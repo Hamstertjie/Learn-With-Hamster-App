@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    <!--
+        Added the constraints for entity Resource.
+    -->
+    <changeSet id="20260212100930-2" author="jhipster">
+
+        <addForeignKeyConstraint baseColumnNames="discipline_id"
+                                 baseTableName="resource"
+                                 constraintName="fk_resource__discipline_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="discipline"
+                                 />
+
+        <addForeignKeyConstraint baseColumnNames="program_id"
+                                 baseTableName="resource"
+                                 constraintName="fk_resource__program_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="program"
+                                 />
+
+        <addForeignKeyConstraint baseColumnNames="course_id"
+                                 baseTableName="resource"
+                                 constraintName="fk_resource__course_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="course"
+                                 />
+
+        <addForeignKeyConstraint baseColumnNames="lesson_id"
+                                 baseTableName="resource"
+                                 constraintName="fk_resource__lesson_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="lesson"
+                                 />
+    </changeSet>
+</databaseChangeLog>

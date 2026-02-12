@@ -1,0 +1,50 @@
+{
+  "annotations": {
+    "changelogDate": "20260212100927"
+  },
+  "applications": "*",
+  "clientRootFolder": "service",
+  "databaseType": "sql",
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "programName",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "programDescription",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "programPrice",
+      "fieldType": "Long"
+    }
+  ],
+  "microserviceName": "service",
+  "name": "Program",
+  "pagination": "pagination",
+  "relationships": [
+    {
+      "otherEntityName": "resource",
+      "relationshipName": "resources",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "course",
+      "otherEntityRelationshipName": "programs",
+      "relationshipName": "courses",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-many"
+    },
+    {
+      "otherEntityName": "discipline",
+      "otherEntityRelationshipName": "programs",
+      "relationshipName": "disciplines",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-many"
+    }
+  ],
+  "service": "serviceImpl"
+}

@@ -1,0 +1,31 @@
+{
+  "serviceApp": {
+    "serviceCourse": {
+      "home": {
+        "title": "Courses",
+        "refreshListLabel": "تحديث القائمة",
+        "createLabel": "إنشاء Course جديد",
+        "createOrEditLabel": "إنشاء أو تعديل Course",
+        "search": "البحث عن Course",
+        "notFound": "لم يتم العثور على Courses"
+      },
+      "created": "Course جديد تم إنشاؤه بالمعرف {{ param }}",
+      "updated": "Course تم تحديثه بالمعرف {{ param }}",
+      "deleted": "Course تم حذفه بالمعرف {{ param }}",
+      "delete": {
+        "question": "هل أنت متأكد أنك تريد حذف Course {{ id }}؟"
+      },
+      "detail": {
+        "title": "Course"
+      },
+      "id": "ID",
+      "courseTitle": "Course Title",
+      "courseDescription": "Course Description",
+      "coursePrice": "Course Price",
+      "courseLevel": "Course Level",
+      "resources": "Resources",
+      "lessons": "Lessons",
+      "programs": "Programs"
+    }
+  }
+}

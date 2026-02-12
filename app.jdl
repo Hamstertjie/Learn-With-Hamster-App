@@ -1,0 +1,135 @@
+/*
+ * Learn With Hamster - Microservice Architecture JDL
+ *
+ * Two deployable modules:
+ *   - gateway: API gateway + Angular frontend (port 8081)
+ *   - service: Microservice owning learning domain entities (port 8080)
+ */
+
+// ===== Application Definitions =====
+
+application {
+  config {
+    applicationType gateway
+    baseName gateway
+    packageName com.learnwithhamster.gateway
+    authenticationType jwt
+    buildTool maven
+    clientFramework angular
+    databaseType sql
+    devDatabaseType h2Disk
+    prodDatabaseType mysql
+    enableTranslation true
+    nativeLanguage en
+    languages [en, ar-ly]
+    reactive true
+    serverPort 8081
+    serviceDiscoveryType consul
+    testFrameworks [gatling, cucumber, cypress]
+    withAdminUi true
+  }
+}
+
+application {
+  config {
+    applicationType microservice
+    baseName service
+    packageName com.learnwithhamster.service
+    authenticationType jwt
+    buildTool maven
+    clientFramework angular
+    databaseType sql
+    devDatabaseType h2Disk
+    prodDatabaseType mysql
+    cacheProvider hazelcast
+    enableHibernateCache true
+    enableTranslation true
+    nativeLanguage en
+    languages [en, ar-ly]
+    reactive false
+    searchEngine elasticsearch
+    serverPort 8080
+    serviceDiscoveryType consul
+    feignClient true
+    testFrameworks [gatling, cucumber, cypress]
+    withAdminUi true
+  }
+  entities Discipline, Program, Course, Lesson, Resource
+}
+
+// ===== Entities =====
+
+entity Discipline {
+  disciplineName String required
+  disciplineDescription String
+  disciplinePrice Long
+}
+
+entity Program {
+  programName String required
+  programDescription String
+  programPrice Long
+}
+
+entity Course {
+  courseTitle String required
+  courseDescription String
+  coursePrice Long
+  courseLevel Level
+}
+
+entity Lesson {
+  lessonTitle String required
+  lessonDescription String
+  language Language
+}
+
+entity Resource {
+  resourceName String
+  resourceDescription String
+  resourceURL String
+  resourcePreviewImage String
+  resourceType ResourceType
+  weight Integer
+}
+
+// ===== Enums =====
+
+enum Level {
+  NOVICE, BEGINNER, INTERMEDIATE, ADVANCED, PROFESSIONAL
+}
+
+enum ResourceType {
+  VIDEO, IMAGE, TUTORIAL, PAGE, PARTIAL, TOOL
+}
+
+enum Language {
+  ENGLISH, SPANISH, HUNGARIAN, GERMAN
+}
+
+// ===== Relationships =====
+
+relationship OneToMany {
+  Discipline{resources} to Resource
+  Program{resources} to Resource
+  Course{resources} to Resource
+  Lesson{resources} to Resource
+}
+
+relationship ManyToMany {
+  Discipline{programs} to Program{disciplines}
+  Program{courses} to Course{programs}
+  Course{lessons} to Lesson{courses}
+}
+
+// ===== Options =====
+
+paginate Lesson with infinite-scroll
+paginate Program, Course with pagination
+
+dto * with mapstruct
+
+service all with serviceImpl
+
+// Microservice assignment - all entities belong to 'service'
+microservice Discipline, Program, Course, Lesson, Resource with service

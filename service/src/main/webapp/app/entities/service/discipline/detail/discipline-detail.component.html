@@ -1,0 +1,51 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (discipline(); as disciplineRef) {
+      <div>
+        <h2 data-cy="disciplineDetailsHeading"><span jhiTranslate="serviceApp.serviceDiscipline.detail.title">Discipline</span></h2>
+
+        <hr />
+
+        <jhi-alert-error />
+
+        <jhi-alert />
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ disciplineRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="serviceApp.serviceDiscipline.disciplineName">Discipline Name</span></dt>
+          <dd>
+            <span>{{ disciplineRef.disciplineName }}</span>
+          </dd>
+          <dt><span jhiTranslate="serviceApp.serviceDiscipline.disciplineDescription">Discipline Description</span></dt>
+          <dd>
+            <span>{{ disciplineRef.disciplineDescription }}</span>
+          </dd>
+          <dt><span jhiTranslate="serviceApp.serviceDiscipline.disciplinePrice">Discipline Price</span></dt>
+          <dd>
+            <span>{{ disciplineRef.disciplinePrice }}</span>
+          </dd>
+          <dt><span jhiTranslate="serviceApp.serviceDiscipline.programs">Programs</span></dt>
+          <dd>
+            @for (programs of disciplineRef.programs; track $index; let last = $last) {
+              <span>
+                <a [routerLink]="['/service/program', programs.id, 'view']">{{ programs?.id }}</a
+                >{{ last ? '' : ', ' }}
+              </span>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/service/discipline', disciplineRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

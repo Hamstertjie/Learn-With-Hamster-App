@@ -1,0 +1,90 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (resource(); as resourceRef) {
+      <div>
+        <h2 data-cy="resourceDetailsHeading"><span jhiTranslate="serviceApp.serviceResource.detail.title">Resource</span></h2>
+
+        <hr />
+
+        <jhi-alert-error />
+
+        <jhi-alert />
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ resourceRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="serviceApp.serviceResource.resourceName">Resource Name</span></dt>
+          <dd>
+            <span>{{ resourceRef.resourceName }}</span>
+          </dd>
+          <dt><span jhiTranslate="serviceApp.serviceResource.resourceDescription">Resource Description</span></dt>
+          <dd>
+            <span>{{ resourceRef.resourceDescription }}</span>
+          </dd>
+          <dt><span jhiTranslate="serviceApp.serviceResource.resourceURL">Resource URL</span></dt>
+          <dd>
+            <span>{{ resourceRef.resourceURL }}</span>
+          </dd>
+          <dt><span jhiTranslate="serviceApp.serviceResource.resourcePreviewImage">Resource Preview Image</span></dt>
+          <dd>
+            <span>{{ resourceRef.resourcePreviewImage }}</span>
+          </dd>
+          <dt><span jhiTranslate="serviceApp.serviceResource.resourceType">Resource Type</span></dt>
+          <dd>
+            <span [jhiTranslate]="'serviceApp.ResourceType.' + (resourceRef.resourceType ?? 'null')">{{
+              { null: '', VIDEO: 'VIDEO', IMAGE: 'IMAGE', TUTORIAL: 'TUTORIAL', PAGE: 'PAGE', PARTIAL: 'PARTIAL', TOOL: 'TOOL' }[
+                resourceRef.resourceType ?? 'null'
+              ]
+            }}</span>
+          </dd>
+          <dt><span jhiTranslate="serviceApp.serviceResource.weight">Weight</span></dt>
+          <dd>
+            <span>{{ resourceRef.weight }}</span>
+          </dd>
+          <dt><span jhiTranslate="serviceApp.serviceResource.discipline">Discipline</span></dt>
+          <dd>
+            @if (resource()!.discipline) {
+              <div>
+                <a [routerLink]="['/service/discipline', resource()!.discipline?.id, 'view']">{{ resourceRef.discipline?.id }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span jhiTranslate="serviceApp.serviceResource.program">Program</span></dt>
+          <dd>
+            @if (resource()!.program) {
+              <div>
+                <a [routerLink]="['/service/program', resource()!.program?.id, 'view']">{{ resourceRef.program?.id }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span jhiTranslate="serviceApp.serviceResource.course">Course</span></dt>
+          <dd>
+            @if (resource()!.course) {
+              <div>
+                <a [routerLink]="['/service/course', resource()!.course?.id, 'view']">{{ resourceRef.course?.id }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span jhiTranslate="serviceApp.serviceResource.lesson">Lesson</span></dt>
+          <dd>
+            @if (resource()!.lesson) {
+              <div>
+                <a [routerLink]="['/service/lesson', resource()!.lesson?.id, 'view']">{{ resourceRef.lesson?.id }}</a>
+              </div>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/service/resource', resourceRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

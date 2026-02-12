@@ -1,0 +1,116 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2 id="jhi-program-heading" data-cy="ProgramCreateUpdateHeading" jhiTranslate="serviceApp.serviceProgram.home.createOrEditLabel">
+        Create or edit a Program
+      </h2>
+
+      <div>
+        <jhi-alert-error />
+
+        @if (editForm.controls.id.value !== null) {
+          <div class="mb-3">
+            <label class="form-label" for="field_id" jhiTranslate="serviceApp.serviceProgram.id">ID</label>
+            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
+        }
+
+        @let programNameRef = editForm.get('programName')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_programName" jhiTranslate="serviceApp.serviceProgram.programName">Program Name</label>
+          <input
+            type="text"
+            class="form-control"
+            name="programName"
+            id="field_programName"
+            data-cy="programName"
+            formControlName="programName"
+          />
+          @if (programNameRef.invalid && (programNameRef.dirty || programNameRef.touched)) {
+            <div>
+              @if (editForm.get('programName')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_programDescription" jhiTranslate="serviceApp.serviceProgram.programDescription"
+            >Program Description</label
+          >
+          <input
+            type="text"
+            class="form-control"
+            name="programDescription"
+            id="field_programDescription"
+            data-cy="programDescription"
+            formControlName="programDescription"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_programPrice" jhiTranslate="serviceApp.serviceProgram.programPrice">Program Price</label>
+          <input
+            type="number"
+            class="form-control"
+            name="programPrice"
+            id="field_programPrice"
+            data-cy="programPrice"
+            formControlName="programPrice"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label for="field_courses" jhiTranslate="serviceApp.serviceProgram.courses">Courses</label>
+          <select
+            class="form-control"
+            id="field_courses"
+            data-cy="courses"
+            multiple
+            name="courses"
+            formControlName="courses"
+            [compareWith]="compareCourse"
+          >
+            @for (courseOption of coursesSharedCollection; track $index) {
+              <option [ngValue]="courseOption">{{ courseOption.id }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="field_disciplines" jhiTranslate="serviceApp.serviceProgram.disciplines">Disciplines</label>
+          <select
+            class="form-control"
+            id="field_disciplines"
+            data-cy="disciplines"
+            multiple
+            name="disciplines"
+            formControlName="disciplines"
+            [compareWith]="compareDiscipline"
+          >
+            @for (disciplineOption of disciplinesSharedCollection; track $index) {
+              <option [ngValue]="disciplineOption">{{ disciplineOption.id }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

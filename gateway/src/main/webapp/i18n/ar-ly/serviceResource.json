@@ -1,0 +1,37 @@
+{
+  "gatewayApp": {
+    "serviceResource": {
+      "home": {
+        "title": "Resources",
+        "refreshListLabel": "تحديث القائمة",
+        "createLabel": "إنشاء Resource جديد",
+        "createOrEditLabel": "إنشاء أو تعديل Resource",
+        "notFound": "لم يتم العثور على Resources"
+      },
+      "delete": {
+        "question": "هل أنت متأكد أنك تريد حذف Resource {{ id }}؟"
+      },
+      "detail": {
+        "title": "Resource"
+      },
+      "id": "ID",
+      "resourceName": "Resource Name",
+      "resourceDescription": "Resource Description",
+      "resourceURL": "Resource URL",
+      "resourcePreviewImage": "Resource Preview Image",
+      "resourceType": "Resource Type",
+      "weight": "Weight",
+      "discipline": "Discipline",
+      "program": "Program",
+      "course": "Course",
+      "lesson": "Lesson"
+    }
+  },
+  "serviceApp": {
+    "serviceResource": {
+      "created": "Resource جديد تم إنشاؤه بالمعرف {{ param }}",
+      "updated": "Resource تم تحديثه بالمعرف {{ param }}",
+      "deleted": "Resource تم حذفه بالمعرف {{ param }}"
+    }
+  }
+}

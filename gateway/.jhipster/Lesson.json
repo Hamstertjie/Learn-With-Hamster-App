@@ -1,0 +1,45 @@
+{
+  "annotations": {
+    "changelogDate": "20260212100955"
+  },
+  "applications": "*",
+  "clientRootFolder": "service",
+  "databaseType": "sql",
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "lessonTitle",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "lessonDescription",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "language",
+      "fieldType": "Language",
+      "fieldValues": "ENGLISH,SPANISH,HUNGARIAN,GERMAN"
+    }
+  ],
+  "microserviceName": "service",
+  "name": "Lesson",
+  "pagination": "infinite-scroll",
+  "relationships": [
+    {
+      "otherEntityName": "resource",
+      "relationshipName": "resources",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "course",
+      "otherEntityRelationshipName": "lessons",
+      "relationshipName": "courses",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-many"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceImpl"
+}

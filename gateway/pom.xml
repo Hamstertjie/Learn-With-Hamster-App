@@ -112,15 +112,6 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-          <!-- remove spring-boot-dependencies 3.2.2 -->
-          <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-dependencies</artifactId>
-            <version>${spring-cloud-dependencies.version}</version>
-            <type>pom</type>
-            <scope>import</scope>
-          </dependency>
-          <!-- keep other BOMs like feign-reactor, cucumber -->
         </dependencies>
     </dependencyManagement>
 
@@ -147,11 +138,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
-      <dependency>
-        <groupId>io.asyncer</groupId>
-        <artifactId>r2dbc-mysql</artifactId>
-        <version>1.0.2</version>
-      </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-r2dbc</artifactId>

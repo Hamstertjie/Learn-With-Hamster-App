@@ -1,0 +1,107 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2
+        id="jhi-discipline-heading"
+        data-cy="DisciplineCreateUpdateHeading"
+        jhiTranslate="gatewayApp.serviceDiscipline.home.createOrEditLabel"
+      >
+        Create or edit a Discipline
+      </h2>
+
+      <div>
+        <jhi-alert-error />
+
+        @if (editForm.controls.id.value !== null) {
+          <div class="mb-3">
+            <label class="form-label" for="field_id" jhiTranslate="gatewayApp.serviceDiscipline.id">ID</label>
+            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
+        }
+
+        @let disciplineNameRef = editForm.get('disciplineName')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_disciplineName" jhiTranslate="gatewayApp.serviceDiscipline.disciplineName"
+            >Discipline Name</label
+          >
+          <input
+            type="text"
+            class="form-control"
+            name="disciplineName"
+            id="field_disciplineName"
+            data-cy="disciplineName"
+            formControlName="disciplineName"
+          />
+          @if (disciplineNameRef.invalid && (disciplineNameRef.dirty || disciplineNameRef.touched)) {
+            <div>
+              @if (editForm.get('disciplineName')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_disciplineDescription" jhiTranslate="gatewayApp.serviceDiscipline.disciplineDescription"
+            >Discipline Description</label
+          >
+          <input
+            type="text"
+            class="form-control"
+            name="disciplineDescription"
+            id="field_disciplineDescription"
+            data-cy="disciplineDescription"
+            formControlName="disciplineDescription"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_disciplinePrice" jhiTranslate="gatewayApp.serviceDiscipline.disciplinePrice"
+            >Discipline Price</label
+          >
+          <input
+            type="number"
+            class="form-control"
+            name="disciplinePrice"
+            id="field_disciplinePrice"
+            data-cy="disciplinePrice"
+            formControlName="disciplinePrice"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label for="field_programs" jhiTranslate="gatewayApp.serviceDiscipline.programs">Programs</label>
+          <select
+            class="form-control"
+            id="field_programs"
+            data-cy="programs"
+            multiple
+            name="programs"
+            formControlName="programs"
+            [compareWith]="compareProgram"
+          >
+            @for (programOption of programsSharedCollection; track $index) {
+              <option [ngValue]="programOption">{{ programOption.id }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

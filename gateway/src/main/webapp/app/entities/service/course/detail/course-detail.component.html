@@ -1,0 +1,73 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (course(); as courseRef) {
+      <div>
+        <h2 data-cy="courseDetailsHeading"><span jhiTranslate="gatewayApp.serviceCourse.detail.title">Course</span></h2>
+
+        <hr />
+
+        <jhi-alert-error />
+
+        <jhi-alert />
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ courseRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="gatewayApp.serviceCourse.courseTitle">Course Title</span></dt>
+          <dd>
+            <span>{{ courseRef.courseTitle }}</span>
+          </dd>
+          <dt><span jhiTranslate="gatewayApp.serviceCourse.courseDescription">Course Description</span></dt>
+          <dd>
+            <span>{{ courseRef.courseDescription }}</span>
+          </dd>
+          <dt><span jhiTranslate="gatewayApp.serviceCourse.coursePrice">Course Price</span></dt>
+          <dd>
+            <span>{{ courseRef.coursePrice }}</span>
+          </dd>
+          <dt><span jhiTranslate="gatewayApp.serviceCourse.courseLevel">Course Level</span></dt>
+          <dd>
+            <span [jhiTranslate]="'gatewayApp.Level.' + (courseRef.courseLevel ?? 'null')">{{
+              {
+                null: '',
+                NOVICE: 'NOVICE',
+                BEGINNER: 'BEGINNER',
+                INTERMEDIATE: 'INTERMEDIATE',
+                ADVANCED: 'ADVANCED',
+                PROFESSIONAL: 'PROFESSIONAL',
+              }[courseRef.courseLevel ?? 'null']
+            }}</span>
+          </dd>
+          <dt><span jhiTranslate="gatewayApp.serviceCourse.lessons">Lessons</span></dt>
+          <dd>
+            @for (lessons of courseRef.lessons; track $index; let last = $last) {
+              <span>
+                <a [routerLink]="['/lesson', lessons.id, 'view']">{{ lessons?.id }}</a
+                >{{ last ? '' : ', ' }}
+              </span>
+            }
+          </dd>
+          <dt><span jhiTranslate="gatewayApp.serviceCourse.programs">Programs</span></dt>
+          <dd>
+            @for (programs of courseRef.programs; track $index; let last = $last) {
+              <span>
+                <a [routerLink]="['/program', programs.id, 'view']">{{ programs?.id }}</a
+                >{{ last ? '' : ', ' }}
+              </span>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/course', courseRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

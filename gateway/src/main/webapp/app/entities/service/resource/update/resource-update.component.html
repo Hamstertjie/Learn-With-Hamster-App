@@ -1,0 +1,171 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2 id="jhi-resource-heading" data-cy="ResourceCreateUpdateHeading" jhiTranslate="gatewayApp.serviceResource.home.createOrEditLabel">
+        Create or edit a Resource
+      </h2>
+
+      <div>
+        <jhi-alert-error />
+
+        @if (editForm.controls.id.value !== null) {
+          <div class="mb-3">
+            <label class="form-label" for="field_id" jhiTranslate="gatewayApp.serviceResource.id">ID</label>
+            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
+        }
+
+        <div class="mb-3">
+          <label class="form-label" for="field_resourceName" jhiTranslate="gatewayApp.serviceResource.resourceName">Resource Name</label>
+          <input
+            type="text"
+            class="form-control"
+            name="resourceName"
+            id="field_resourceName"
+            data-cy="resourceName"
+            formControlName="resourceName"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_resourceDescription" jhiTranslate="gatewayApp.serviceResource.resourceDescription"
+            >Resource Description</label
+          >
+          <input
+            type="text"
+            class="form-control"
+            name="resourceDescription"
+            id="field_resourceDescription"
+            data-cy="resourceDescription"
+            formControlName="resourceDescription"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_resourceURL" jhiTranslate="gatewayApp.serviceResource.resourceURL">Resource URL</label>
+          <input
+            type="text"
+            class="form-control"
+            name="resourceURL"
+            id="field_resourceURL"
+            data-cy="resourceURL"
+            formControlName="resourceURL"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_resourcePreviewImage" jhiTranslate="gatewayApp.serviceResource.resourcePreviewImage"
+            >Resource Preview Image</label
+          >
+          <input
+            type="text"
+            class="form-control"
+            name="resourcePreviewImage"
+            id="field_resourcePreviewImage"
+            data-cy="resourcePreviewImage"
+            formControlName="resourcePreviewImage"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_resourceType" jhiTranslate="gatewayApp.serviceResource.resourceType">Resource Type</label>
+          <select class="form-control" name="resourceType" formControlName="resourceType" id="field_resourceType" data-cy="resourceType">
+            <option [ngValue]="null">{{ 'gatewayApp.ResourceType.null' | translate }}</option>
+            @for (resourceType of resourceTypeValues; track $index) {
+              <option [value]="resourceType">{{ 'gatewayApp.ResourceType.' + resourceType | translate }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_weight" jhiTranslate="gatewayApp.serviceResource.weight">Weight</label>
+          <input type="number" class="form-control" name="weight" id="field_weight" data-cy="weight" formControlName="weight" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_discipline" jhiTranslate="gatewayApp.serviceResource.discipline">Discipline</label>
+          <select
+            class="form-control"
+            id="field_discipline"
+            data-cy="discipline"
+            name="discipline"
+            formControlName="discipline"
+            [compareWith]="compareDiscipline"
+          >
+            <option [ngValue]="null"></option>
+            @for (disciplineOption of disciplinesSharedCollection; track $index) {
+              <option [ngValue]="disciplineOption">{{ disciplineOption.id }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_program" jhiTranslate="gatewayApp.serviceResource.program">Program</label>
+          <select
+            class="form-control"
+            id="field_program"
+            data-cy="program"
+            name="program"
+            formControlName="program"
+            [compareWith]="compareProgram"
+          >
+            <option [ngValue]="null"></option>
+            @for (programOption of programsSharedCollection; track $index) {
+              <option [ngValue]="programOption">{{ programOption.id }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_course" jhiTranslate="gatewayApp.serviceResource.course">Course</label>
+          <select
+            class="form-control"
+            id="field_course"
+            data-cy="course"
+            name="course"
+            formControlName="course"
+            [compareWith]="compareCourse"
+          >
+            <option [ngValue]="null"></option>
+            @for (courseOption of coursesSharedCollection; track $index) {
+              <option [ngValue]="courseOption">{{ courseOption.id }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_lesson" jhiTranslate="gatewayApp.serviceResource.lesson">Lesson</label>
+          <select
+            class="form-control"
+            id="field_lesson"
+            data-cy="lesson"
+            name="lesson"
+            formControlName="lesson"
+            [compareWith]="compareLesson"
+          >
+            <option [ngValue]="null"></option>
+            @for (lessonOption of lessonsSharedCollection; track $index) {
+              <option [ngValue]="lessonOption">{{ lessonOption.id }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

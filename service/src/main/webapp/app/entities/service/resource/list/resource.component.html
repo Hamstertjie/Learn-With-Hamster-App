@@ -1,0 +1,213 @@
+<div>
+  <h2 id="page-heading" data-cy="ResourceHeading">
+    <span jhiTranslate="serviceApp.serviceResource.home.title">Resources</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
+        <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
+        <span jhiTranslate="serviceApp.serviceResource.home.refreshListLabel">Refresh list</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-resource"
+        [routerLink]="['/service/resource/new']"
+      >
+        <fa-icon icon="plus"></fa-icon>
+        <span class="hidden-sm-down" jhiTranslate="serviceApp.serviceResource.home.createLabel">Create a new Resource</span>
+      </button>
+    </div>
+  </h2>
+
+  <jhi-alert-error />
+
+  <jhi-alert />
+
+  <form name="searchForm" class="row row-cols-sm-auto align-items-center">
+    <div class="col-sm-12">
+      <div class="input-group w-100 mt-3">
+        <label class="visually-hidden" for="currentSearch" jhiTranslate="serviceApp.serviceResource.home.search">Search for Resource</label>
+        <input
+          type="text"
+          class="form-control"
+          [(ngModel)]="currentSearch"
+          id="currentSearch"
+          name="currentSearch"
+          placeholder="{{ 'serviceApp.serviceResource.home.search' | translate }}"
+        />
+
+        <button class="btn btn-info" (click)="search(currentSearch)">
+          <fa-icon icon="search"></fa-icon>
+        </button>
+
+        @if (currentSearch) {
+          <button class="btn btn-danger" (click)="search('')">
+            <fa-icon icon="trash-alt"></fa-icon>
+          </button>
+        }
+      </div>
+    </div>
+  </form>
+
+  @if (resources().length === 0) {
+    <div class="alert alert-warning" id="no-result">
+      <span jhiTranslate="serviceApp.serviceResource.home.notFound">No Resources found</span>
+    </div>
+  } @else {
+    <div class="table-responsive table-entities" id="entities">
+      <table class="table table-striped" aria-describedby="page-heading">
+        <thead>
+          <tr jhiSort [(sortState)]="sortState" (sortChange)="navigateToWithComponentValues($event)">
+            <th scope="col" jhiSortBy="id">
+              <div class="d-flex">
+                <span jhiTranslate="global.field.id">ID</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="resourceName">
+              <div class="d-flex">
+                <span jhiTranslate="serviceApp.serviceResource.resourceName">Resource Name</span>
+                @if (!currentSearch) {
+                  <fa-icon class="p-1" icon="sort"></fa-icon>
+                }
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="resourceDescription">
+              <div class="d-flex">
+                <span jhiTranslate="serviceApp.serviceResource.resourceDescription">Resource Description</span>
+                @if (!currentSearch) {
+                  <fa-icon class="p-1" icon="sort"></fa-icon>
+                }
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="resourceURL">
+              <div class="d-flex">
+                <span jhiTranslate="serviceApp.serviceResource.resourceURL">Resource URL</span>
+                @if (!currentSearch) {
+                  <fa-icon class="p-1" icon="sort"></fa-icon>
+                }
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="resourcePreviewImage">
+              <div class="d-flex">
+                <span jhiTranslate="serviceApp.serviceResource.resourcePreviewImage">Resource Preview Image</span>
+                @if (!currentSearch) {
+                  <fa-icon class="p-1" icon="sort"></fa-icon>
+                }
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="resourceType">
+              <div class="d-flex">
+                <span jhiTranslate="serviceApp.serviceResource.resourceType">Resource Type</span>
+                @if (!currentSearch) {
+                  <fa-icon class="p-1" icon="sort"></fa-icon>
+                }
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="weight">
+              <div class="d-flex">
+                <span jhiTranslate="serviceApp.serviceResource.weight">Weight</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="discipline.id">
+              <div class="d-flex">
+                <span jhiTranslate="serviceApp.serviceResource.discipline">Discipline</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="program.id">
+              <div class="d-flex">
+                <span jhiTranslate="serviceApp.serviceResource.program">Program</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="course.id">
+              <div class="d-flex">
+                <span jhiTranslate="serviceApp.serviceResource.course">Course</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="lesson.id">
+              <div class="d-flex">
+                <span jhiTranslate="serviceApp.serviceResource.lesson">Lesson</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (resource of resources(); track trackId(resource)) {
+            <tr data-cy="entityTable">
+              <td>
+                <a [routerLink]="['/service/resource', resource.id, 'view']">{{ resource.id }}</a>
+              </td>
+              <td>{{ resource.resourceName }}</td>
+              <td>{{ resource.resourceDescription }}</td>
+              <td>{{ resource.resourceURL }}</td>
+              <td>{{ resource.resourcePreviewImage }}</td>
+              <td [jhiTranslate]="'serviceApp.ResourceType.' + (resource.resourceType ?? 'null')">
+                {{
+                  { null: '', VIDEO: 'VIDEO', IMAGE: 'IMAGE', TUTORIAL: 'TUTORIAL', PAGE: 'PAGE', PARTIAL: 'PARTIAL', TOOL: 'TOOL' }[
+                    resource.resourceType ?? 'null'
+                  ]
+                }}
+              </td>
+              <td>{{ resource.weight }}</td>
+              <td>
+                @if (resource.discipline) {
+                  <div>
+                    <a [routerLink]="['/service/discipline', resource.discipline.id, 'view']">{{ resource.discipline.id }}</a>
+                  </div>
+                }
+              </td>
+              <td>
+                @if (resource.program) {
+                  <div>
+                    <a [routerLink]="['/service/program', resource.program.id, 'view']">{{ resource.program.id }}</a>
+                  </div>
+                }
+              </td>
+              <td>
+                @if (resource.course) {
+                  <div>
+                    <a [routerLink]="['/service/course', resource.course.id, 'view']">{{ resource.course.id }}</a>
+                  </div>
+                }
+              </td>
+              <td>
+                @if (resource.lesson) {
+                  <div>
+                    <a [routerLink]="['/service/lesson', resource.lesson.id, 'view']">{{ resource.lesson.id }}</a>
+                  </div>
+                }
+              </td>
+              <td class="text-end">
+                <div class="btn-group">
+                  <a [routerLink]="['/service/resource', resource.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                    <fa-icon icon="eye"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+                  </a>
+
+                  <a [routerLink]="['/service/resource', resource.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                    <fa-icon icon="pencil-alt"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+                  </a>
+
+                  <button type="submit" (click)="delete(resource)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                    <fa-icon icon="times"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
