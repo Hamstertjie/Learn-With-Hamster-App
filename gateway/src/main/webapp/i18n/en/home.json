@@ -1,19 +1,28 @@
 {
   "home": {
-    "title": "Welcome, Java Hipster!",
-    "subtitle": "This is your homepage",
+    "title": "Welcome to Learn With Hamster",
+    "subtitle": "Your personalized learning management platform",
     "logged": {
-      "message": "You are logged in as user \"{{username}}\"."
+      "message": "You are logged in as \"{{username}}\"."
     },
-    "question": "If you have any question on JHipster:",
-    "link": {
-      "homepage": "JHipster homepage",
-      "stackoverflow": "JHipster on Stack Overflow",
-      "bugtracker": "JHipster bug tracker",
-      "chat": "JHipster public chat room",
-      "follow": "follow @jhipster on Twitter"
+    "features": {
+      "disciplines": {
+        "title": "Browse Disciplines",
+        "description": "Explore a wide range of disciplines spanning multiple fields of study."
+      },
+      "programs": {
+        "title": "Structured Programs",
+        "description": "Follow structured learning programs designed to take you from beginner to expert."
+      },
+      "progress": {
+        "title": "Track Progress",
+        "description": "Monitor your learning journey with courses, lessons, and resources."
+      }
     },
-    "like": "If you like JHipster, don't forget to give us a star on",
-    "github": "GitHub"
+    "cta": {
+      "signin": "Sign In",
+      "register": "Create Account",
+      "browse": "Browse Catalog"
+    }
   }
 }
