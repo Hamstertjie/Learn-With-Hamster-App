@@ -1,0 +1,55 @@
+{
+  "annotations": {
+    "changelogDate": "20260212100928"
+  },
+  "applications": "*",
+  "clientRootFolder": "service",
+  "databaseType": "sql",
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "courseTitle",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "courseDescription",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "coursePrice",
+      "fieldType": "Long"
+    },
+    {
+      "fieldName": "courseLevel",
+      "fieldType": "Level",
+      "fieldValues": "NOVICE,BEGINNER,INTERMEDIATE,ADVANCED,PROFESSIONAL"
+    }
+  ],
+  "microserviceName": "service",
+  "name": "Course",
+  "pagination": "pagination",
+  "relationships": [
+    {
+      "otherEntityName": "resource",
+      "relationshipName": "resources",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "lesson",
+      "otherEntityRelationshipName": "courses",
+      "relationshipName": "lessons",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-many"
+    },
+    {
+      "otherEntityName": "program",
+      "otherEntityRelationshipName": "courses",
+      "relationshipName": "programs",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-many"
+    }
+  ],
+  "service": "serviceImpl"
+}

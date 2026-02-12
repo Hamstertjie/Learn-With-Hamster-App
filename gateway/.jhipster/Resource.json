@@ -1,0 +1,41 @@
+{
+  "annotations": {
+    "changelogDate": "20260212100956"
+  },
+  "applications": "*",
+  "clientRootFolder": "service",
+  "databaseType": "sql",
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "resourceName",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "resourceDescription",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "resourceURL",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "resourcePreviewImage",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "resourceType",
+      "fieldType": "ResourceType",
+      "fieldValues": "VIDEO,IMAGE,TUTORIAL,PAGE,PARTIAL,TOOL"
+    },
+    {
+      "fieldName": "weight",
+      "fieldType": "Integer"
+    }
+  ],
+  "microserviceName": "service",
+  "name": "Resource",
+  "relationships": [],
+  "searchEngine": "no",
+  "service": "serviceImpl"
+}

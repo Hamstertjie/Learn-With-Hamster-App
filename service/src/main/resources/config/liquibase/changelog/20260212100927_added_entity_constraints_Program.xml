@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    <!--
+        Added the constraints for entity Program.
+    -->
+    <changeSet id="20260212100927-2" author="jhipster">
+
+        <addForeignKeyConstraint baseColumnNames="program_id"
+                                 baseTableName="rel_program__courses"
+                                 constraintName="fk_rel_program__courses__program_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="program"
+                                 />
+
+        <addForeignKeyConstraint baseColumnNames="courses_id"
+                                 baseTableName="rel_program__courses"
+                                 constraintName="fk_rel_program__courses__courses_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="course"
+                                 />
+    </changeSet>
+</databaseChangeLog>

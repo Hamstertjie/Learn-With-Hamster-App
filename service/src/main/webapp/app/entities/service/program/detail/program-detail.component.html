@@ -1,0 +1,60 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (program(); as programRef) {
+      <div>
+        <h2 data-cy="programDetailsHeading"><span jhiTranslate="serviceApp.serviceProgram.detail.title">Program</span></h2>
+
+        <hr />
+
+        <jhi-alert-error />
+
+        <jhi-alert />
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ programRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="serviceApp.serviceProgram.programName">Program Name</span></dt>
+          <dd>
+            <span>{{ programRef.programName }}</span>
+          </dd>
+          <dt><span jhiTranslate="serviceApp.serviceProgram.programDescription">Program Description</span></dt>
+          <dd>
+            <span>{{ programRef.programDescription }}</span>
+          </dd>
+          <dt><span jhiTranslate="serviceApp.serviceProgram.programPrice">Program Price</span></dt>
+          <dd>
+            <span>{{ programRef.programPrice }}</span>
+          </dd>
+          <dt><span jhiTranslate="serviceApp.serviceProgram.courses">Courses</span></dt>
+          <dd>
+            @for (courses of programRef.courses; track $index; let last = $last) {
+              <span>
+                <a [routerLink]="['/service/course', courses.id, 'view']">{{ courses?.id }}</a
+                >{{ last ? '' : ', ' }}
+              </span>
+            }
+          </dd>
+          <dt><span jhiTranslate="serviceApp.serviceProgram.disciplines">Disciplines</span></dt>
+          <dd>
+            @for (disciplines of programRef.disciplines; track $index; let last = $last) {
+              <span>
+                <a [routerLink]="['/service/discipline', disciplines.id, 'view']">{{ disciplines?.id }}</a
+                >{{ last ? '' : ', ' }}
+              </span>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/service/program', programRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

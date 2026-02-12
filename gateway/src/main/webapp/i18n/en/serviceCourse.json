@@ -1,0 +1,34 @@
+{
+  "gatewayApp": {
+    "serviceCourse": {
+      "home": {
+        "title": "Courses",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Course",
+        "createOrEditLabel": "Create or edit a Course",
+        "notFound": "No Courses found"
+      },
+      "delete": {
+        "question": "Are you sure you want to delete Course {{ id }}?"
+      },
+      "detail": {
+        "title": "Course"
+      },
+      "id": "ID",
+      "courseTitle": "Course Title",
+      "courseDescription": "Course Description",
+      "coursePrice": "Course Price",
+      "courseLevel": "Course Level",
+      "resources": "Resources",
+      "lessons": "Lessons",
+      "programs": "Programs"
+    }
+  },
+  "serviceApp": {
+    "serviceCourse": {
+      "created": "A new Course is created with identifier {{ param }}",
+      "updated": "A Course is updated with identifier {{ param }}",
+      "deleted": "A Course is deleted with identifier {{ param }}"
+    }
+  }
+}

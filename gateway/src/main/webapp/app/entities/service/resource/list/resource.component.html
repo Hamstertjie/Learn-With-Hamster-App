@@ -1,0 +1,182 @@
+<div>
+  <h2 id="page-heading" data-cy="ResourceHeading">
+    <span jhiTranslate="gatewayApp.serviceResource.home.title">Resources</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
+        <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
+        <span jhiTranslate="gatewayApp.serviceResource.home.refreshListLabel">Refresh list</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-resource"
+        [routerLink]="['/resource/new']"
+      >
+        <fa-icon icon="plus"></fa-icon>
+        <span jhiTranslate="gatewayApp.serviceResource.home.createLabel">Create a new Resource</span>
+      </button>
+    </div>
+  </h2>
+
+  <jhi-alert-error />
+
+  <jhi-alert />
+
+  @if (resources().length === 0) {
+    <div class="alert alert-warning" id="no-result">
+      <span jhiTranslate="gatewayApp.serviceResource.home.notFound">No Resources found</span>
+    </div>
+  } @else {
+    <div class="table-responsive table-entities" id="entities">
+      <table class="table table-striped" aria-describedby="page-heading">
+        <thead>
+          <tr jhiSort [(sortState)]="sortState" (sortChange)="navigateToWithComponentValues($event)">
+            <th scope="col" jhiSortBy="id">
+              <div class="d-flex">
+                <span jhiTranslate="global.field.id">ID</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="resourceName">
+              <div class="d-flex">
+                <span jhiTranslate="gatewayApp.serviceResource.resourceName">Resource Name</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="resourceDescription">
+              <div class="d-flex">
+                <span jhiTranslate="gatewayApp.serviceResource.resourceDescription">Resource Description</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="resourceURL">
+              <div class="d-flex">
+                <span jhiTranslate="gatewayApp.serviceResource.resourceURL">Resource URL</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="resourcePreviewImage">
+              <div class="d-flex">
+                <span jhiTranslate="gatewayApp.serviceResource.resourcePreviewImage">Resource Preview Image</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="resourceType">
+              <div class="d-flex">
+                <span jhiTranslate="gatewayApp.serviceResource.resourceType">Resource Type</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="weight">
+              <div class="d-flex">
+                <span jhiTranslate="gatewayApp.serviceResource.weight">Weight</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="discipline.id">
+              <div class="d-flex">
+                <span jhiTranslate="gatewayApp.serviceResource.discipline">Discipline</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="program.id">
+              <div class="d-flex">
+                <span jhiTranslate="gatewayApp.serviceResource.program">Program</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="course.id">
+              <div class="d-flex">
+                <span jhiTranslate="gatewayApp.serviceResource.course">Course</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="lesson.id">
+              <div class="d-flex">
+                <span jhiTranslate="gatewayApp.serviceResource.lesson">Lesson</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (resource of resources(); track trackId(resource)) {
+            <tr data-cy="entityTable">
+              <td>
+                <a [routerLink]="['/resource', resource.id, 'view']">{{ resource.id }}</a>
+              </td>
+              <td>{{ resource.resourceName }}</td>
+              <td>{{ resource.resourceDescription }}</td>
+              <td>{{ resource.resourceURL }}</td>
+              <td>{{ resource.resourcePreviewImage }}</td>
+              <td [jhiTranslate]="'gatewayApp.ResourceType.' + (resource.resourceType ?? 'null')">
+                {{
+                  { null: '', VIDEO: 'VIDEO', IMAGE: 'IMAGE', TUTORIAL: 'TUTORIAL', PAGE: 'PAGE', PARTIAL: 'PARTIAL', TOOL: 'TOOL' }[
+                    resource.resourceType ?? 'null'
+                  ]
+                }}
+              </td>
+              <td>{{ resource.weight }}</td>
+              <td>
+                @if (resource.discipline) {
+                  <div>
+                    <a [routerLink]="['/discipline', resource.discipline.id, 'view']">{{ resource.discipline.id }}</a>
+                  </div>
+                }
+              </td>
+              <td>
+                @if (resource.program) {
+                  <div>
+                    <a [routerLink]="['/program', resource.program.id, 'view']">{{ resource.program.id }}</a>
+                  </div>
+                }
+              </td>
+              <td>
+                @if (resource.course) {
+                  <div>
+                    <a [routerLink]="['/course', resource.course.id, 'view']">{{ resource.course.id }}</a>
+                  </div>
+                }
+              </td>
+              <td>
+                @if (resource.lesson) {
+                  <div>
+                    <a [routerLink]="['/lesson', resource.lesson.id, 'view']">{{ resource.lesson.id }}</a>
+                  </div>
+                }
+              </td>
+              <td class="text-end">
+                <div class="btn-group">
+                  <a [routerLink]="['/resource', resource.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                    <fa-icon icon="eye"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+                  </a>
+
+                  <a [routerLink]="['/resource', resource.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                    <fa-icon icon="pencil-alt"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+                  </a>
+
+                  <button type="submit" (click)="delete(resource)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                    <fa-icon icon="times"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

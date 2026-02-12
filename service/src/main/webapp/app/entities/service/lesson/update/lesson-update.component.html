@@ -1,0 +1,97 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2 id="jhi-lesson-heading" data-cy="LessonCreateUpdateHeading" jhiTranslate="serviceApp.serviceLesson.home.createOrEditLabel">
+        Create or edit a Lesson
+      </h2>
+
+      <div>
+        <jhi-alert-error />
+
+        @if (editForm.controls.id.value !== null) {
+          <div class="mb-3">
+            <label class="form-label" for="field_id" jhiTranslate="serviceApp.serviceLesson.id">ID</label>
+            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
+        }
+
+        @let lessonTitleRef = editForm.get('lessonTitle')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_lessonTitle" jhiTranslate="serviceApp.serviceLesson.lessonTitle">Lesson Title</label>
+          <input
+            type="text"
+            class="form-control"
+            name="lessonTitle"
+            id="field_lessonTitle"
+            data-cy="lessonTitle"
+            formControlName="lessonTitle"
+          />
+          @if (lessonTitleRef.invalid && (lessonTitleRef.dirty || lessonTitleRef.touched)) {
+            <div>
+              @if (editForm.get('lessonTitle')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_lessonDescription" jhiTranslate="serviceApp.serviceLesson.lessonDescription"
+            >Lesson Description</label
+          >
+          <input
+            type="text"
+            class="form-control"
+            name="lessonDescription"
+            id="field_lessonDescription"
+            data-cy="lessonDescription"
+            formControlName="lessonDescription"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_language" jhiTranslate="serviceApp.serviceLesson.language">Language</label>
+          <select class="form-control" name="language" formControlName="language" id="field_language" data-cy="language">
+            <option [ngValue]="null">{{ 'serviceApp.Language.null' | translate }}</option>
+            @for (language of languageValues; track $index) {
+              <option [value]="language">{{ 'serviceApp.Language.' + language | translate }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="field_courses" jhiTranslate="serviceApp.serviceLesson.courses">Courses</label>
+          <select
+            class="form-control"
+            id="field_courses"
+            data-cy="courses"
+            multiple
+            name="courses"
+            formControlName="courses"
+            [compareWith]="compareCourse"
+          >
+            @for (courseOption of coursesSharedCollection; track $index) {
+              <option [ngValue]="courseOption">{{ courseOption.id }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

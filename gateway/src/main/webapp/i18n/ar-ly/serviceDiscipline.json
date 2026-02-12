@@ -1,0 +1,32 @@
+{
+  "gatewayApp": {
+    "serviceDiscipline": {
+      "home": {
+        "title": "Disciplines",
+        "refreshListLabel": "تحديث القائمة",
+        "createLabel": "إنشاء Discipline جديد",
+        "createOrEditLabel": "إنشاء أو تعديل Discipline",
+        "notFound": "لم يتم العثور على Disciplines"
+      },
+      "delete": {
+        "question": "هل أنت متأكد أنك تريد حذف Discipline {{ id }}؟"
+      },
+      "detail": {
+        "title": "Discipline"
+      },
+      "id": "ID",
+      "disciplineName": "Discipline Name",
+      "disciplineDescription": "Discipline Description",
+      "disciplinePrice": "Discipline Price",
+      "resources": "Resources",
+      "programs": "Programs"
+    }
+  },
+  "serviceApp": {
+    "serviceDiscipline": {
+      "created": "Discipline جديد تم إنشاؤه بالمعرف {{ param }}",
+      "updated": "Discipline تم تحديثه بالمعرف {{ param }}",
+      "deleted": "Discipline تم حذفه بالمعرف {{ param }}"
+    }
+  }
+}

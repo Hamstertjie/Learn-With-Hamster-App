@@ -1,0 +1,29 @@
+{
+  "serviceApp": {
+    "serviceLesson": {
+      "home": {
+        "title": "Lessons",
+        "refreshListLabel": "تحديث القائمة",
+        "createLabel": "إنشاء Lesson جديد",
+        "createOrEditLabel": "إنشاء أو تعديل Lesson",
+        "search": "البحث عن Lesson",
+        "notFound": "لم يتم العثور على Lessons"
+      },
+      "created": "Lesson جديد تم إنشاؤه بالمعرف {{ param }}",
+      "updated": "Lesson تم تحديثه بالمعرف {{ param }}",
+      "deleted": "Lesson تم حذفه بالمعرف {{ param }}",
+      "delete": {
+        "question": "هل أنت متأكد أنك تريد حذف Lesson {{ id }}؟"
+      },
+      "detail": {
+        "title": "Lesson"
+      },
+      "id": "ID",
+      "lessonTitle": "Lesson Title",
+      "lessonDescription": "Lesson Description",
+      "language": "Language",
+      "resources": "Resources",
+      "courses": "Courses"
+    }
+  }
+}

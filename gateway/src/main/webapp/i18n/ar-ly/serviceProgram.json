@@ -1,0 +1,33 @@
+{
+  "gatewayApp": {
+    "serviceProgram": {
+      "home": {
+        "title": "Programs",
+        "refreshListLabel": "تحديث القائمة",
+        "createLabel": "إنشاء Program جديد",
+        "createOrEditLabel": "إنشاء أو تعديل Program",
+        "notFound": "لم يتم العثور على Programs"
+      },
+      "delete": {
+        "question": "هل أنت متأكد أنك تريد حذف Program {{ id }}؟"
+      },
+      "detail": {
+        "title": "Program"
+      },
+      "id": "ID",
+      "programName": "Program Name",
+      "programDescription": "Program Description",
+      "programPrice": "Program Price",
+      "resources": "Resources",
+      "courses": "Courses",
+      "disciplines": "Disciplines"
+    }
+  },
+  "serviceApp": {
+    "serviceProgram": {
+      "created": "Program جديد تم إنشاؤه بالمعرف {{ param }}",
+      "updated": "Program تم تحديثه بالمعرف {{ param }}",
+      "deleted": "Program تم حذفه بالمعرف {{ param }}"
+    }
+  }
+}

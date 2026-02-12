@@ -1,0 +1,42 @@
+{
+  "annotations": {
+    "changelogDate": "20260212100926"
+  },
+  "applications": "*",
+  "clientRootFolder": "service",
+  "databaseType": "sql",
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "disciplineName",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "disciplineDescription",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "disciplinePrice",
+      "fieldType": "Long"
+    }
+  ],
+  "microserviceName": "service",
+  "name": "Discipline",
+  "relationships": [
+    {
+      "otherEntityName": "resource",
+      "relationshipName": "resources",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "program",
+      "otherEntityRelationshipName": "disciplines",
+      "relationshipName": "programs",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-many"
+    }
+  ],
+  "service": "serviceImpl"
+}

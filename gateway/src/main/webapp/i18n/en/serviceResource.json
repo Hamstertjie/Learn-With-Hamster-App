@@ -1,0 +1,37 @@
+{
+  "gatewayApp": {
+    "serviceResource": {
+      "home": {
+        "title": "Resources",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Resource",
+        "createOrEditLabel": "Create or edit a Resource",
+        "notFound": "No Resources found"
+      },
+      "delete": {
+        "question": "Are you sure you want to delete Resource {{ id }}?"
+      },
+      "detail": {
+        "title": "Resource"
+      },
+      "id": "ID",
+      "resourceName": "Resource Name",
+      "resourceDescription": "Resource Description",
+      "resourceURL": "Resource URL",
+      "resourcePreviewImage": "Resource Preview Image",
+      "resourceType": "Resource Type",
+      "weight": "Weight",
+      "discipline": "Discipline",
+      "program": "Program",
+      "course": "Course",
+      "lesson": "Lesson"
+    }
+  },
+  "serviceApp": {
+    "serviceResource": {
+      "created": "A new Resource is created with identifier {{ param }}",
+      "updated": "A Resource is updated with identifier {{ param }}",
+      "deleted": "A Resource is deleted with identifier {{ param }}"
+    }
+  }
+}

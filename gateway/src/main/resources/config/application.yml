@@ -175,10 +175,6 @@ spring:
   output:
     ansi:
       console-available: true
-  r2dbc:
-    url: r2dbc:mysql://mysql:3306/gateway?sslMode=DISABLED
-    username: root
-    password: secret
 
 server:
   servlet:
