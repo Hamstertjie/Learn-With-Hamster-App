@@ -1,0 +1,73 @@
+# Root Docker Compose - starts all infrastructure for local development
+# Usage: docker compose up -d
+name: learn-with-hamster
+services:
+  # Shared service discovery
+  consul:
+    image: docker.io/bitnami/consul:1.21.0
+    ports:
+      - 127.0.0.1:8300:8300
+      - 127.0.0.1:8500:8500
+      - 127.0.0.1:8600:8600
+    command: consul agent -dev -ui -client 0.0.0.0 -log-level=INFO
+    labels:
+      org.springframework.boot.ignore: true
+
+  consul-config-loader:
+    image: jhipster/consul-config-loader:v0.4.1
+    volumes:
+      - ./docker/central-server-config:/config
+    environment:
+      - INIT_SLEEP_SECONDS=5
+      - CONSUL_URL=consul
+      - CONSUL_PORT=8500
+    depends_on:
+      - consul
+    labels:
+      org.springframework.boot.ignore: true
+
+  # Gateway database
+  gateway-mysql:
+    image: mysql:9.2.0
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+      - MYSQL_DATABASE=gateway
+    ports:
+      - 127.0.0.1:3306:3306
+    command: mysqld --lower_case_table_names=1 --skip-mysqlx --character_set_server=utf8mb4 --explicit_defaults_for_timestamp
+    healthcheck:
+      test: ['CMD-SHELL', 'mysql -e "SHOW DATABASES;" && sleep 5']
+      interval: 5s
+      timeout: 10s
+      retries: 10
+
+  # Service database
+  service-mysql:
+    image: mysql:9.2.0
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+      - MYSQL_DATABASE=service
+    ports:
+      - 127.0.0.1:3307:3306
+    command: mysqld --lower_case_table_names=1 --skip-mysqlx --character_set_server=utf8mb4 --explicit_defaults_for_timestamp
+    healthcheck:
+      test: ['CMD-SHELL', 'mysql -e "SHOW DATABASES;" && sleep 5']
+      interval: 5s
+      timeout: 10s
+      retries: 10
+
+  # Elasticsearch for service
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
+    ports:
+      - 127.0.0.1:9200:9200
+      - 127.0.0.1:9300:9300
+    environment:
+      - 'ES_JAVA_OPTS=-Xms256m -Xmx256m'
+      - 'discovery.type=single-node'
+      - 'xpack.security.enabled=false'
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:9200/_cluster/health?wait_for_status=green&timeout=10s']
+      interval: 5s
+      timeout: 10s
+      retries: 10
