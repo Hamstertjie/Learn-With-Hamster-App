@@ -1,0 +1,4 @@
+org.springframework.test.context.ContextCustomizerFactory = \
+    com.learnwithhamster.service.config.\
+    SqlTestContainersSpringContextCustomizerFactory,com.learnwithhamster.\
+    service.config.TestContainersSpringContextCustomizerFactory
