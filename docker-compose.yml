@@ -4,7 +4,7 @@ name: learn-with-hamster
 services:
   # Shared service discovery
   consul:
-    image: docker.io/bitnami/consul:1.21.0
+    image: hashicorp/consul:1.21.2
     ports:
       - 127.0.0.1:8300:8300
       - 127.0.0.1:8500:8500
