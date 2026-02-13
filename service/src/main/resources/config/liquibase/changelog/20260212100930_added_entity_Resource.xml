@@ -71,6 +71,10 @@
             <column name="resource_preview_image" type="string"/>
             <column name="resource_type" type="string"/>
             <column name="weight" type="numeric"/>
+            <column name="discipline_id" type="numeric"/>
+            <column name="program_id" type="numeric"/>
+            <column name="course_id" type="numeric"/>
+            <column name="lesson_id" type="numeric"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
         </loadData>
     </changeSet>

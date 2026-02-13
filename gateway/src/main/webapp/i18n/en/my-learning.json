@@ -1,0 +1,18 @@
+{
+  "myLearning": {
+    "title": "My Learning",
+    "welcome": "Welcome back, {{ username }}!",
+    "continueLearning": {
+      "title": "Continue Learning",
+      "empty": "You haven't started any courses yet. Browse the catalog to find something interesting!",
+      "browseCatalog": "Browse Catalog"
+    },
+    "quickLinks": {
+      "title": "Quick Links",
+      "exploreCatalog": "Explore Catalog",
+      "exploreCatalogDesc": "Discover new disciplines, courses, and lessons.",
+      "editProfile": "Edit Profile",
+      "editProfileDesc": "Update your account settings and preferences."
+    }
+  }
+}

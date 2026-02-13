@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!--
+        Load sample relationship data for join tables.
+        Links disciplines to programs, programs to courses, and courses to lessons.
+    -->
+    <changeSet id="20260213000000-1" author="jhipster" context="faker">
+        <loadData
+                  file="config/liquibase/fake-data/rel_discipline__programs.csv"
+                  separator=";"
+                  tableName="rel_discipline__programs"
+                  usePreparedStatements="true">
+            <column name="discipline_id" type="numeric"/>
+            <column name="programs_id" type="numeric"/>
+        </loadData>
+    </changeSet>
+
+    <changeSet id="20260213000000-2" author="jhipster" context="faker">
+        <loadData
+                  file="config/liquibase/fake-data/rel_program__courses.csv"
+                  separator=";"
+                  tableName="rel_program__courses"
+                  usePreparedStatements="true">
+            <column name="program_id" type="numeric"/>
+            <column name="courses_id" type="numeric"/>
+        </loadData>
+    </changeSet>
+
+    <changeSet id="20260213000000-3" author="jhipster" context="faker">
+        <loadData
+                  file="config/liquibase/fake-data/rel_course__lessons.csv"
+                  separator=";"
+                  tableName="rel_course__lessons"
+                  usePreparedStatements="true">
+            <column name="course_id" type="numeric"/>
+            <column name="lessons_id" type="numeric"/>
+        </loadData>
+    </changeSet>
+
+</databaseChangeLog>

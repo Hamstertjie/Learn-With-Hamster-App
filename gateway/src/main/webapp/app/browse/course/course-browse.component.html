@@ -1,0 +1,113 @@
+@if (loading()) {
+  <div class="browse-loading">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+} @else if (!isAuthenticated()) {
+  <div class="browse-login-prompt">
+    <div class="prompt-content">
+      <fa-icon icon="compass" class="prompt-icon"></fa-icon>
+      <h2 jhiTranslate="browse.catalog.title">Explore Disciplines</h2>
+      <p jhiTranslate="browse.catalog.loginPrompt">Sign in to browse our full catalog.</p>
+      <button class="btn btn-primary btn-lg" (click)="login()" jhiTranslate="browse.catalog.loginButton">Sign In to Explore</button>
+    </div>
+  </div>
+} @else {
+  @let c = course()!;
+  <div class="browse-hero">
+    <div class="hero-breadcrumb">
+      <a routerLink="/catalog">Catalog</a>
+      <fa-icon icon="chevron-right"></fa-icon>
+      <span>{{ c.courseTitle }}</span>
+    </div>
+    <h1>{{ c.courseTitle }}</h1>
+    <p>{{ c.courseDescription }}</p>
+    <div class="hero-meta">
+      @if (c.courseLevel) {
+        <span class="badge-level">{{ c.courseLevel }}</span>
+      }
+      @if (c.coursePrice && c.coursePrice > 0) {
+        <span class="badge-price">${{ c.coursePrice }}</span>
+      } @else {
+        <span class="badge-free" jhiTranslate="browse.course.free">Free</span>
+      }
+      <span class="badge-count">{{ lessons().length }} lesson(s)</span>
+    </div>
+  </div>
+
+  <div class="browse-content">
+    <div class="container">
+      <!-- Curriculum Section -->
+      <section class="browse-section">
+        <h3 jhiTranslate="browse.course.curriculum">Curriculum</h3>
+        @if (lessons().length === 0) {
+          <p class="text-muted" jhiTranslate="browse.course.noLessons">No lessons in this course yet.</p>
+        } @else {
+          <div class="curriculum-list">
+            @for (lesson of lessons(); track lesson.id; let i = $index) {
+              <div class="curriculum-item" [class.expanded]="isLessonExpanded(lesson.id)">
+                <div class="curriculum-header" (click)="toggleLesson(lesson.id)">
+                  <div class="curriculum-toggle">
+                    @if (isLessonExpanded(lesson.id)) {
+                      <fa-icon icon="chevron-down"></fa-icon>
+                    } @else {
+                      <fa-icon icon="chevron-right"></fa-icon>
+                    }
+                  </div>
+                  <div class="curriculum-number">{{ i + 1 }}</div>
+                  <div class="curriculum-title">{{ lesson.lessonTitle }}</div>
+                  @if (lesson.language) {
+                    <span class="badge-language">
+                      <fa-icon icon="globe"></fa-icon>
+                      {{ lesson.language }}
+                    </span>
+                  }
+                </div>
+                @if (isLessonExpanded(lesson.id)) {
+                  <div class="curriculum-body">
+                    <p>{{ lesson.lessonDescription }}</p>
+                    <a [routerLink]="['/catalog/lesson', lesson.id]" class="btn btn-sm btn-primary">
+                      <span jhiTranslate="browse.course.viewLesson">View Lesson</span>
+                      <fa-icon icon="arrow-right"></fa-icon>
+                    </a>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+      </section>
+
+      <!-- Resources Section -->
+      @if (resources().length > 0) {
+        <section class="browse-section">
+          <h3 jhiTranslate="browse.course.resources">Resources</h3>
+          <div class="resource-list">
+            @for (resource of resources(); track resource.id) {
+              <div class="resource-item">
+                <div class="resource-icon">
+                  @switch (resource.resourceType) {
+                    @case ('VIDEO') { <fa-icon icon="video"></fa-icon> }
+                    @case ('IMAGE') { <fa-icon icon="image"></fa-icon> }
+                    @case ('TOOL') { <fa-icon icon="tools"></fa-icon> }
+                    @default { <fa-icon icon="file-alt"></fa-icon> }
+                  }
+                </div>
+                <div class="resource-info">
+                  <h6>{{ resource.resourceName }}</h6>
+                  <p>{{ resource.resourceDescription }}</p>
+                </div>
+                @if (resource.resourceURL) {
+                  <a [href]="resource.resourceURL" target="_blank" rel="noopener" class="btn btn-sm btn-outline-primary">
+                    <span jhiTranslate="browse.lesson.openResource">Open</span>
+                  </a>
+                }
+              </div>
+            }
+          </div>
+        </section>
+      }
+    </div>
+  </div>
+}

@@ -1,108 +1,148 @@
-<div class="home-container">
-  <!-- Hero Section -->
-  <div class="hero-section text-center">
-    <h1 class="display-4" jhiTranslate="home.title">Welcome to Learn With Hamster</h1>
-    <p class="lead" jhiTranslate="home.subtitle">Your personalized learning management platform</p>
-
-    @if (account() !== null) {
-      @if (account(); as accountRef) {
-        <p class="logged-message" jhiTranslate="home.logged.message" [translateValues]="{ username: accountRef.login }">
-          You are logged in as "{{ accountRef.login }}".
-        </p>
-      }
-    } @else {
+@if (account() === null) {
+  <!-- Hero Section (logged out) -->
+  <div class="hero-section">
+    <div class="hero-content">
+      <h1 class="hero-title" jhiTranslate="home.title">Learn without limits</h1>
+      <p class="hero-subtitle" jhiTranslate="home.subtitle">Start, switch, or advance your career with thousands of courses</p>
       <div class="hero-actions">
-        <a class="btn btn-primary btn-lg me-3" (click)="login()" jhiTranslate="home.cta.signin">Sign In</a>
-        <a class="btn btn-outline-primary btn-lg" routerLink="/account/register" jhiTranslate="home.cta.register">Create Account</a>
+        <a class="btn btn-primary btn-lg hero-btn" (click)="login()" jhiTranslate="home.cta.signin">Sign In</a>
+        <a class="btn btn-outline-light btn-lg hero-btn" routerLink="/catalog" jhiTranslate="home.cta.browse">Browse Catalog</a>
       </div>
-    }
+    </div>
   </div>
 
-  @if (account() === null) {
-    <!-- Feature Cards (not logged in) -->
-    <div class="row feature-cards">
-      <div class="col-md-4">
-        <div class="card feature-card h-100">
-          <div class="card-body text-center">
-            <fa-icon icon="graduation-cap" class="feature-icon"></fa-icon>
-            <h5 class="card-title" jhiTranslate="home.features.disciplines.title">Browse Disciplines</h5>
-            <p class="card-text" jhiTranslate="home.features.disciplines.description">
+  <!-- Feature Highlights -->
+  <div class="features-section">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4">
+          <div class="feature-card">
+            <div class="feature-icon-wrapper">
+              <fa-icon icon="graduation-cap" class="feature-icon"></fa-icon>
+            </div>
+            <h5 class="feature-title" jhiTranslate="home.features.disciplines.title">Browse Disciplines</h5>
+            <p class="feature-text" jhiTranslate="home.features.disciplines.description">
               Explore a wide range of disciplines spanning multiple fields of study.
             </p>
           </div>
         </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card feature-card h-100">
-          <div class="card-body text-center">
-            <fa-icon icon="sitemap" class="feature-icon"></fa-icon>
-            <h5 class="card-title" jhiTranslate="home.features.programs.title">Structured Programs</h5>
-            <p class="card-text" jhiTranslate="home.features.programs.description">
+        <div class="col-md-4">
+          <div class="feature-card">
+            <div class="feature-icon-wrapper">
+              <fa-icon icon="sitemap" class="feature-icon"></fa-icon>
+            </div>
+            <h5 class="feature-title" jhiTranslate="home.features.programs.title">Structured Programs</h5>
+            <p class="feature-text" jhiTranslate="home.features.programs.description">
               Follow structured learning programs designed to take you from beginner to expert.
             </p>
           </div>
         </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card feature-card h-100">
-          <div class="card-body text-center">
-            <fa-icon icon="chart-line" class="feature-icon"></fa-icon>
-            <h5 class="card-title" jhiTranslate="home.features.progress.title">Track Progress</h5>
-            <p class="card-text" jhiTranslate="home.features.progress.description">
+        <div class="col-md-4">
+          <div class="feature-card">
+            <div class="feature-icon-wrapper">
+              <fa-icon icon="chart-line" class="feature-icon"></fa-icon>
+            </div>
+            <h5 class="feature-title" jhiTranslate="home.features.progress.title">Track Progress</h5>
+            <p class="feature-text" jhiTranslate="home.features.progress.description">
               Monitor your learning journey with courses, lessons, and resources.
             </p>
           </div>
         </div>
       </div>
     </div>
-  } @else {
-    <!-- Dashboard Cards (logged in) -->
-    <div class="row dashboard-cards">
-      <div class="col-md-4 col-sm-6 mb-4">
-        <a routerLink="/discipline" class="card dashboard-card h-100 text-decoration-none">
-          <div class="card-body text-center">
-            <fa-icon icon="graduation-cap" class="dashboard-icon"></fa-icon>
-            <h5 class="card-title">Disciplines</h5>
-            <p class="card-text text-muted">Manage learning disciplines</p>
+  </div>
+
+  <!-- Bottom CTA -->
+  <div class="cta-section">
+    <h2 class="cta-title" jhiTranslate="home.cta.bottomTitle">Ready to start learning?</h2>
+    <a class="btn btn-primary btn-lg hero-btn" (click)="login()" jhiTranslate="home.cta.signin">Sign In</a>
+  </div>
+} @else {
+  @if (account(); as accountRef) {
+    <!-- Dashboard (logged in) -->
+    <div class="dashboard-section">
+      <div class="container">
+        <div class="welcome-header">
+          <h2 class="welcome-title" jhiTranslate="home.logged.message" [translateValues]="{ username: accountRef.login }">
+            Welcome back, {{ accountRef.login }}
+          </h2>
+        </div>
+
+        <div class="row dashboard-grid">
+          <div class="col-lg-6 col-md-6 mb-4">
+            <a routerLink="/catalog" class="dashboard-card card-explore">
+              <div class="card-accent"></div>
+              <div class="card-body">
+                <fa-icon icon="compass" class="dashboard-icon"></fa-icon>
+                <h5 class="card-title">Explore Catalog</h5>
+                <p class="card-text">Discover disciplines, courses, and lessons</p>
+              </div>
+            </a>
           </div>
-        </a>
-      </div>
-      <div class="col-md-4 col-sm-6 mb-4">
-        <a routerLink="/program" class="card dashboard-card h-100 text-decoration-none">
-          <div class="card-body text-center">
-            <fa-icon icon="sitemap" class="dashboard-icon"></fa-icon>
-            <h5 class="card-title">Programs</h5>
-            <p class="card-text text-muted">Browse structured programs</p>
+          <div class="col-lg-6 col-md-6 mb-4">
+            <a routerLink="/my-learning" class="dashboard-card card-learning">
+              <div class="card-accent"></div>
+              <div class="card-body">
+                <fa-icon icon="book-open" class="dashboard-icon"></fa-icon>
+                <h5 class="card-title">My Learning</h5>
+                <p class="card-text">Continue your learning journey</p>
+              </div>
+            </a>
           </div>
-        </a>
-      </div>
-      <div class="col-md-4 col-sm-6 mb-4">
-        <a routerLink="/course" class="card dashboard-card h-100 text-decoration-none">
-          <div class="card-body text-center">
-            <fa-icon icon="book" class="dashboard-icon"></fa-icon>
-            <h5 class="card-title">Courses</h5>
-            <p class="card-text text-muted">Explore available courses</p>
+        </div>
+
+        <!-- Admin Content Management -->
+        <div *jhiHasAnyAuthority="'ROLE_ADMIN'" class="admin-section">
+          <h4 class="admin-section-title">Content Management</h4>
+          <div class="row">
+            <div class="col-lg-4 col-md-6 mb-3">
+              <a routerLink="/discipline" class="dashboard-card dashboard-card-sm card-discipline">
+                <div class="card-accent"></div>
+                <div class="card-body">
+                  <fa-icon icon="graduation-cap" class="dashboard-icon-sm"></fa-icon>
+                  <h6 class="card-title">Disciplines</h6>
+                </div>
+              </a>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-3">
+              <a routerLink="/program" class="dashboard-card dashboard-card-sm card-program">
+                <div class="card-accent"></div>
+                <div class="card-body">
+                  <fa-icon icon="sitemap" class="dashboard-icon-sm"></fa-icon>
+                  <h6 class="card-title">Programs</h6>
+                </div>
+              </a>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-3">
+              <a routerLink="/course" class="dashboard-card dashboard-card-sm card-course">
+                <div class="card-accent"></div>
+                <div class="card-body">
+                  <fa-icon icon="book" class="dashboard-icon-sm"></fa-icon>
+                  <h6 class="card-title">Courses</h6>
+                </div>
+              </a>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-3">
+              <a routerLink="/lesson" class="dashboard-card dashboard-card-sm card-lesson">
+                <div class="card-accent"></div>
+                <div class="card-body">
+                  <fa-icon icon="chalkboard-teacher" class="dashboard-icon-sm"></fa-icon>
+                  <h6 class="card-title">Lessons</h6>
+                </div>
+              </a>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-3">
+              <a routerLink="/resource" class="dashboard-card dashboard-card-sm card-resource">
+                <div class="card-accent"></div>
+                <div class="card-body">
+                  <fa-icon icon="file-alt" class="dashboard-icon-sm"></fa-icon>
+                  <h6 class="card-title">Resources</h6>
+                </div>
+              </a>
+            </div>
           </div>
-        </a>
-      </div>
-      <div class="col-md-4 col-sm-6 mb-4">
-        <a routerLink="/lesson" class="card dashboard-card h-100 text-decoration-none">
-          <div class="card-body text-center">
-            <fa-icon icon="chalkboard-teacher" class="dashboard-icon"></fa-icon>
-            <h5 class="card-title">Lessons</h5>
-            <p class="card-text text-muted">View and manage lessons</p>
-          </div>
-        </a>
-      </div>
-      <div class="col-md-4 col-sm-6 mb-4">
-        <a routerLink="/resource" class="card dashboard-card h-100 text-decoration-none">
-          <div class="card-body text-center">
-            <fa-icon icon="file-alt" class="dashboard-icon"></fa-icon>
-            <h5 class="card-title">Resources</h5>
-            <p class="card-text text-muted">Access learning resources</p>
-          </div>
-        </a>
+        </div>
       </div>
     </div>
   }
-</div>
+}

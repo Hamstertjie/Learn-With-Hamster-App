@@ -1,28 +1,29 @@
 {
   "home": {
-    "title": "Welcome to Learn With Hamster",
-    "subtitle": "Your personalized learning management platform",
+    "title": "Learn without limits",
+    "subtitle": "Start, switch, or advance your career with thousands of courses",
     "logged": {
-      "message": "You are logged in as \"{{username}}\"."
+      "message": "Welcome back, {{username}}"
     },
     "features": {
       "disciplines": {
         "title": "Browse Disciplines",
-        "description": "Explore a wide range of disciplines spanning multiple fields of study."
+        "description": "Dive into a wide range of disciplines across multiple fields of study."
       },
       "programs": {
         "title": "Structured Programs",
-        "description": "Follow structured learning programs designed to take you from beginner to expert."
+        "description": "Follow guided learning paths designed to take you from beginner to expert."
       },
       "progress": {
         "title": "Track Progress",
-        "description": "Monitor your learning journey with courses, lessons, and resources."
+        "description": "Monitor your learning journey with courses, lessons, and rich resources."
       }
     },
     "cta": {
       "signin": "Sign In",
       "register": "Create Account",
-      "browse": "Browse Catalog"
+      "browse": "Browse Catalog",
+      "bottomTitle": "Ready to start learning?"
     }
   }
 }

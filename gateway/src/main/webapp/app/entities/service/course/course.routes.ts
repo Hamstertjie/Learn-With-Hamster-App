@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
 import { ASC } from 'app/config/navigation.constants';
+import { Authority } from 'app/config/authority.constants';
 import CourseResolve from './route/course-routing-resolve.service';
 
 const courseRoute: Routes = [
@@ -10,6 +11,7 @@ const courseRoute: Routes = [
     loadComponent: () => import('./list/course.component').then(m => m.CourseComponent),
     data: {
       defaultSort: `id,${ASC}`,
+      authorities: [Authority.ADMIN],
     },
     canActivate: [UserRouteAccessService],
   },
@@ -19,6 +21,7 @@ const courseRoute: Routes = [
     resolve: {
       course: CourseResolve,
     },
+    data: { authorities: [Authority.ADMIN] },
     canActivate: [UserRouteAccessService],
   },
   {
@@ -27,6 +30,7 @@ const courseRoute: Routes = [
     resolve: {
       course: CourseResolve,
     },
+    data: { authorities: [Authority.ADMIN] },
     canActivate: [UserRouteAccessService],
   },
   {
@@ -35,6 +39,7 @@ const courseRoute: Routes = [
     resolve: {
       course: CourseResolve,
     },
+    data: { authorities: [Authority.ADMIN] },
     canActivate: [UserRouteAccessService],
   },
 ];

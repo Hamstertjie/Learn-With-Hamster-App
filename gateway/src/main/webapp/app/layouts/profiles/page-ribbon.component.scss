@@ -2,24 +2,24 @@
 Development Ribbon
 ========================================================================== */
 .ribbon {
-  background-color: rgba(170, 0, 0, 0.5);
+  background-color: rgba(164, 53, 240, 0.85);
   overflow: hidden;
   position: absolute;
-  top: 40px;
+  top: 32px;
   white-space: nowrap;
-  width: 15em;
+  width: 10em;
   z-index: 9999;
   pointer-events: none;
-  opacity: 0.75;
+  opacity: 0.6;
+  font-size: 0.75rem;
   a {
     color: #fff;
     display: block;
-    font-weight: 400;
+    font-weight: 500;
     margin: 1px 0;
-    padding: 10px 50px;
+    padding: 4px 50px;
     text-align: center;
     text-decoration: none;
-    text-shadow: 0 0 5px #444;
     pointer-events: none;
   }
 }

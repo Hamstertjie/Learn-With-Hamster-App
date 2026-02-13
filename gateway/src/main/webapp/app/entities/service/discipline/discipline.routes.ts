@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
 import { ASC } from 'app/config/navigation.constants';
+import { Authority } from 'app/config/authority.constants';
 import DisciplineResolve from './route/discipline-routing-resolve.service';
 
 const disciplineRoute: Routes = [
@@ -10,6 +11,7 @@ const disciplineRoute: Routes = [
     loadComponent: () => import('./list/discipline.component').then(m => m.DisciplineComponent),
     data: {
       defaultSort: `id,${ASC}`,
+      authorities: [Authority.ADMIN],
     },
     canActivate: [UserRouteAccessService],
   },
@@ -19,6 +21,7 @@ const disciplineRoute: Routes = [
     resolve: {
       discipline: DisciplineResolve,
     },
+    data: { authorities: [Authority.ADMIN] },
     canActivate: [UserRouteAccessService],
   },
   {
@@ -27,6 +30,7 @@ const disciplineRoute: Routes = [
     resolve: {
       discipline: DisciplineResolve,
     },
+    data: { authorities: [Authority.ADMIN] },
     canActivate: [UserRouteAccessService],
   },
   {
@@ -35,6 +39,7 @@ const disciplineRoute: Routes = [
     resolve: {
       discipline: DisciplineResolve,
     },
+    data: { authorities: [Authority.ADMIN] },
     canActivate: [UserRouteAccessService],
   },
 ];

@@ -1,6 +1,6 @@
 {
-  "name": "Gateway",
-  "short_name": "Gateway",
+  "name": "Learn With Hamster",
+  "short_name": "Learn With Hamster",
   "icons": [
     {
       "src": "./content/images/jhipster_family_member_0_head-192.png",
@@ -23,8 +23,8 @@
       "type": "image/png"
     }
   ],
-  "theme_color": "#000000",
-  "background_color": "#e0e0e0",
+  "theme_color": "#A435F0",
+  "background_color": "#ffffff",
   "start_url": ".",
   "display": "standalone",
   "orientation": "portrait"

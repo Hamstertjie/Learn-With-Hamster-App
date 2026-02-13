@@ -131,6 +131,53 @@ cd gateway && npm run lint:fix          # ESLint + Prettier for frontend
 ./mvnw checkstyle:check                 # Checkstyle (nohttp check)
 ```
 
+## Frontend Screen Flows
+
+### Browse Module (`app/browse/`) - Public catalog, no Angular auth guard
+
+| Route | Component | Purpose |
+|-------|-----------|---------|
+| `/catalog` | CatalogComponent | Discipline grid with course counts |
+| `/catalog/discipline/:id` | DisciplineBrowseComponent | Discipline detail + course cards |
+| `/catalog/course/:id` | CourseBrowseComponent | Course detail + expandable lesson curriculum |
+| `/catalog/lesson/:id` | LessonBrowseComponent | Lesson viewer + sorted resources |
+
+Browse components check `AccountService.identity()` and show a login prompt for anonymous users (backend requires auth for `/services/**`).
+
+### My Learning (`app/my-learning/`) - Requires login
+
+| Route | Component | Purpose |
+|-------|-----------|---------|
+| `/my-learning` | MyLearningComponent | Dashboard with quick links (enrollment placeholder) |
+
+### Entity CRUD (`app/entities/`) - Admin only
+
+All entity routes have `authorities: [Authority.ADMIN]`. Non-admin users are redirected.
+
+### Navbar Structure
+
+- **Home** (always visible)
+- **Explore** -> `/catalog` (always visible)
+- **My Learning** -> `/my-learning` (visible when logged in)
+- **Manage Content** dropdown (admin only, `*jhiHasAnyAuthority="'ROLE_ADMIN'"`)
+- Right side: Administration (admin), Language, Account
+
+### Data Loading Pattern (Browse)
+
+Browse components reuse existing entity services. Relationships are resolved client-side:
+- Discipline -> Course: match via shared program IDs (`discipline.programs` intersect `course.programs`)
+- Course -> Lesson: filter lessons where `lesson.id` is in `course.lessons` IDs
+- Resources: filter by FK (`resource.discipline?.id`, `resource.course?.id`, `resource.lesson?.id`)
+
+## Sample Data
+
+Dev profile loads sample data via Liquibase (`context="faker"`):
+- 3 disciplines (Sport, Music, Technology), 4 programs, 5 courses, 10 lessons, 10 resources
+- Sport/Cycling/Trackstand Mastery is the richest path with 7 detailed lessons and video resources
+- Join table data loaded by `20260213000000_load_sample_relationships.xml`
+- CSVs in `service/src/main/resources/config/liquibase/fake-data/`
+- To reset: `cd service && ./mvnw clean spring-boot:run`
+
 ## Key Configuration Files
 
 | File | Purpose |
@@ -141,6 +188,9 @@ cd gateway && npm run lint:fix          # ESLint + Prettier for frontend
 | `gateway/.yo-rc.json` / `service/.yo-rc.json` | JHipster generator config |
 | `{module}/src/main/resources/config/application*.yml` | Spring Boot config per profile |
 | `{module}/src/main/resources/config/liquibase/master.xml` | Liquibase migration entrypoint |
+| `gateway/src/main/webapp/app/app.routes.ts` | Angular route definitions |
+| `gateway/src/main/webapp/app/browse/browse.routes.ts` | Catalog browse routes |
+| `gateway/src/main/webapp/app/config/font-awesome-icons.ts` | Icon registration |
 
 ## Important Notes
 
@@ -149,3 +199,6 @@ cd gateway && npm run lint:fix          # ESLint + Prettier for frontend
 - The gateway auto-discovers service routes via Consul - requests to `/services/service/**` are forwarded with JWT relay
 - All DTOs use MapStruct; do not manually map between entities and DTOs
 - i18n supports English (`en`) and Arabic-Libya (`ar-ly`)
+- i18n JSON files are auto-merged by webpack `MergeJsonWebpackPlugin` (glob `i18n/{lang}/*.json`)
+- Angular `@else if` blocks cannot use `as` expressions; use `@let` inside `@else` blocks instead
+- `HasAnyAuthorityDirective` is not exported by SharedModule; import directly when needed

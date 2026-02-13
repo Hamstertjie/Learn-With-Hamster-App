@@ -1,0 +1,60 @@
+@if (loading()) {
+  <div class="browse-loading">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+} @else if (!isAuthenticated()) {
+  <div class="browse-login-prompt">
+    <div class="prompt-content">
+      <fa-icon icon="compass" class="prompt-icon"></fa-icon>
+      <h2 jhiTranslate="browse.catalog.title">Explore Disciplines</h2>
+      <p jhiTranslate="browse.catalog.loginPrompt">Sign in to browse our full catalog of disciplines, courses, and lessons.</p>
+      <button class="btn btn-primary btn-lg" (click)="login()" jhiTranslate="browse.catalog.loginButton">Sign In to Explore</button>
+    </div>
+  </div>
+} @else {
+  <div class="browse-hero">
+    <h1 jhiTranslate="browse.catalog.title">Explore Disciplines</h1>
+    <p jhiTranslate="browse.catalog.subtitle">Browse our catalog of learning disciplines and find the perfect path for you.</p>
+  </div>
+
+  <div class="browse-content">
+    <div class="container">
+      @if (disciplines().length === 0) {
+        <div class="browse-empty">
+          <p jhiTranslate="browse.catalog.empty">No disciplines available yet. Check back soon!</p>
+        </div>
+      } @else {
+        <div class="row">
+          @for (discipline of disciplines(); track discipline.id) {
+            <div class="col-lg-4 col-md-6 mb-4">
+              <a [routerLink]="['/catalog/discipline', discipline.id]" class="discipline-card">
+                <div class="card-accent"></div>
+                <div class="card-body">
+                  <h5 class="card-title">{{ discipline.disciplineName }}</h5>
+                  <p class="card-description">{{ discipline.disciplineDescription }}</p>
+                  <div class="card-meta">
+                    @if (discipline.disciplinePrice && discipline.disciplinePrice > 0) {
+                      <span class="badge-price">${{ discipline.disciplinePrice }}</span>
+                    } @else {
+                      <span class="badge-free" jhiTranslate="browse.discipline.free">Free</span>
+                    }
+                    <span class="badge-courses">
+                      {{ courseCountMap()[discipline.id] || 0 }}
+                      <span>course(s)</span>
+                    </span>
+                  </div>
+                  <div class="card-action">
+                    <span jhiTranslate="browse.catalog.viewDiscipline">View Discipline</span>
+                    <fa-icon icon="arrow-right"></fa-icon>
+                  </div>
+                </div>
+              </a>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+}

@@ -1,0 +1,140 @@
+<mxfile host="app.diagrams.net" modified="2026-02-13" type="device">
+  <diagram id="jwtrelay" name="JWT Relay Mechanism">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1600" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="la" value="Angular (HttpClient)" style="shape=swimlane;startSize=30;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="300" height="1500" as="geometry"/>
+        </mxCell>
+        <mxCell id="lg" value="Gateway (Spring Cloud Gateway)" style="shape=swimlane;startSize=30;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="360" y="40" width="360" height="1500" as="geometry"/>
+        </mxCell>
+        <mxCell id="lc" value="Consul (Config + Discovery)" style="shape=swimlane;startSize=30;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="740" y="40" width="280" height="1500" as="geometry"/>
+        </mxCell>
+        <mxCell id="ls" value="Service (Spring MVC)" style="shape=swimlane;startSize=30;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="40" width="300" height="1500" as="geometry"/>
+        </mxCell>
+
+        <!-- === STARTUP: JWT SECRET DISTRIBUTION === -->
+        <mxCell id="h1" value="STARTUP: JWT SECRET DISTRIBUTION" style="text;fontStyle=5;fontSize=12;fillColor=#e1d5e7;strokeColor=#9673a6;rounded=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="40" y="80" width="1300" height="25" as="geometry"/>
+        </mxCell>
+
+        <!-- 1: Consul config -->
+        <mxCell id="n1" value="central-server-config/&#xa;  application.yml&#xa;jhipster.security.authentication&#xa;  .jwt.base64-secret:&#xa;  (shared 512-bit HMAC key)" style="rounded=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;align=left;spacingLeft=8;" vertex="1" parent="lc">
+          <mxGeometry x="10" y="50" width="260" height="90" as="geometry"/>
+        </mxCell>
+
+        <!-- 2: Gateway reads -->
+        <mxCell id="n2" value="Gateway startup:&#xa;Spring Cloud Consul Config&#xa;reads shared JWT secret&#xa;SecurityConfiguration&#xa;  → ReactiveJwtDecoder (HS512)&#xa;  → JWTRelayGatewayFilterFactory" style="rounded=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;align=left;spacingLeft=8;" vertex="1" parent="lg">
+          <mxGeometry x="40" y="50" width="280" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n1" target="n2" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 3: Service reads -->
+        <mxCell id="n3" value="Service startup:&#xa;Spring Cloud Consul Config&#xa;reads same JWT secret&#xa;SecurityConfiguration&#xa;  → JwtDecoder (HS512)&#xa;  → validates incoming JWTs" style="rounded=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;align=left;spacingLeft=8;" vertex="1" parent="ls">
+          <mxGeometry x="20" y="50" width="260" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n1" target="n3" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 4: Service registers -->
+        <mxCell id="n4" value="Service registers with Consul:&#xa;ServiceName: 'service'&#xa;Host: localhost, Port: 8080&#xa;Health check: /management/health" style="rounded=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;align=left;spacingLeft=8;" vertex="1" parent="ls">
+          <mxGeometry x="20" y="180" width="260" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="n4c" value="Consul service catalog:&#xa;service → localhost:8080" style="rounded=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="lc">
+          <mxGeometry x="10" y="180" width="260" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n4" target="n4c" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- === REQUEST FLOW === -->
+        <mxCell id="h2" value="REQUEST FLOW: ANGULAR → GATEWAY → SERVICE" style="text;fontStyle=5;fontSize=12;fillColor=#e1d5e7;strokeColor=#9673a6;rounded=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="40" y="300" width="1300" height="25" as="geometry"/>
+        </mxCell>
+
+        <!-- 5: Angular request -->
+        <mxCell id="n5" value="HttpClient request:&#xa;GET /services/service/&#xa;  api/disciplines?size=1000" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;" vertex="1" parent="la">
+          <mxGeometry x="20" y="280" width="260" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- 6: AuthInterceptor -->
+        <mxCell id="n6" value="AuthInterceptor (HttpInterceptorFn):&#xa;token = stateStorageService&#xa;  .getAuthenticationToken()&#xa;  (localStorage or sessionStorage)&#xa;Adds header:&#xa;  Authorization: Bearer eyJ..." style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;" vertex="1" parent="la">
+          <mxGeometry x="20" y="360" width="260" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n5" target="n6" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 7: Gateway receives -->
+        <mxCell id="n7" value="Gateway receives request:&#xa;GET /services/service/&#xa;  api/disciplines?size=1000&#xa;Authorization: Bearer eyJ..." style="rounded=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;align=left;spacingLeft=8;" vertex="1" parent="lg">
+          <mxGeometry x="40" y="490" width="280" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n6" target="n7" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 8: Security chain -->
+        <mxCell id="n8" value="SecurityWebFilterChain:&#xa;1. /services/** → authenticated()&#xa;2. NimbusReactiveJwtDecoder&#xa;   decodes JWT with HS512 key&#xa;3. Extracts: sub, auth, userId&#xa;4. Creates Authentication object&#xa;   with GrantedAuthorities" style="rounded=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;align=left;spacingLeft=8;" vertex="1" parent="lg">
+          <mxGeometry x="40" y="580" width="280" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n7" target="n8" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 9: Route matching -->
+        <mxCell id="n9" value="Spring Cloud Gateway route match:&#xa;RouteLocator (application.yml):&#xa;  id: 'service'&#xa;  uri: lb://service (Consul LB)&#xa;  predicates:&#xa;    - Path=/services/service/**&#xa;  filters:&#xa;    - StripPrefix=2&#xa;    - JWTRelay" style="rounded=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;align=left;spacingLeft=8;" vertex="1" parent="lg">
+          <mxGeometry x="40" y="710" width="280" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="e8" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n8" target="n9" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 10: Consul lookup -->
+        <mxCell id="n10" value="lb://service resolved:&#xa;Consul health-check lookup&#xa;→ localhost:8080 (healthy)" style="rounded=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="lc">
+          <mxGeometry x="10" y="760" width="260" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="e9" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n9" target="n10" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 11: JWTRelay filter -->
+        <mxCell id="n11" value="JWTRelayGatewayFilterFactory:&#xa;1. Extract JWT from Security Context&#xa;2. Re-serialize token string&#xa;3. Forward as:&#xa;   Authorization: Bearer eyJ...&#xa;   (same token, not re-signed)&#xa;&#xa;StripPrefix=2 transforms:&#xa;  /services/service/api/disciplines&#xa;  → /api/disciplines" style="rounded=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;align=left;spacingLeft=8;" vertex="1" parent="lg">
+          <mxGeometry x="40" y="870" width="280" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="e10" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n10" target="n11" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 12: Service receives -->
+        <mxCell id="n12" value="Service receives:&#xa;GET /api/disciplines?size=1000&#xa;Authorization: Bearer eyJ...&#xa;&#xa;SecurityConfiguration:&#xa;  JwtDecoder validates with&#xa;  same HS512 shared secret&#xa;  → Authentication created&#xa;  → request authorized" style="rounded=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;align=left;spacingLeft=8;" vertex="1" parent="ls">
+          <mxGeometry x="20" y="870" width="260" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="e11" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n11" target="n12" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 13: Service processes -->
+        <mxCell id="n13" value="DisciplineResource handles request&#xa;→ DisciplineServiceImpl&#xa;→ DisciplineRepository (JPA)&#xa;→ Response: 200 + JSON body" style="rounded=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;align=left;spacingLeft=8;" vertex="1" parent="ls">
+          <mxGeometry x="20" y="1030" width="260" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="e12" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n12" target="n13" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 14: Response back -->
+        <mxCell id="n14" value="Gateway proxies response back&#xa;(no transformation on response)&#xa;→ Angular HttpClient receives&#xa;  Observable&lt;HttpResponse&gt;" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;" vertex="1" parent="la">
+          <mxGeometry x="20" y="1030" width="260" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="e13" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n13" target="n14" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- === ERROR: 401 FLOW === -->
+        <mxCell id="h3" value="ERROR: JWT EXPIRED / INVALID" style="text;fontStyle=5;fontSize=12;fillColor=#e1d5e7;strokeColor=#9673a6;rounded=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1160" width="1300" height="25" as="geometry"/>
+        </mxCell>
+
+        <!-- 15: 401 at gateway -->
+        <mxCell id="n15" value="JWT expired or invalid:&#xa;SecurityWebFilterChain&#xa;  returns 401 Unauthorized&#xa;(request never reaches service)" style="rounded=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;align=left;spacingLeft=8;" vertex="1" parent="lg">
+          <mxGeometry x="40" y="1150" width="280" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- 16: AuthExpiredInterceptor -->
+        <mxCell id="n16" value="AuthExpiredInterceptor catches 401:&#xa;loginService.logout()&#xa;  → clears token from storage&#xa;  → accountService.authenticate(null)&#xa;  → router.navigate(['/login'])" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;" vertex="1" parent="la">
+          <mxGeometry x="20" y="1150" width="260" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="e15" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n15" target="n16" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 17: User sees login -->
+        <mxCell id="n17" value="ErrorHandlerInterceptor:&#xa;Non-401 errors (500, 404, etc.)&#xa;→ EventManager notification&#xa;→ AlertComponent shows toast&#xa;&#xa;NotificationInterceptor:&#xa;Reads X-app-alert header&#xa;→ shows success notification" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;" vertex="1" parent="la">
+          <mxGeometry x="20" y="1270" width="260" height="120" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

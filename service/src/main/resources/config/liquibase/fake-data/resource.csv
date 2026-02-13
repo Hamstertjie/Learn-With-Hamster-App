@@ -1,11 +1,11 @@
-id;resource_name;resource_description;resource_url;resource_preview_image;resource_type;weight
-1;regarding bare nor;like misfire;upbeat draw;as;TUTORIAL;21284
-2;longboat during;molasses;of likewise;snarling;PARTIAL;992
-3;whereas;cow alongside gadzooks;appropriate norm certainly;midst neatly which;VIDEO;24434
-4;hence um;optimal boastfully gum;till;farmer qua by;TUTORIAL;7793
-5;another perky unethically;whether madly;thigh;testimonial heavily phew;VIDEO;21707
-6;whispered;coolly uh-huh repurpose;while agreement finally;overvalue swift;VIDEO;28137
-7;reorient;whoa;absent consequently;before within affectionate;PARTIAL;24741
-8;boohoo;quash;nicely thoroughly that;knavishly slink pushy;IMAGE;31961
-9;unselfish reclassify;infinite exacerbate lift;phooey mid fooey;zowie;TOOL;8390
-10;step-mother furiously;rewarding serpentine rim;sweatshop only;mammoth delirious glittering;IMAGE;26418
+id;resource_name;resource_description;resource_url;resource_preview_image;resource_type;weight;discipline_id;program_id;course_id;lesson_id
+1;How to Trackstand - Video Guide;Watch a complete trackstand tutorial from beginner to advanced techniques;https://www.youtube.com/watch?v=YozLbJdqG1U;;VIDEO;1;;;;1
+2;Bike Fit Calculator;Interactive tool to find your optimal saddle height and reach measurements;https://www.competitivecyclist.com/Store/catalog/fitCalculatorBike.jsp;;TOOL;1;;;;2
+3;Balance Point Drill - Slow Motion;Slow-motion video showing exact body position and micro-corrections at the balance point;https://www.youtube.com/watch?v=EFnEGHhMjYA;;VIDEO;1;;;;3
+4;The Rocking Technique Explained;Close-up demonstration of pedal pressure and release timing for the rocking trackstand;https://www.youtube.com/watch?v=Wr8IwBKmGSs;;VIDEO;1;;;;4
+5;Trackstand Progression Checklist;Printable checklist to track your progress through each trackstand milestone;https://www.learnwithhamster.com/resources/trackstand-checklist;;PAGE;1;;;1;
+6;Cycling Balance Training Overview;Comprehensive guide to all balance exercises for cyclists at every skill level;https://www.learnwithhamster.com/resources/cycling-balance-guide;;PAGE;1;1;;;
+7;Road Bike Buyers Guide;Compare frame materials, groupsets, and price points to find your perfect first road bike;https://www.bikeradar.com/advice/buyers-guides/best-road-bikes;;PAGE;1;;;;8
+8;Proper Riding Position Diagram;Illustrated diagram showing correct body angles and contact points on a road bike;https://www.learnwithhamster.com/resources/riding-position-diagram;;IMAGE;1;;;;9
+9;Freestyle Swimming Tutorial;Expert coaching video breaking down each phase of the freestyle stroke with drills;https://www.youtube.com/watch?v=5HLW2AI1Ink;;VIDEO;1;;;;10
+10;Sport Training Fundamentals;Overview article covering core training principles that apply across all sporting disciplines;https://www.learnwithhamster.com/resources/sport-training-fundamentals;;PAGE;2;1;;;

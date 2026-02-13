@@ -1,0 +1,131 @@
+<mxfile host="app.diagrams.net" modified="2026-02-13" type="device">
+  <diagram id="login" name="Login Flow">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1400" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- Swim Lanes -->
+        <mxCell id="lb" value="Browser / User" style="shape=swimlane;startSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="280" height="1300" as="geometry"/>
+        </mxCell>
+        <mxCell id="la" value="Angular (LoginComponent / Services)" style="shape=swimlane;startSize=30;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="340" y="40" width="340" height="1300" as="geometry"/>
+        </mxCell>
+        <mxCell id="lg" value="Gateway Backend (port 8081)" style="shape=swimlane;startSize=30;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="700" y="40" width="320" height="1300" as="geometry"/>
+        </mxCell>
+        <mxCell id="ld" value="Database (R2DBC / H2)" style="shape=swimlane;startSize=30;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="40" width="280" height="1300" as="geometry"/>
+        </mxCell>
+
+        <!-- 1: User navigates to guarded route -->
+        <mxCell id="n1" value="User navigates to&#xa;guarded route (e.g. /my-learning)" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="lb">
+          <mxGeometry x="20" y="50" width="240" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- 2: UserRouteAccessService -->
+        <mxCell id="n2" value="UserRouteAccessService (CanActivateFn)&#xa;accountService.identity()&#xa;→ not authenticated" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="la">
+          <mxGeometry x="40" y="50" width="260" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n1" target="n2" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 3: Store URL and redirect -->
+        <mxCell id="n3" value="stateStorageService.storeUrl(&#xa;  '/my-learning')&#xa;router.navigate(['/login'])&#xa;return false" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;" vertex="1" parent="la">
+          <mxGeometry x="40" y="130" width="260" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n2" target="n3" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 4: Login form -->
+        <mxCell id="n4" value="LoginComponent renders&#xa;Username + Password + RememberMe form&#xa;ngAfterViewInit: autofocus username" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="lb">
+          <mxGeometry x="20" y="220" width="240" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n3" target="n4" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 5: User submits -->
+        <mxCell id="n5" value="User enters credentials&#xa;and clicks Sign In" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="lb">
+          <mxGeometry x="20" y="310" width="240" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- 6: LoginService.login() -->
+        <mxCell id="n6" value="LoginComponent.login()&#xa;→ loginService.login(credentials)" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="la">
+          <mxGeometry x="40" y="310" width="260" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n5" target="n6" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 7: AuthServerProvider.login -->
+        <mxCell id="n7" value="AuthServerProvider.login()&#xa;POST /api/authenticate&#xa;body: {username, password, rememberMe}" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="la">
+          <mxGeometry x="40" y="380" width="260" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n6" target="n7" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 8: Gateway SecurityChain -->
+        <mxCell id="n8" value="SecurityWebFilterChain&#xa;/api/authenticate is permitAll()&#xa;No JWT required" style="rounded=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="lg">
+          <mxGeometry x="30" y="380" width="260" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n7" target="n8" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 9: AuthenticateController -->
+        <mxCell id="n9" value="AuthenticateController.authorize()&#xa;ReactiveAuthenticationManager&#xa;  .authenticate(&#xa;    UsernamePasswordAuthToken)" style="rounded=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;align=left;spacingLeft=8;" vertex="1" parent="lg">
+          <mxGeometry x="30" y="460" width="260" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="e8" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n8" target="n9" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 10: DomainUserDetailsService -->
+        <mxCell id="n10" value="DomainUserDetailsService&#xa;  .findByUsername(login)&#xa;Checks: user.isActivated()" style="rounded=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="lg">
+          <mxGeometry x="30" y="550" width="260" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="e9" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n9" target="n10" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 11: DB lookup -->
+        <mxCell id="n11" value="UserRepository&#xa;  .findOneWithAuthoritiesByLogin()&#xa;R2DBC query → jhi_user + authority" style="rounded=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="ld">
+          <mxGeometry x="20" y="550" width="240" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="e10" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n10" target="n11" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 12: BCrypt verify -->
+        <mxCell id="n12" value="BCryptPasswordEncoder&#xa;  .matches(password, hash)&#xa;Returns UserWithId" style="rounded=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="lg">
+          <mxGeometry x="30" y="640" width="260" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="e11" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n11" target="n12" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 13: Create JWT -->
+        <mxCell id="n13" value="createToken(auth, rememberMe)&#xa;JwtClaimsSet: sub=login,&#xa;  auth=ROLE_ADMIN ROLE_USER,&#xa;  userId=1&#xa;Sign: HMAC-SHA512 (shared secret)&#xa;Returns: { id_token: &quot;eyJ...&quot; }" style="rounded=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;align=left;spacingLeft=8;" vertex="1" parent="lg">
+          <mxGeometry x="30" y="720" width="260" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="e12" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n12" target="n13" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 14: Store JWT -->
+        <mxCell id="n14" value="StateStorageService&#xa;  .storeAuthenticationToken(jwt)&#xa;rememberMe ? localStorage : sessionStorage" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="la">
+          <mxGeometry x="40" y="840" width="260" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="e13" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n13" target="n14" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 15: Fetch identity -->
+        <mxCell id="n15" value="accountService.identity(force=true)&#xa;GET /api/account&#xa;AuthInterceptor adds Bearer token" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="la">
+          <mxGeometry x="40" y="920" width="260" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="e14" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n14" target="n15" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 16: AccountResource -->
+        <mxCell id="n16" value="AccountResource.getAccount()&#xa;JWT validated by SecurityChain&#xa;→ AdminUserDTO(login, email,&#xa;  authorities, langKey...)" style="rounded=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;align=left;spacingLeft=8;" vertex="1" parent="lg">
+          <mxGeometry x="30" y="920" width="260" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="e15" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n15" target="n16" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 17: Set auth state -->
+        <mxCell id="n17" value="AccountService.authenticate(account)&#xa;  userIdentity.set(account)&#xa;  authenticationState.next(account)&#xa;navigateToStoredUrl()&#xa;  → router.navigate('/my-learning')" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;" vertex="1" parent="la">
+          <mxGeometry x="40" y="1020" width="260" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="e16" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n16" target="n17" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 18: User sees target page -->
+        <mxCell id="n18" value="User redirected to&#xa;originally requested page&#xa;(/my-learning)" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="lb">
+          <mxGeometry x="20" y="1020" width="240" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="e17" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n17" target="n18" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

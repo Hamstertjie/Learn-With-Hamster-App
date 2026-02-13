@@ -1,0 +1,83 @@
+@if (loading()) {
+  <div class="browse-loading">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+} @else if (!isAuthenticated()) {
+  <div class="browse-login-prompt">
+    <div class="prompt-content">
+      <fa-icon icon="compass" class="prompt-icon"></fa-icon>
+      <h2 jhiTranslate="browse.catalog.title">Explore Disciplines</h2>
+      <p jhiTranslate="browse.catalog.loginPrompt">Sign in to browse our full catalog.</p>
+      <button class="btn btn-primary btn-lg" (click)="login()" jhiTranslate="browse.catalog.loginButton">Sign In to Explore</button>
+    </div>
+  </div>
+} @else {
+  @let l = lesson()!;
+  <div class="browse-hero">
+    <div class="hero-breadcrumb">
+      <a routerLink="/catalog">Catalog</a>
+      <fa-icon icon="chevron-right"></fa-icon>
+      <span>{{ l.lessonTitle }}</span>
+    </div>
+    <h1>{{ l.lessonTitle }}</h1>
+    @if (l.language) {
+      <div class="hero-meta">
+        <span class="badge-language">
+          <fa-icon icon="globe"></fa-icon>
+          {{ l.language }}
+        </span>
+      </div>
+    }
+  </div>
+
+  <div class="browse-content">
+    <div class="container">
+      <!-- Lesson Description -->
+      @if (l.lessonDescription) {
+        <section class="browse-section">
+          <div class="lesson-description">
+            <p>{{ l.lessonDescription }}</p>
+          </div>
+        </section>
+      }
+
+      <!-- Resources Section -->
+      <section class="browse-section">
+        <h3 jhiTranslate="browse.lesson.resources">Resources</h3>
+        @if (resources().length === 0) {
+          <p class="text-muted" jhiTranslate="browse.lesson.noResources">No resources attached to this lesson.</p>
+        } @else {
+          <div class="resource-list">
+            @for (resource of resources(); track resource.id) {
+              <div class="resource-item">
+                <div class="resource-icon">
+                  @switch (resource.resourceType) {
+                    @case ('VIDEO') { <fa-icon icon="video"></fa-icon> }
+                    @case ('IMAGE') { <fa-icon icon="image"></fa-icon> }
+                    @case ('TOOL') { <fa-icon icon="tools"></fa-icon> }
+                    @default { <fa-icon icon="file-alt"></fa-icon> }
+                  }
+                </div>
+                <div class="resource-info">
+                  <h6>{{ resource.resourceName }}</h6>
+                  <p>{{ resource.resourceDescription }}</p>
+                  @if (resource.resourceType) {
+                    <span class="resource-type-badge">{{ resource.resourceType }}</span>
+                  }
+                </div>
+                @if (resource.resourceURL) {
+                  <a [href]="resource.resourceURL" target="_blank" rel="noopener" class="btn btn-sm btn-primary">
+                    <fa-icon icon="arrow-right"></fa-icon>
+                    <span jhiTranslate="browse.lesson.openResource">Open Resource</span>
+                  </a>
+                }
+              </div>
+            }
+          </div>
+        }
+      </section>
+    </div>
+  </div>
+}
