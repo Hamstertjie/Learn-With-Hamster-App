@@ -40,7 +40,14 @@
       "noResources": "No resources attached to this lesson.",
       "language": "Language",
       "openResource": "Open Resource",
-      "backToCourse": "Back to Course"
+      "backToCourse": "Back to Course",
+      "courseContents": "Course Contents",
+      "additionalResources": "Additional Resources",
+      "noContent": "No content available for this lesson yet.",
+      "openInNewTab": "Open in New Tab",
+      "lessonOf": "Lesson {{ current }} of {{ total }}",
+      "nextLesson": "Next Lesson",
+      "previousLesson": "Previous Lesson"
     }
   }
 }
