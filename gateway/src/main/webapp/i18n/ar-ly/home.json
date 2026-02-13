@@ -1,19 +1,29 @@
 {
   "home": {
-    "title": "أهلا وسهلا بك، جافا هبستر!",
-    "subtitle": "هذه صفحتك الرئيسية",
+    "title": "تعلم بلا حدود",
+    "subtitle": "ابدأ أو غير أو طور مسيرتك المهنية مع آلاف الدورات",
     "logged": {
-      "message": "قمت بتسجيل الدخول كمستخدم \"{{username}}\"."
+      "message": "مرحبًا بعودتك، {{username}}"
     },
-    "question": "إذا كان لديك أي سؤال حول JHipster:",
-    "link": {
-      "homepage": "JHipster homepage",
-      "stackoverflow": "JHipster on Stack Overflow",
-      "bugtracker": "JHipster bug tracker",
-      "chat": "JHipster public chat room",
-      "follow": "follow @jhipster on Twitter"
+    "features": {
+      "disciplines": {
+        "title": "تصفح التخصصات",
+        "description": "استكشف مجموعة واسعة من التخصصات عبر مجالات دراسية متعددة."
+      },
+      "programs": {
+        "title": "برامج منظمة",
+        "description": "اتبع مسارات تعليمية مصممة لنقلك من مبتدئ إلى خبير."
+      },
+      "progress": {
+        "title": "تتبع التقدم",
+        "description": "راقب رحلتك التعليمية مع الدورات والدروس والموارد."
+      }
     },
-    "like": "إذا كنت تحب JHipster، لا تنسى أن تعطي لنا نجم على",
-    "github": "GitHub"
+    "cta": {
+      "signin": "تسجيل الدخول",
+      "register": "إنشاء حساب",
+      "browse": "تصفح الكتالوج",
+      "bottomTitle": "هل أنت مستعد لبدء التعلم؟"
+    }
   }
 }

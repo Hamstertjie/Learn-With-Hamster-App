@@ -1,0 +1,50 @@
+@if (account(); as acc) {
+  <div class="my-learning-hero">
+    <h1 jhiTranslate="myLearning.title">My Learning</h1>
+    <p jhiTranslate="myLearning.welcome" [translateValues]="{ username: acc.login }">Welcome back, {{ acc.login }}!</p>
+  </div>
+
+  <div class="my-learning-content">
+    <div class="container">
+      <!-- Continue Learning (placeholder) -->
+      <section class="ml-section">
+        <h3 jhiTranslate="myLearning.continueLearning.title">Continue Learning</h3>
+        <div class="empty-state">
+          <fa-icon icon="book-open" class="empty-icon"></fa-icon>
+          <p jhiTranslate="myLearning.continueLearning.empty">You haven't started any courses yet. Browse the catalog to find something interesting!</p>
+          <a routerLink="/catalog" class="btn btn-primary">
+            <fa-icon icon="compass"></fa-icon>
+            <span jhiTranslate="myLearning.continueLearning.browseCatalog">Browse Catalog</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- Quick Links -->
+      <section class="ml-section">
+        <h3 jhiTranslate="myLearning.quickLinks.title">Quick Links</h3>
+        <div class="row">
+          <div class="col-md-6 mb-4">
+            <a routerLink="/catalog" class="quick-link-card">
+              <div class="card-accent accent-explore"></div>
+              <div class="card-body">
+                <fa-icon icon="compass" class="ql-icon"></fa-icon>
+                <h5 jhiTranslate="myLearning.quickLinks.exploreCatalog">Explore Catalog</h5>
+                <p jhiTranslate="myLearning.quickLinks.exploreCatalogDesc">Discover new disciplines, courses, and lessons.</p>
+              </div>
+            </a>
+          </div>
+          <div class="col-md-6 mb-4">
+            <a routerLink="/account/settings" class="quick-link-card">
+              <div class="card-accent accent-profile"></div>
+              <div class="card-body">
+                <fa-icon icon="user" class="ql-icon"></fa-icon>
+                <h5 jhiTranslate="myLearning.quickLinks.editProfile">Edit Profile</h5>
+                <p jhiTranslate="myLearning.quickLinks.editProfileDesc">Update your account settings and preferences.</p>
+              </div>
+            </a>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+}

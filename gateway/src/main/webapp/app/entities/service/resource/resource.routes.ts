@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
 import { ASC } from 'app/config/navigation.constants';
+import { Authority } from 'app/config/authority.constants';
 import ResourceResolve from './route/resource-routing-resolve.service';
 
 const resourceRoute: Routes = [
@@ -10,6 +11,7 @@ const resourceRoute: Routes = [
     loadComponent: () => import('./list/resource.component').then(m => m.ResourceComponent),
     data: {
       defaultSort: `id,${ASC}`,
+      authorities: [Authority.ADMIN],
     },
     canActivate: [UserRouteAccessService],
   },
@@ -19,6 +21,7 @@ const resourceRoute: Routes = [
     resolve: {
       resource: ResourceResolve,
     },
+    data: { authorities: [Authority.ADMIN] },
     canActivate: [UserRouteAccessService],
   },
   {
@@ -27,6 +30,7 @@ const resourceRoute: Routes = [
     resolve: {
       resource: ResourceResolve,
     },
+    data: { authorities: [Authority.ADMIN] },
     canActivate: [UserRouteAccessService],
   },
   {
@@ -35,6 +39,7 @@ const resourceRoute: Routes = [
     resolve: {
       resource: ResourceResolve,
     },
+    data: { authorities: [Authority.ADMIN] },
     canActivate: [UserRouteAccessService],
   },
 ];

@@ -29,6 +29,15 @@ const routes: Routes = [
     loadChildren: () => import('./account/account.route'),
   },
   {
+    path: 'catalog',
+    loadChildren: () => import('./browse/browse.routes'),
+  },
+  {
+    path: 'my-learning',
+    loadComponent: () => import('./my-learning/my-learning.component'),
+    canActivate: [UserRouteAccessService],
+  },
+  {
     path: 'login',
     loadComponent: () => import('./login/login.component'),
     title: 'login.title',

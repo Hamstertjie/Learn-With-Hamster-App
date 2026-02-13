@@ -1,0 +1,95 @@
+<mxfile host="app.diagrams.net" modified="2026-02-13" type="device">
+  <diagram id="discipline" name="View Discipline Flow">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1400" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="lb" value="Browser / User" style="shape=swimlane;startSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="280" height="1300" as="geometry"/>
+        </mxCell>
+        <mxCell id="la" value="Angular (DisciplineBrowseComponent)" style="shape=swimlane;startSize=30;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="340" y="40" width="340" height="1300" as="geometry"/>
+        </mxCell>
+        <mxCell id="lg" value="Gateway (JWT Relay + Proxy)" style="shape=swimlane;startSize=30;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="700" y="40" width="300" height="1300" as="geometry"/>
+        </mxCell>
+        <mxCell id="ls" value="Service (REST + JPA + ES)" style="shape=swimlane;startSize=30;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="40" width="300" height="1300" as="geometry"/>
+        </mxCell>
+
+        <!-- 1 -->
+        <mxCell id="n1" value="User clicks discipline card&#xa;on catalog page&#xa;→ /catalog/discipline/1" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="lb">
+          <mxGeometry x="20" y="50" width="240" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- 2 -->
+        <mxCell id="n2" value="Router: browse.routes.ts&#xa;path: 'discipline/:id'&#xa;Lazy-loads DisciplineBrowseComponent" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="la">
+          <mxGeometry x="40" y="50" width="260" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n1" target="n2" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 3 -->
+        <mxCell id="n3" value="ngOnInit()&#xa;id = Number(route.snapshot&#xa;  .paramMap.get('id'))&#xa;accountService.identity()&#xa;  → authenticated → loadData(id)" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;" vertex="1" parent="la">
+          <mxGeometry x="40" y="130" width="260" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n2" target="n3" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 4: API Call 1 - discipline detail -->
+        <mxCell id="n4" value="API Call 1:&#xa;disciplineService.find(id)&#xa;GET /services/service/&#xa;  api/disciplines/1" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;" vertex="1" parent="la">
+          <mxGeometry x="40" y="240" width="260" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n3" target="n4" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 5: Gateway proxy -->
+        <mxCell id="n5" value="JWT validated → relay&#xa;StripPrefix=2&#xa;→ /api/disciplines/1" style="rounded=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="lg">
+          <mxGeometry x="20" y="240" width="260" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n4" target="n5" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 6: Service findOne -->
+        <mxCell id="n6" value="DisciplineResource.getDiscipline(1)&#xa;DisciplineServiceImpl.findOne(1)&#xa;DisciplineRepository&#xa;  .findOneWithEagerRelationships(1)&#xa;JPQL: LEFT JOIN FETCH programs&#xa;DisciplineMapper::toDto" style="rounded=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;align=left;spacingLeft=8;" vertex="1" parent="ls">
+          <mxGeometry x="20" y="240" width="260" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n5" target="n6" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 7: API Call 2 - all courses -->
+        <mxCell id="n7" value="API Call 2 (parallel):&#xa;courseService.query(&#xa;  {size:1000, eagerload:true})&#xa;Fetches ALL courses" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;" vertex="1" parent="la">
+          <mxGeometry x="40" y="370" width="260" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n6" target="n7" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 8: Service courses -->
+        <mxCell id="n8" value="CourseResource.getAllCourses()&#xa;→ List&lt;CourseDTO&gt;&#xa;  each with programs:[{id}]&#xa;  and lessons:[{id}]" style="rounded=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;align=left;spacingLeft=8;" vertex="1" parent="ls">
+          <mxGeometry x="20" y="370" width="260" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n7" target="n8" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 9: Filter courses client-side -->
+        <mxCell id="n9" value="Client-side filter:&#xa;disciplineProgramIds =&#xa;  Set(discipline.programs.map(p→id))&#xa;filtered = courses.filter(c →&#xa;  c.programs.some(p →&#xa;    disciplineProgramIds.has(p.id)))" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;" vertex="1" parent="la">
+          <mxGeometry x="40" y="470" width="260" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="e8" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n8" target="n9" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 10: API Call 3 - resources -->
+        <mxCell id="n10" value="API Call 3 (parallel):&#xa;resourceService.query({size:1000})&#xa;Filter: resource.discipline?.id === id" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;" vertex="1" parent="la">
+          <mxGeometry x="40" y="590" width="260" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="e9" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n9" target="n10" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 11: Service resources -->
+        <mxCell id="n11" value="ResourceResource.getAllResources()&#xa;→ List&lt;ResourceDTO&gt;&#xa;  each with discipline:{id},&#xa;  course:{id}, lesson:{id}" style="rounded=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;align=left;spacingLeft=8;" vertex="1" parent="ls">
+          <mxGeometry x="20" y="590" width="260" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="e10" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n10" target="n11" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 12: Render -->
+        <mxCell id="n12" value="Render discipline page:&#xa;- Hero: name, description, price&#xa;- Breadcrumb: Catalog → name&#xa;- Course cards grid (filtered)&#xa;  each with level, price, link&#xa;  → /catalog/course/:id&#xa;- Resources list with type icons&#xa;  VIDEO/IMAGE/TOOL/default" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;align=left;spacingLeft=8;" vertex="1" parent="lb">
+          <mxGeometry x="20" y="700" width="240" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="e11" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n11" target="n12" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

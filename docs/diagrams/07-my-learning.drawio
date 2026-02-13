@@ -1,0 +1,79 @@
+<mxfile host="app.diagrams.net" modified="2026-02-13" type="device">
+  <diagram id="mylearning" name="My Learning Flow">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="lb" value="Browser / User" style="shape=swimlane;startSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="280" height="1100" as="geometry"/>
+        </mxCell>
+        <mxCell id="la" value="Angular (MyLearningComponent)" style="shape=swimlane;startSize=30;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="340" y="40" width="340" height="1100" as="geometry"/>
+        </mxCell>
+        <mxCell id="lg" value="Gateway (port 8081)" style="shape=swimlane;startSize=30;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="700" y="40" width="300" height="1100" as="geometry"/>
+        </mxCell>
+
+        <!-- 1: User navigates -->
+        <mxCell id="n1" value="User clicks &quot;My Learning&quot;&#xa;in navbar (requires login)&#xa;→ /my-learning" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="lb">
+          <mxGeometry x="20" y="50" width="240" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- 2: Route guard -->
+        <mxCell id="n2" value="Router: app.routes.ts&#xa;path: 'my-learning'&#xa;canActivate: [UserRouteAccessService]" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="la">
+          <mxGeometry x="40" y="50" width="260" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n1" target="n2" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 3: UserRouteAccessService -->
+        <mxCell id="n3" value="UserRouteAccessService (CanActivateFn)&#xa;accountService.identity()&#xa;  → checks authentication state" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="la">
+          <mxGeometry x="40" y="130" width="260" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n2" target="n3" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- Decision: authenticated? -->
+        <mxCell id="d1" value="account&#xa;!== null?" style="rhombus;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="la">
+          <mxGeometry x="100" y="210" width="120" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n3" target="d1" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- Not authenticated: redirect to login -->
+        <mxCell id="n4" value="stateStorageService.storeUrl(&#xa;  '/my-learning')&#xa;router.navigate(['/login'])&#xa;return false" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;" vertex="1" parent="la">
+          <mxGeometry x="40" y="320" width="260" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="e4" value="No" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="d1" target="n4" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- Login redirect shown -->
+        <mxCell id="n4b" value="User sees login page&#xa;(see 02-login-flow diagram)&#xa;After login → redirect back&#xa;to /my-learning" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="lb">
+          <mxGeometry x="20" y="320" width="240" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="e4b" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n4" target="n4b" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- Authenticated: load component -->
+        <mxCell id="n5" value="Lazy-loads MyLearningComponent&#xa;(default export)&#xa;return true" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="la">
+          <mxGeometry x="40" y="420" width="260" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="e5" value="Yes" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="d1" target="n5" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 6: Component init -->
+        <mxCell id="n6" value="MyLearningComponent&#xa;account = inject(AccountService)&#xa;  .trackCurrentAccount()&#xa;No API calls — uses cached&#xa;  account signal from identity()&#xa;  already resolved by guard" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;" vertex="1" parent="la">
+          <mxGeometry x="40" y="500" width="260" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n5" target="n6" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 7: Render -->
+        <mxCell id="n7" value="Render My Learning page:&#xa;- Hero: &quot;Welcome back, [login]!&quot;&#xa;  using account()?.login&#xa;- Continue Learning section&#xa;  (placeholder — enrollment&#xa;  not yet implemented)&#xa;  Empty state: dashed border,&#xa;  &quot;Nothing here yet&quot; message&#xa;- Quick Links cards:&#xa;  → Browse Catalog (/catalog)&#xa;  → Edit Profile (/account/settings)" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;align=left;spacingLeft=8;" vertex="1" parent="lb">
+          <mxGeometry x="20" y="640" width="240" height="180" as="geometry"/>
+        </mxCell>
+        <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n6" target="n7" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 8: User clicks Browse Catalog -->
+        <mxCell id="n8" value="User clicks &quot;Browse Catalog&quot;&#xa;→ /catalog&#xa;(see 03-browse-catalog diagram)" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="lb">
+          <mxGeometry x="20" y="860" width="240" height="60" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

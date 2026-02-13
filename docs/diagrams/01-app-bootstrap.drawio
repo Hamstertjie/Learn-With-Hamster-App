@@ -1,0 +1,96 @@
+<mxfile host="app.diagrams.net" modified="2026-02-13" type="device">
+  <diagram id="bootstrap" name="App Bootstrap Flow">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- Swim Lane Headers -->
+        <mxCell id="lane_browser" value="Browser" style="shape=swimlane;startSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=14;horizontal=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="300" height="1100" as="geometry"/>
+        </mxCell>
+        <mxCell id="lane_angular" value="Angular Framework" style="shape=swimlane;startSize=30;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=14;horizontal=1;" vertex="1" parent="1">
+          <mxGeometry x="360" y="40" width="340" height="1100" as="geometry"/>
+        </mxCell>
+        <mxCell id="lane_gateway" value="Gateway (port 8081)" style="shape=swimlane;startSize=30;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=14;horizontal=1;" vertex="1" parent="1">
+          <mxGeometry x="720" y="40" width="300" height="1100" as="geometry"/>
+        </mxCell>
+        <mxCell id="lane_service" value="Service (port 8080)" style="shape=swimlane;startSize=30;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=14;horizontal=1;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="40" width="300" height="1100" as="geometry"/>
+        </mxCell>
+
+        <!-- Step 1: Browser loads index.html -->
+        <mxCell id="s1" value="Load index.html&#xa;&lt;jhi-app&gt; with spinner" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="lane_browser">
+          <mxGeometry x="30" y="50" width="240" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- Step 2: main.ts -> bootstrap.ts -->
+        <mxCell id="s2" value="main.ts&#xa;import('./bootstrap')" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="lane_angular">
+          <mxGeometry x="50" y="50" width="240" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="s1" target="s2" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- Step 3: bootstrap.ts -->
+        <mxCell id="s3" value="bootstrap.ts&#xa;enableProdMode() if prod&#xa;bootstrapApplication(AppComponent, appConfig)" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="lane_angular">
+          <mxGeometry x="50" y="120" width="240" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="s2" target="s3" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- Step 4: appConfig providers -->
+        <mxCell id="s4" value="app.config.ts providers:&#xa;- provideRouter(routes)&#xa;- HttpClient + 4 interceptors&#xa;- TranslationModule (loads i18n)&#xa;- TitleStrategy&#xa;- NgbDateAdapter" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;" vertex="1" parent="lane_angular">
+          <mxGeometry x="50" y="200" width="240" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="s3" target="s4" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- Step 5: AppComponent constructor -->
+        <mxCell id="s5" value="AppComponent constructor:&#xa;- setEndpointPrefix(SERVER_API_URL)&#xa;- registerLocaleData(en)&#xa;- addIcons(fontAwesomeIcons)&#xa;- renders &lt;jhi-main /&gt;" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;" vertex="1" parent="lane_angular">
+          <mxGeometry x="50" y="320" width="240" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="s4" target="s5" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- Step 6: MainComponent ngOnInit -->
+        <mxCell id="s6" value="MainComponent.ngOnInit()&#xa;- accountService.identity()&#xa;- subscribe to lang changes&#xa;Renders:&#xa;  PageRibbon | Navbar outlet&#xa;  RouterOutlet | Footer" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;" vertex="1" parent="lane_angular">
+          <mxGeometry x="50" y="430" width="240" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="s5" target="s6" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- Step 7: GET /api/account -->
+        <mxCell id="s7" value="AccountService.identity()&#xa;GET /api/account&#xa;+ AuthInterceptor adds JWT" style="rounded=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="lane_gateway">
+          <mxGeometry x="30" y="430" width="240" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="s6" target="s7" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- Step 8: AccountResource -->
+        <mxCell id="s8" value="AccountResource.getAccount()&#xa;SecurityWebFilterChain validates JWT&#xa;Returns AdminUserDTO or 401" style="rounded=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="lane_gateway">
+          <mxGeometry x="30" y="510" width="240" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="s7" target="s8" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- Step 9: Auth result -->
+        <mxCell id="s9" value="If 200: authenticate(account)&#xa;  set userIdentity signal&#xa;  navigateToStoredUrl()&#xa;If 401: authenticate(null)&#xa;  user stays anonymous" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;" vertex="1" parent="lane_angular">
+          <mxGeometry x="50" y="570" width="240" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="e8" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="s8" target="s9" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- Step 10: NavbarComponent renders -->
+        <mxCell id="s10" value="NavbarComponent renders:&#xa;- trackCurrentAccount() signal&#xa;- ProfileService.getProfileInfo()&#xa;  GET /management/info&#xa;- Shows Explore, My Learning,&#xa;  Manage Content based on auth" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;" vertex="1" parent="lane_angular">
+          <mxGeometry x="50" y="680" width="240" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="e9" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="s9" target="s10" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- Step 11: Route component loads -->
+        <mxCell id="s11" value="Router loads path component:&#xa;'/' → HomeComponent&#xa;'/catalog' → CatalogComponent&#xa;'/login' → LoginComponent&#xa;etc. (all lazy-loaded)" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;" vertex="1" parent="lane_angular">
+          <mxGeometry x="50" y="800" width="240" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="e10" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="s10" target="s11" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- Step 12: Browser renders -->
+        <mxCell id="s12" value="Spinner replaced&#xa;Full app rendered" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="lane_browser">
+          <mxGeometry x="30" y="800" width="240" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="e11" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="s11" target="s12" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,183 @@
+<mxfile host="app.diagrams.net" modified="2026-02-13" type="device">
+  <diagram id="admincrud" name="Admin CRUD Flow">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1800" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="lb" value="Browser / Admin User" style="shape=swimlane;startSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="280" height="1700" as="geometry"/>
+        </mxCell>
+        <mxCell id="la" value="Angular (Entity Components)" style="shape=swimlane;startSize=30;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="340" y="40" width="340" height="1700" as="geometry"/>
+        </mxCell>
+        <mxCell id="lg" value="Gateway (JWT Relay + Proxy)" style="shape=swimlane;startSize=30;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="700" y="40" width="300" height="1700" as="geometry"/>
+        </mxCell>
+        <mxCell id="ls" value="Service (REST + JPA + MySQL + ES)" style="shape=swimlane;startSize=30;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="40" width="320" height="1700" as="geometry"/>
+        </mxCell>
+
+        <!-- === LIST FLOW === -->
+        <mxCell id="h1" value="LIST ENTITIES" style="text;fontStyle=5;fontSize=12;fillColor=#e1d5e7;strokeColor=#9673a6;rounded=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="40" y="80" width="1300" height="25" as="geometry"/>
+        </mxCell>
+
+        <!-- 1: Admin navigates -->
+        <mxCell id="n1" value="Admin clicks &quot;Manage Content&quot;&#xa;→ e.g. &quot;Disciplines&quot;&#xa;→ /discipline" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="lb">
+          <mxGeometry x="20" y="80" width="240" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- 2: Route guard -->
+        <mxCell id="n2" value="discipline.routes.ts&#xa;canActivate: [UserRouteAccessService]&#xa;data: { authorities: [ROLE_ADMIN],&#xa;  defaultSort: 'id,asc' }" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;" vertex="1" parent="la">
+          <mxGeometry x="40" y="80" width="260" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n1" target="n2" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 3: Guard check -->
+        <mxCell id="n3" value="UserRouteAccessService:&#xa;accountService.identity()&#xa;  → account.authorities includes&#xa;  ROLE_ADMIN → return true&#xa;Non-admin → navigate /accessdenied" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;" vertex="1" parent="la">
+          <mxGeometry x="40" y="170" width="260" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n2" target="n3" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 4: List component -->
+        <mxCell id="n4" value="DisciplineComponent (list)&#xa;ngOnInit → load()&#xa;disciplineService.query({&#xa;  page, size, sort, eagerload})&#xa;GET /services/service/&#xa;  api/disciplines?page=0&amp;size=20&#xa;  &amp;sort=id,asc&amp;eagerload=true" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;" vertex="1" parent="la">
+          <mxGeometry x="40" y="280" width="260" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n3" target="n4" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 5: Gateway -->
+        <mxCell id="n5" value="SecurityWebFilterChain:&#xa;  JWT validated (ROLE_ADMIN)&#xa;JWTRelayGatewayFilterFactory&#xa;StripPrefix=2&#xa;→ /api/disciplines?..." style="rounded=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;align=left;spacingLeft=8;" vertex="1" parent="lg">
+          <mxGeometry x="20" y="280" width="260" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n4" target="n5" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 6: Service list -->
+        <mxCell id="n6" value="DisciplineResource&#xa;  .getAllDisciplines(pageable, eagerload)&#xa;DisciplineServiceImpl.findAll(pageable)&#xa;DisciplineRepository.findAll(pageable)&#xa;  → Hazelcast L2 cache or MySQL&#xa;DisciplineMapper::toDto (list)&#xa;Response: Page&lt;DisciplineDTO&gt;&#xa;  + X-Total-Count header" style="rounded=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;align=left;spacingLeft=8;" vertex="1" parent="ls">
+          <mxGeometry x="20" y="280" width="280" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n5" target="n6" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 7: Render table -->
+        <mxCell id="n7" value="Render sortable table:&#xa;- ID, Name, Description, Price&#xa;- Pagination controls&#xa;- View / Edit / Delete buttons&#xa;- &quot;Create new&quot; button" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;align=left;spacingLeft=8;" vertex="1" parent="lb">
+          <mxGeometry x="20" y="440" width="240" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n6" target="n7" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- === CREATE FLOW === -->
+        <mxCell id="h2" value="CREATE ENTITY" style="text;fontStyle=5;fontSize=12;fillColor=#e1d5e7;strokeColor=#9673a6;rounded=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="40" y="600" width="1300" height="25" as="geometry"/>
+        </mxCell>
+
+        <!-- 8: Click create -->
+        <mxCell id="n8" value="Admin clicks &quot;Create new&quot;&#xa;→ /discipline/new" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="lb">
+          <mxGeometry x="20" y="600" width="240" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- 9: Update component -->
+        <mxCell id="n9" value="DisciplineUpdateComponent&#xa;route: 'new' → createForm()&#xa;editForm = FormGroup with&#xa;  Validators.required&#xa;Loads programs for multiselect:&#xa;  programService.query({size:1000})" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;" vertex="1" parent="la">
+          <mxGeometry x="40" y="600" width="260" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="e8" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n8" target="n9" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 10: Fill form -->
+        <mxCell id="n10" value="Admin fills form:&#xa;name, description, price&#xa;selects programs (multi-select)&#xa;Clicks &quot;Save&quot;" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="lb">
+          <mxGeometry x="20" y="720" width="240" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- 11: Save -->
+        <mxCell id="n11" value="save()&#xa;disciplineService.create(discipline)&#xa;POST /services/service/&#xa;  api/disciplines&#xa;Body: DisciplineDTO JSON" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;" vertex="1" parent="la">
+          <mxGeometry x="40" y="720" width="260" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="e10" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n10" target="n11" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 12: Gateway relay -->
+        <mxCell id="n12" value="JWT relay → POST&#xa;/api/disciplines" style="rounded=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="lg">
+          <mxGeometry x="20" y="740" width="260" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="e11" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n11" target="n12" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 13: Service create -->
+        <mxCell id="n13" value="DisciplineResource.createDiscipline()&#xa;DisciplineServiceImpl.save(dto)&#xa;DisciplineMapper::toEntity&#xa;DisciplineRepository.save(entity)&#xa;  → MySQL INSERT&#xa;DisciplineSearchRepository&#xa;  .index(entity)&#xa;  → Elasticsearch index&#xa;Returns 201 + DisciplineDTO" style="rounded=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;align=left;spacingLeft=8;" vertex="1" parent="ls">
+          <mxGeometry x="20" y="700" width="280" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="e12" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n12" target="n13" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 14: Navigate back -->
+        <mxCell id="n14" value="onSaveSuccess()&#xa;router.navigate(['/discipline'])&#xa;Back to list view" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="la">
+          <mxGeometry x="40" y="860" width="260" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="e13" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n13" target="n14" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- === DELETE FLOW === -->
+        <mxCell id="h3" value="DELETE ENTITY" style="text;fontStyle=5;fontSize=12;fillColor=#e1d5e7;strokeColor=#9673a6;rounded=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="40" y="980" width="1300" height="25" as="geometry"/>
+        </mxCell>
+
+        <!-- 15: Click delete -->
+        <mxCell id="n15" value="Admin clicks &quot;Delete&quot; button&#xa;on list row" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="lb">
+          <mxGeometry x="20" y="980" width="240" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- 16: Confirm dialog -->
+        <mxCell id="n16" value="DisciplineDeleteDialogComponent&#xa;NgbModal opens confirmation&#xa;&quot;Are you sure you want to delete?&quot;&#xa;Admin clicks &quot;Delete&quot;" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="la">
+          <mxGeometry x="40" y="980" width="260" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="e15" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n15" target="n16" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 17: Delete request -->
+        <mxCell id="n17" value="confirmDelete()&#xa;disciplineService.delete(id)&#xa;DELETE /services/service/&#xa;  api/disciplines/1" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;" vertex="1" parent="la">
+          <mxGeometry x="40" y="1070" width="260" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="e16" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n16" target="n17" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 18: Gateway relay -->
+        <mxCell id="n18" value="JWT relay → DELETE&#xa;/api/disciplines/1" style="rounded=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="lg">
+          <mxGeometry x="20" y="1080" width="260" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="e17" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n17" target="n18" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 19: Service delete -->
+        <mxCell id="n19" value="DisciplineResource.deleteDiscipline(1)&#xa;DisciplineServiceImpl.delete(1)&#xa;DisciplineRepository.deleteById(1)&#xa;  → MySQL DELETE&#xa;DisciplineSearchRepository&#xa;  .deleteFromIndexById(1)&#xa;  → Elasticsearch remove&#xa;Returns 204 No Content" style="rounded=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;align=left;spacingLeft=8;" vertex="1" parent="ls">
+          <mxGeometry x="20" y="1060" width="280" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="e18" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n18" target="n19" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 20: Refresh list -->
+        <mxCell id="n20" value="Modal closes&#xa;EventManager emits&#xa;  'disciplineListModification'&#xa;DisciplineComponent.load()&#xa;  re-fetches list" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;" vertex="1" parent="la">
+          <mxGeometry x="40" y="1210" width="260" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="e19" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n19" target="n20" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- === SEARCH FLOW === -->
+        <mxCell id="h4" value="SEARCH (ELASTICSEARCH)" style="text;fontStyle=5;fontSize=12;fillColor=#e1d5e7;strokeColor=#9673a6;rounded=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1350" width="1300" height="25" as="geometry"/>
+        </mxCell>
+
+        <!-- 21: Search -->
+        <mxCell id="n21" value="Admin types in search box&#xa;and presses Enter" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="lb">
+          <mxGeometry x="20" y="1350" width="240" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- 22: Search request -->
+        <mxCell id="n22" value="DisciplineComponent.search(query)&#xa;disciplineService.search({&#xa;  query, page, size, sort})&#xa;GET /services/service/&#xa;  api/disciplines/_search?query=sport" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;" vertex="1" parent="la">
+          <mxGeometry x="40" y="1350" width="260" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="e21" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n21" target="n22" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 23: Service search -->
+        <mxCell id="n23" value="DisciplineResource.searchDisciplines()&#xa;DisciplineServiceImpl.search(query)&#xa;DisciplineSearchRepository&#xa;  .search(queryStringQuery)&#xa;  → Elasticsearch full-text search&#xa;DisciplineMapper::toDto&#xa;Returns Page&lt;DisciplineDTO&gt;" style="rounded=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;align=left;spacingLeft=8;" vertex="1" parent="ls">
+          <mxGeometry x="20" y="1350" width="280" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="e22" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n22" target="n23" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 24: Results -->
+        <mxCell id="n24" value="Search results replace&#xa;table contents&#xa;Pagination updates" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="lb">
+          <mxGeometry x="20" y="1490" width="240" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="e23" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n23" target="n24" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

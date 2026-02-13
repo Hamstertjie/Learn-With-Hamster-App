@@ -1,0 +1,102 @@
+<mxfile host="app.diagrams.net" modified="2026-02-13" type="device">
+  <diagram id="catalog" name="Browse Catalog Flow">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1400" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- Swim Lanes -->
+        <mxCell id="lb" value="Browser / User" style="shape=swimlane;startSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="280" height="1300" as="geometry"/>
+        </mxCell>
+        <mxCell id="la" value="Angular (CatalogComponent)" style="shape=swimlane;startSize=30;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="340" y="40" width="340" height="1300" as="geometry"/>
+        </mxCell>
+        <mxCell id="lg" value="Gateway (Spring Cloud Gateway)" style="shape=swimlane;startSize=30;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="700" y="40" width="320" height="1300" as="geometry"/>
+        </mxCell>
+        <mxCell id="ls" value="Service (Spring MVC + JPA)" style="shape=swimlane;startSize=30;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="40" width="300" height="1300" as="geometry"/>
+        </mxCell>
+
+        <!-- 1 -->
+        <mxCell id="n1" value="User navigates to /catalog&#xa;(clicks Explore in navbar)" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="lb">
+          <mxGeometry x="20" y="50" width="240" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- 2 -->
+        <mxCell id="n2" value="Router: /catalog → browse.routes.ts&#xa;Lazy-loads CatalogComponent&#xa;No canActivate guard" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="la">
+          <mxGeometry x="40" y="50" width="260" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n1" target="n2" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 3 -->
+        <mxCell id="n3" value="CatalogComponent.ngOnInit()&#xa;accountService.identity()&#xa;  .subscribe(account ⇒ ...)" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="la">
+          <mxGeometry x="40" y="130" width="260" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n2" target="n3" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- Decision diamond -->
+        <mxCell id="d1" value="account&#xa;!== null?" style="rhombus;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="la">
+          <mxGeometry x="100" y="210" width="120" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n3" target="d1" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- NOT authenticated path -->
+        <mxCell id="n4" value="Show login prompt:&#xa;fa-icon compass&#xa;&quot;Sign In to Explore&quot; button&#xa;loading.set(false)" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="lb">
+          <mxGeometry x="20" y="210" width="240" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="e4" value="No" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="d1" target="n4" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- Authenticated path: load disciplines -->
+        <mxCell id="n5" value="loadData()&#xa;disciplineService.query(&#xa;  {size:1000, eagerload:true})&#xa;GET /services/service/&#xa;  api/disciplines?size=1000&amp;eagerload=true" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;" vertex="1" parent="la">
+          <mxGeometry x="40" y="320" width="260" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="e5" value="Yes" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="d1" target="n5" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- Gateway proxy -->
+        <mxCell id="n6" value="SecurityWebFilterChain:&#xa;  /services/** requires auth&#xa;  JWT validated (HS512)&#xa;JWTRelayGatewayFilterFactory:&#xa;  decode + forward token&#xa;StripPrefix=2 → /api/disciplines" style="rounded=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;align=left;spacingLeft=8;" vertex="1" parent="lg">
+          <mxGeometry x="30" y="320" width="260" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n5" target="n6" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- Service controller -->
+        <mxCell id="n7" value="DisciplineResource&#xa;  .getAllDisciplines(eagerload)&#xa;DisciplineServiceImpl.findAll()&#xa;DisciplineRepository.findAll()&#xa;  → Hazelcast L2 cache or MySQL&#xa;DisciplineMapper::toDto&#xa;  programs: [{id}] only" style="rounded=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;align=left;spacingLeft=8;" vertex="1" parent="ls">
+          <mxGeometry x="20" y="320" width="260" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n6" target="n7" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- Response: disciplines list -->
+        <mxCell id="n8" value="Response: IDiscipline[]&#xa;[{id, disciplineName,&#xa;  disciplineDescription,&#xa;  disciplinePrice,&#xa;  programs: [{id:1},{id:2}]}]" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;" vertex="1" parent="la">
+          <mxGeometry x="40" y="460" width="260" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="e8" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n7" target="n8" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- Load courses -->
+        <mxCell id="n9" value="courseService.query(&#xa;  {size:1000, eagerload:true})&#xa;GET /services/service/&#xa;  api/courses?size=1000&amp;eagerload=true" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;" vertex="1" parent="la">
+          <mxGeometry x="40" y="570" width="260" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="e9" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n8" target="n9" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- Service: courses -->
+        <mxCell id="n10" value="CourseResource.getAllCourses()&#xa;CourseServiceImpl.findAll()&#xa;CourseRepository.findAll()&#xa;  → MySQL: course table&#xa;CourseMapper::toDto&#xa;  programs: [{id}], lessons: [{id}]" style="rounded=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;align=left;spacingLeft=8;" vertex="1" parent="ls">
+          <mxGeometry x="20" y="570" width="260" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="e10" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n9" target="n10" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- Client-side cross-reference -->
+        <mxCell id="n11" value="Client-side cross-reference:&#xa;For each discipline:&#xa;  disciplineProgramIds = Set(&#xa;    discipline.programs.map(p→p.id))&#xa;  count courses where any&#xa;    course.programs.id ∈&#xa;    disciplineProgramIds&#xa;→ courseCountMap[discipline.id]" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;" vertex="1" parent="la">
+          <mxGeometry x="40" y="700" width="260" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="e11" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n10" target="n11" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- Render grid -->
+        <mxCell id="n12" value="Render discipline card grid:&#xa;- discipline name&#xa;- description (3 lines clamp)&#xa;- price badge ($X or Free)&#xa;- course count badge&#xa;- &quot;View Discipline →&quot; link&#xa;  → /catalog/discipline/:id" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;align=left;spacingLeft=8;" vertex="1" parent="lb">
+          <mxGeometry x="20" y="860" width="240" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="e12" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n11" target="n12" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

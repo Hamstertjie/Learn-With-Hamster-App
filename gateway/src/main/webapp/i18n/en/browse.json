@@ -1,0 +1,46 @@
+{
+  "browse": {
+    "catalog": {
+      "title": "Explore Disciplines",
+      "subtitle": "Browse our catalog of learning disciplines and find the perfect path for you.",
+      "courses": "{{ count }} course(s)",
+      "noCourses": "No courses yet",
+      "viewDiscipline": "View Discipline",
+      "empty": "No disciplines available yet. Check back soon!",
+      "loginPrompt": "Sign in to browse our full catalog of disciplines, courses, and lessons.",
+      "loginButton": "Sign In to Explore"
+    },
+    "discipline": {
+      "title": "Discipline",
+      "courses": "Courses",
+      "resources": "Resources",
+      "noCourses": "No courses available in this discipline yet.",
+      "noResources": "No resources attached to this discipline.",
+      "price": "Price",
+      "free": "Free",
+      "viewCourse": "View Course"
+    },
+    "course": {
+      "title": "Course",
+      "curriculum": "Curriculum",
+      "resources": "Resources",
+      "lessons": "{{ count }} lesson(s)",
+      "noLessons": "No lessons in this course yet.",
+      "noResources": "No resources attached to this course.",
+      "level": "Level",
+      "price": "Price",
+      "free": "Free",
+      "viewLesson": "View Lesson",
+      "expandAll": "Expand All",
+      "collapseAll": "Collapse All"
+    },
+    "lesson": {
+      "title": "Lesson",
+      "resources": "Resources",
+      "noResources": "No resources attached to this lesson.",
+      "language": "Language",
+      "openResource": "Open Resource",
+      "backToCourse": "Back to Course"
+    }
+  }
+}

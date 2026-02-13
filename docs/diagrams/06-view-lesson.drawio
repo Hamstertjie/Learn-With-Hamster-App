@@ -1,0 +1,88 @@
+<mxfile host="app.diagrams.net" modified="2026-02-13" type="device">
+  <diagram id="lesson" name="View Lesson Flow">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1400" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="lb" value="Browser / User" style="shape=swimlane;startSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="280" height="1300" as="geometry"/>
+        </mxCell>
+        <mxCell id="la" value="Angular (LessonBrowseComponent)" style="shape=swimlane;startSize=30;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="340" y="40" width="340" height="1300" as="geometry"/>
+        </mxCell>
+        <mxCell id="lg" value="Gateway (JWT Relay + Proxy)" style="shape=swimlane;startSize=30;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="700" y="40" width="300" height="1300" as="geometry"/>
+        </mxCell>
+        <mxCell id="ls" value="Service (REST + JPA + ES)" style="shape=swimlane;startSize=30;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="40" width="300" height="1300" as="geometry"/>
+        </mxCell>
+
+        <!-- 1 -->
+        <mxCell id="n1" value="User clicks lesson link&#xa;from course page or curriculum&#xa;→ /catalog/lesson/1" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="lb">
+          <mxGeometry x="20" y="50" width="240" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- 2 -->
+        <mxCell id="n2" value="Router: browse.routes.ts&#xa;path: 'lesson/:id'&#xa;Lazy-loads LessonBrowseComponent" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="la">
+          <mxGeometry x="40" y="50" width="260" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n1" target="n2" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 3 -->
+        <mxCell id="n3" value="ngOnInit()&#xa;id = Number(route.snapshot&#xa;  .paramMap.get('id'))&#xa;accountService.identity()&#xa;  → authenticated → loadData(id)" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;" vertex="1" parent="la">
+          <mxGeometry x="40" y="130" width="260" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n2" target="n3" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 4: API Call 1 - lesson detail -->
+        <mxCell id="n4" value="API Call 1:&#xa;lessonService.find(id)&#xa;GET /services/service/&#xa;  api/lessons/1" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;" vertex="1" parent="la">
+          <mxGeometry x="40" y="240" width="260" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n3" target="n4" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 5: Gateway proxy -->
+        <mxCell id="n5" value="JWT validated → relay&#xa;StripPrefix=2&#xa;→ /api/lessons/1" style="rounded=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="lg">
+          <mxGeometry x="20" y="240" width="260" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n4" target="n5" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 6: Service findOne -->
+        <mxCell id="n6" value="LessonResource.getLesson(1)&#xa;LessonServiceImpl.findOne(1)&#xa;LessonRepository.findById(1)&#xa;LessonMapper::toDto&#xa;→ {id, lessonTitle,&#xa;  lessonDescription, language}" style="rounded=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;align=left;spacingLeft=8;" vertex="1" parent="ls">
+          <mxGeometry x="20" y="240" width="260" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n5" target="n6" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 7: API Call 2 - resources -->
+        <mxCell id="n7" value="API Call 2 (parallel):&#xa;resourceService.query({size:1000})&#xa;GET /services/service/&#xa;  api/resources?size=1000" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;" vertex="1" parent="la">
+          <mxGeometry x="40" y="370" width="260" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n6" target="n7" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 8: Service resources -->
+        <mxCell id="n8" value="ResourceResource.getAllResources()&#xa;ResourceServiceImpl.findAll()&#xa;ResourceRepository.findAll()&#xa;→ List&lt;ResourceDTO&gt;" style="rounded=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;align=left;spacingLeft=8;" vertex="1" parent="ls">
+          <mxGeometry x="20" y="370" width="260" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n7" target="n8" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 9: Filter + sort resources -->
+        <mxCell id="n9" value="Client-side filter &amp; sort:&#xa;resources.filter(r →&#xa;  r.lesson?.id === lessonId)&#xa;.sort((a, b) →&#xa;  (a.weight ?? 0) - (b.weight ?? 0))&#xa;Sorted by resourceWeight ascending" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;" vertex="1" parent="la">
+          <mxGeometry x="40" y="470" width="260" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="e8" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n8" target="n9" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 10: Render -->
+        <mxCell id="n10" value="Render lesson page:&#xa;- Breadcrumb: Catalog → Lesson&#xa;- Title with language badge&#xa;  (faGlobe + language enum)&#xa;- Description block&#xa;- Resource list sorted by weight:&#xa;  VIDEO → faVideo icon&#xa;  IMAGE → faImage icon&#xa;  TOOL  → faTools icon&#xa;  other → faArrowRight icon&#xa;  Each: name, type badge,&#xa;  &quot;Open Resource&quot; link (href)" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;align=left;spacingLeft=8;" vertex="1" parent="lb">
+          <mxGeometry x="20" y="620" width="240" height="180" as="geometry"/>
+        </mxCell>
+        <mxCell id="e9" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n9" target="n10" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- 11: User clicks resource -->
+        <mxCell id="n11" value="User clicks &quot;Open Resource&quot;&#xa;→ opens resourceUrl in new tab&#xa;(target=_blank, rel=noopener)" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="lb">
+          <mxGeometry x="20" y="830" width="240" height="60" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,140 @@
+.browse-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+}
+
+.browse-login-prompt {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  background: linear-gradient(135deg, #f8f5ff 0%, #ede9fe 100%);
+  padding: 2rem;
+}
+
+.prompt-content {
+  text-align: center;
+  max-width: 500px;
+}
+
+.prompt-icon {
+  font-size: 3rem;
+  color: #a435f0;
+  margin-bottom: 1.5rem;
+}
+
+.browse-hero {
+  background: linear-gradient(135deg, #a435f0 0%, #6d28d9 50%, #4c1d95 100%);
+  color: #fff;
+  padding: 3rem 2rem;
+  text-align: center;
+
+  h1 {
+    font-size: 2.25rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+  }
+
+  p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+}
+
+.browse-content {
+  padding: 2.5rem 1rem;
+}
+
+.browse-empty {
+  text-align: center;
+  padding: 3rem;
+  color: #6a6f73;
+  font-size: 1.1rem;
+}
+
+.discipline-card {
+  display: block;
+  background: #fff;
+  border: 1px solid #e8e9eb;
+  border-radius: 0.75rem;
+  text-decoration: none;
+  color: #1c1d1f;
+  overflow: hidden;
+  height: 100%;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    text-decoration: none;
+    color: #1c1d1f;
+  }
+
+  .card-accent {
+    height: 4px;
+    background: #a435f0;
+  }
+
+  .card-body {
+    padding: 1.5rem;
+  }
+
+  .card-title {
+    font-weight: 700;
+    font-size: 1.15rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .card-description {
+    color: #6a6f73;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .card-meta {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .card-action {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #a435f0;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+}
+
+.badge-price {
+  background: #f0e6fc;
+  color: #6d28d9;
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.badge-free {
+  background: #d1fae5;
+  color: #065f46;
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.badge-courses {
+  color: #6a6f73;
+  font-size: 0.85rem;
+}
