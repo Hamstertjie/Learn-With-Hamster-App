@@ -67,7 +67,7 @@
                 @if (isLessonExpanded(lesson.id)) {
                   <div class="curriculum-body">
                     <p>{{ lesson.lessonDescription }}</p>
-                    <a [routerLink]="['/catalog/lesson', lesson.id]" class="btn btn-sm btn-primary">
+                    <a [routerLink]="['/catalog/lesson', lesson.id]" [queryParams]="{course: c.id}" class="btn btn-sm btn-primary">
                       <span jhiTranslate="browse.course.viewLesson">View Lesson</span>
                       <fa-icon icon="arrow-right"></fa-icon>
                     </a>

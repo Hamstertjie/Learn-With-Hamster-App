@@ -15,42 +15,195 @@
   </div>
 } @else {
   @let l = lesson()!;
-  <div class="browse-hero">
-    <div class="hero-breadcrumb">
-      <a routerLink="/catalog">Catalog</a>
-      <fa-icon icon="chevron-right"></fa-icon>
-      <span>{{ l.lessonTitle }}</span>
+
+  <!-- Compact Top Bar -->
+  <div class="lesson-topbar">
+    <div class="topbar-left">
+      @if (course(); as c) {
+        <a [routerLink]="['/catalog/course', c.id]" class="topbar-back">
+          <fa-icon icon="chevron-left"></fa-icon>
+          <span>{{ c.courseTitle }}</span>
+        </a>
+      } @else {
+        <a routerLink="/catalog" class="topbar-back">
+          <fa-icon icon="chevron-left"></fa-icon>
+          <span jhiTranslate="browse.catalog.title">Catalog</span>
+        </a>
+      }
     </div>
-    <h1>{{ l.lessonTitle }}</h1>
-    @if (l.language) {
-      <div class="hero-meta">
-        <span class="badge-language">
-          <fa-icon icon="globe"></fa-icon>
-          {{ l.language }}
-        </span>
-      </div>
+    @if (courseLessons().length > 0) {
+      <button class="sidebar-toggle" (click)="toggleSidebar()" aria-label="Toggle course contents">
+        <fa-icon icon="list-ol"></fa-icon>
+      </button>
     }
   </div>
 
-  <div class="browse-content">
-    <div class="container">
-      <!-- Lesson Description -->
-      @if (l.lessonDescription) {
-        <section class="browse-section">
-          <div class="lesson-description">
-            <p>{{ l.lessonDescription }}</p>
+  <!-- Main Layout -->
+  <div class="lesson-layout" [class.sidebar-visible]="courseLessons().length > 0">
+
+    <!-- Sidebar -->
+    @if (courseLessons().length > 0) {
+      <div class="lesson-sidebar-overlay" [class.open]="sidebarOpen()" (click)="toggleSidebar()"></div>
+      <aside class="lesson-sidebar" [class.open]="sidebarOpen()">
+        <div class="sidebar-header">
+          <fa-icon icon="list-ol"></fa-icon>
+          <span jhiTranslate="browse.lesson.courseContents">Course Contents</span>
+        </div>
+        @if (course(); as c) {
+          <a [routerLink]="['/catalog/course', c.id]" class="sidebar-course-title">
+            {{ c.courseTitle }}
+          </a>
+        }
+        <div class="sidebar-lesson-list">
+          @for (sl of courseLessons(); track sl.id; let i = $index) {
+            <button
+              class="sidebar-lesson-item"
+              [class.active]="isCurrentLesson(sl.id)"
+              (click)="navigateToLesson(sl.id)"
+            >
+              <span class="lesson-number">{{ i + 1 }}</span>
+              <span class="lesson-title">{{ sl.lessonTitle }}</span>
+              @if (sl.language) {
+                <span class="lesson-lang-badge">{{ sl.language }}</span>
+              }
+            </button>
+          }
+        </div>
+      </aside>
+    }
+
+    <!-- Main Content -->
+    <main class="lesson-main">
+
+      <!-- Mini Player / Display -->
+      <div class="mini-player">
+        @if (primaryResource(); as pr) {
+          @switch (pr.resourceType) {
+            @case ('VIDEO') {
+              @if (safeVideoUrl(); as videoUrl) {
+                <div class="mini-player-video">
+                  <iframe
+                    [src]="videoUrl"
+                    title="{{ pr.resourceName }}"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                  ></iframe>
+                </div>
+              } @else {
+                <!-- Video URL not embeddable, show as card -->
+                <div class="mini-player-card">
+                  <div class="card-icon">
+                    <fa-icon icon="video"></fa-icon>
+                  </div>
+                  <div class="card-info">
+                    <h5>{{ pr.resourceName }}</h5>
+                    @if (pr.resourceDescription) {
+                      <p>{{ pr.resourceDescription }}</p>
+                    }
+                  </div>
+                  @if (pr.resourceURL) {
+                    <a [href]="pr.resourceURL" target="_blank" rel="noopener" class="btn btn-primary">
+                      <fa-icon icon="external-link-alt"></fa-icon>
+                      <span jhiTranslate="browse.lesson.openInNewTab">Open in New Tab</span>
+                    </a>
+                  }
+                </div>
+              }
+            }
+            @case ('IMAGE') {
+              <div class="mini-player-image">
+                <img [src]="pr.resourceURL" [alt]="pr.resourceName ?? 'Lesson image'" />
+              </div>
+            }
+            @default {
+              <div class="mini-player-card">
+                <div class="card-icon">
+                  @switch (pr.resourceType) {
+                    @case ('TOOL') { <fa-icon icon="tools"></fa-icon> }
+                    @default { <fa-icon icon="file-alt"></fa-icon> }
+                  }
+                </div>
+                <div class="card-info">
+                  <h5>{{ pr.resourceName }}</h5>
+                  @if (pr.resourceDescription) {
+                    <p>{{ pr.resourceDescription }}</p>
+                  }
+                  @if (pr.resourceType) {
+                    <span class="resource-type-badge">{{ pr.resourceType }}</span>
+                  }
+                </div>
+                @if (pr.resourceURL) {
+                  <a [href]="pr.resourceURL" target="_blank" rel="noopener" class="btn btn-primary">
+                    <fa-icon icon="external-link-alt"></fa-icon>
+                    <span jhiTranslate="browse.lesson.openInNewTab">Open in New Tab</span>
+                  </a>
+                }
+              </div>
+            }
+          }
+        } @else {
+          <div class="mini-player-placeholder">
+            <fa-icon icon="video" class="placeholder-icon"></fa-icon>
+            <p jhiTranslate="browse.lesson.noContent">No content available for this lesson yet.</p>
           </div>
-        </section>
+        }
+      </div>
+
+      <!-- Lesson Info -->
+      <div class="lesson-info">
+        <h2>{{ l.lessonTitle }}</h2>
+        <div class="lesson-meta">
+          @if (l.language) {
+            <span class="badge-language">
+              <fa-icon icon="globe"></fa-icon>
+              {{ l.language }}
+            </span>
+          }
+          @if (courseLessons().length > 0) {
+            @let idx = getCurrentLessonIndex();
+            @if (idx >= 0) {
+              <span class="badge-position">
+                {{ idx + 1 }} / {{ courseLessons().length }}
+              </span>
+            }
+          }
+        </div>
+      </div>
+
+      <!-- Description -->
+      @if (l.lessonDescription) {
+        <div class="lesson-description">
+          <p>{{ l.lessonDescription }}</p>
+        </div>
       }
 
-      <!-- Resources Section -->
-      <section class="browse-section">
-        <h3 jhiTranslate="browse.lesson.resources">Resources</h3>
-        @if (resources().length === 0) {
-          <p class="text-muted" jhiTranslate="browse.lesson.noResources">No resources attached to this lesson.</p>
-        } @else {
+      <!-- Lesson Navigation (prev/next) -->
+      @if (courseLessons().length > 1) {
+        @let idx = getCurrentLessonIndex();
+        <div class="lesson-nav">
+          @if (idx > 0) {
+            <button class="btn btn-outline-secondary lesson-nav-btn" (click)="navigateToLesson(courseLessons()[idx - 1].id)">
+              <fa-icon icon="chevron-left"></fa-icon>
+              <span jhiTranslate="browse.lesson.previousLesson">Previous Lesson</span>
+            </button>
+          } @else {
+            <div></div>
+          }
+          @if (idx >= 0 && idx < courseLessons().length - 1) {
+            <button class="btn btn-primary lesson-nav-btn" (click)="navigateToLesson(courseLessons()[idx + 1].id)">
+              <span jhiTranslate="browse.lesson.nextLesson">Next Lesson</span>
+              <fa-icon icon="arrow-right"></fa-icon>
+            </button>
+          }
+        </div>
+      }
+
+      <!-- Additional Resources -->
+      @if (additionalResources().length > 0) {
+        <section class="additional-resources">
+          <h4 jhiTranslate="browse.lesson.additionalResources">Additional Resources</h4>
           <div class="resource-list">
-            @for (resource of resources(); track resource.id) {
+            @for (resource of additionalResources(); track resource.id) {
               <div class="resource-item">
                 <div class="resource-icon">
                   @switch (resource.resourceType) {
@@ -69,15 +222,15 @@
                 </div>
                 @if (resource.resourceURL) {
                   <a [href]="resource.resourceURL" target="_blank" rel="noopener" class="btn btn-sm btn-primary">
-                    <fa-icon icon="arrow-right"></fa-icon>
+                    <fa-icon icon="external-link-alt"></fa-icon>
                     <span jhiTranslate="browse.lesson.openResource">Open Resource</span>
                   </a>
                 }
               </div>
             }
           </div>
-        }
-      </section>
-    </div>
+        </section>
+      }
+    </main>
   </div>
 }
