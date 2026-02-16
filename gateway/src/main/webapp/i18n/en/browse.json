@@ -47,7 +47,9 @@
       "openInNewTab": "Open in New Tab",
       "lessonOf": "Lesson {{ current }} of {{ total }}",
       "nextLesson": "Next Lesson",
-      "previousLesson": "Previous Lesson"
+      "previousLesson": "Previous Lesson",
+      "completed": "completed",
+      "progressCount": "{{ done }} / {{ total }} completed"
     }
   }
 }

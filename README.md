@@ -16,7 +16,7 @@ This is a modernized rebuild of the [Electronic Armory "Armory" project](https:/
 ├─────────────────────────────────────────────────────┤
 │  Service (port 8080)                                │
 │  Domain entities: Discipline, Program, Course,      │
-│  Lesson, Resource                                   │
+│  Lesson, Resource, UserLessonProgress               │
 │  Spring MVC, JPA/Hibernate, Elasticsearch           │
 └─────────────────────────────────────────────────────┘
 ```
@@ -34,6 +34,7 @@ Discipline ──ManyToMany──> Program ──ManyToMany──> Course ──
 - **Courses** - Individual courses with level and pricing (e.g., Trackstand Mastery)
 - **Lessons** - Content units with language support
 - **Resources** - Attachments (VIDEO, IMAGE, TUTORIAL, PAGE, PARTIAL, TOOL)
+- **UserLessonProgress** - Tracks which lessons a user has visited (per course)
 
 ## Prerequisites
 
@@ -96,7 +97,7 @@ This starts the Angular dev server on port 4200 with HMR, proxying API calls to 
 | `/catalog` | Browse all disciplines with course counts |
 | `/catalog/discipline/:id` | Discipline detail with courses and resources |
 | `/catalog/course/:id` | Course detail with expandable lesson curriculum |
-| `/catalog/lesson/:id` | Lesson viewer with sorted resources |
+| `/catalog/lesson/:id` | Lesson viewer with sorted resources and progress tracking |
 
 > **Note**: API calls require authentication. Browse pages show a login prompt for anonymous users and load data for authenticated users.
 
@@ -106,6 +107,8 @@ This starts the Angular dev server on port 4200 with HMR, proxying API calls to 
 |-------|-------------|
 | `/my-learning` | Personal dashboard with quick links |
 | `/account/settings` | Profile settings |
+
+**Lesson Progress Tracking**: When a logged-in user views a lesson within a course, their visit is automatically recorded server-side. The course sidebar shows a progress bar and green checkmarks next to completed lessons. Progress persists across sessions.
 
 ### Admin Only (ROLE_ADMIN)
 
@@ -190,7 +193,7 @@ Learn-With-Hamster-App/
 │       │   │   ├── course/           # Course detail + curriculum
 │       │   │   └── lesson/           # Lesson viewer
 │       │   ├── my-learning/          # Authenticated dashboard
-│       │   ├── entities/             # Admin CRUD (auto-generated)
+│       │   ├── entities/             # Admin CRUD + user-lesson-progress service
 │       │   ├── home/                 # Landing page
 │       │   ├── layouts/navbar/       # Navigation bar
 │       │   └── config/              # Icons, routes, authority
@@ -242,7 +245,7 @@ Detailed flow diagrams showing every class and component touched per use case. O
 | 3 | [`03-browse-catalog.drawio`](docs/diagrams/03-browse-catalog.drawio) | Browse Catalog | Auth check → `disciplineService.query()` → Gateway JWT relay → `DisciplineResource` → `courseService.query()` → client-side cross-reference (program ID matching) → render discipline card grid |
 | 4 | [`04-view-discipline.drawio`](docs/diagrams/04-view-discipline.drawio) | View Discipline | 3 parallel API calls: discipline detail + all courses + all resources → filter courses by shared program IDs → filter resources by `discipline.id` → render hero + course cards + resource list |
 | 5 | [`05-view-course.drawio`](docs/diagrams/05-view-course.drawio) | View Course | Course detail + lessons + resources → filter lessons by `course.lessons` IDs → expandable curriculum with `Set<number>` toggle → lesson links to `/catalog/lesson/:id` |
-| 6 | [`06-view-lesson.drawio`](docs/diagrams/06-view-lesson.drawio) | View Lesson | Lesson detail + resources → filter by `resource.lesson.id` → sort by `resourceWeight` → render with type-specific icons (VIDEO/IMAGE/TOOL) + "Open Resource" links |
+| 6 | [`06-view-lesson.drawio`](docs/diagrams/06-view-lesson.drawio) | View Lesson | Lesson detail + resources → filter by `resource.lesson.id` → sort by `resourceWeight` → render with type-specific icons (VIDEO/IMAGE/TOOL) + "Open Resource" links → auto-record progress via `POST /api/user-lesson-progress/mark` → sidebar shows checkmarks + progress bar |
 | 7 | [`07-my-learning.drawio`](docs/diagrams/07-my-learning.drawio) | My Learning | `UserRouteAccessService` guard → redirect to login if anonymous → `AccountService.trackCurrentAccount()` signal → render dashboard with quick links (no API calls beyond identity) |
 | 8 | [`08-admin-crud.drawio`](docs/diagrams/08-admin-crud.drawio) | Admin CRUD | `ROLE_ADMIN` guard → List (paginated table) → Create (`POST` + MySQL + Elasticsearch index) → Delete (confirmation modal + MySQL + ES remove) → Search (Elasticsearch full-text) |
 | 9 | [`09-jwt-relay.drawio`](docs/diagrams/09-jwt-relay.drawio) | JWT Relay Mechanism | Consul shared secret distribution → `AuthInterceptor` adds Bearer token → Gateway `SecurityWebFilterChain` validates → `JWTRelayGatewayFilterFactory` forwards → `StripPrefix=2` → Service validates same secret → error handling (401 → `AuthExpiredInterceptor`) |

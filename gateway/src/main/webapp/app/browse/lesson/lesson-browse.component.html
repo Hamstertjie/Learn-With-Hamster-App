@@ -49,6 +49,14 @@
           <fa-icon icon="list-ol"></fa-icon>
           <span jhiTranslate="browse.lesson.courseContents">Course Contents</span>
         </div>
+        @if (courseLessons().length > 0) {
+          <div class="progress-section">
+            <div class="progress-track">
+              <div class="progress-fill" [style.width.%]="progressPercent()"></div>
+            </div>
+            <div class="progress-text">{{ completedLessonIds().size }} / {{ courseLessons().length }}</div>
+          </div>
+        }
         @if (course(); as c) {
           <a [routerLink]="['/catalog/course', c.id]" class="sidebar-course-title">
             {{ c.courseTitle }}
@@ -61,6 +69,13 @@
               [class.active]="isCurrentLesson(sl.id)"
               (click)="navigateToLesson(sl.id)"
             >
+              <span class="lesson-check">
+                @if (isLessonCompleted(sl.id)) {
+                  <fa-icon icon="check-circle" class="completed"></fa-icon>
+                } @else {
+                  <fa-icon icon="circle" class="incomplete"></fa-icon>
+                }
+              </span>
               <span class="lesson-number">{{ i + 1 }}</span>
               <span class="lesson-title">{{ sl.lessonTitle }}</span>
               @if (sl.language) {

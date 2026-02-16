@@ -57,6 +57,8 @@ import {
   faListOl,
   faExternalLinkAlt,
   faChevronLeft,
+  faCheckCircle,
+  faCircle,
   // jhipster-needle-add-icon-import
 } from '@fortawesome/free-solid-svg-icons';
 
@@ -119,5 +121,7 @@ export const fontAwesomeIcons = [
   faListOl,
   faExternalLinkAlt,
   faChevronLeft,
+  faCheckCircle,
+  faCircle,
   // jhipster-needle-add-icon-import
 ];

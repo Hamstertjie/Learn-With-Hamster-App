@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
@@ -9,6 +9,7 @@ import { AccountService } from 'app/core/auth/account.service';
 import { LessonService } from 'app/entities/service/lesson/service/lesson.service';
 import { ResourceService } from 'app/entities/service/resource/service/resource.service';
 import { CourseService } from 'app/entities/service/course/service/course.service';
+import { UserLessonProgressService } from 'app/entities/service/user-lesson-progress/service/user-lesson-progress.service';
 import { ILesson } from 'app/entities/service/lesson/lesson.model';
 import { IResource } from 'app/entities/service/resource/resource.model';
 import { ICourse } from 'app/entities/service/course/course.model';
@@ -27,9 +28,16 @@ export default class LessonBrowseComponent implements OnInit, OnDestroy {
   course = signal<ICourse | null>(null);
   courseLessons = signal<ILesson[]>([]);
   safeVideoUrl = signal<SafeResourceUrl | null>(null);
+  completedLessonIds = signal<Set<number>>(new Set());
   isAuthenticated = signal(false);
   loading = signal(true);
   sidebarOpen = signal(false);
+
+  progressPercent = computed(() => {
+    const total = this.courseLessons().length;
+    if (total === 0) return 0;
+    return (this.completedLessonIds().size / total) * 100;
+  });
 
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -37,6 +45,7 @@ export default class LessonBrowseComponent implements OnInit, OnDestroy {
   private readonly lessonService = inject(LessonService);
   private readonly resourceService = inject(ResourceService);
   private readonly courseService = inject(CourseService);
+  private readonly progressService = inject(UserLessonProgressService);
   private readonly sanitizer = inject(DomSanitizer);
 
   private paramSub?: Subscription;
@@ -76,6 +85,10 @@ export default class LessonBrowseComponent implements OnInit, OnDestroy {
     });
   }
 
+  isLessonCompleted(lessonId: number): boolean {
+    return this.completedLessonIds().has(lessonId);
+  }
+
   getCurrentLessonIndex(): number {
     const currentId = this.lesson()?.id;
     if (currentId == null) return -1;
@@ -95,6 +108,7 @@ export default class LessonBrowseComponent implements OnInit, OnDestroy {
         if (lesson) {
           this.loadResources(lesson.id);
           this.loadCourseContext(lesson);
+          this.recordProgress(lesson.id);
         } else {
           this.loading.set(false);
         }
@@ -139,6 +153,21 @@ export default class LessonBrowseComponent implements OnInit, OnDestroy {
     });
   }
 
+  private recordProgress(lessonId: number): void {
+    const courseId = Number(this.route.snapshot.queryParamMap.get('course')) || 0;
+    if (courseId > 0) {
+      this.progressService.markProgress(lessonId, courseId).subscribe(res => {
+        if (res.body?.lessonId) {
+          this.completedLessonIds.update(set => {
+            const next = new Set(set);
+            next.add(res.body!.lessonId!);
+            return next;
+          });
+        }
+      });
+    }
+  }
+
   private loadCourseContext(lesson: ILesson): void {
     // Try query param first, fall back to lesson's course associations
     const courseIdParam = this.route.snapshot.queryParamMap.get('course');
@@ -153,6 +182,12 @@ export default class LessonBrowseComponent implements OnInit, OnDestroy {
       this.courseLessons.set([]);
       return;
     }
+
+    // Load progress data for this course
+    this.progressService.getCourseProgress(courseId).subscribe(progressRes => {
+      const ids = new Set((progressRes.body ?? []).map(p => p.lessonId).filter((id): id is number => id != null));
+      this.completedLessonIds.set(ids);
+    });
 
     this.courseService.find(courseId).subscribe(courseRes => {
       const course = courseRes.body;
