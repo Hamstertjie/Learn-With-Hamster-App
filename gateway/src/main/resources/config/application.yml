@@ -208,7 +208,7 @@ jhipster:
   #   allow-credentials: true
   #   max-age: 1800
   mail:
-    from: gateway@localhost
+    from: ${MAIL_FROM:gateway@localhost}
   api-docs:
     default-include-pattern: /api/**
     management-include-pattern: /management/**
