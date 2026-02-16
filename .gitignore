@@ -12,3 +12,8 @@ Desktop.ini
 
 # Node (root level)
 node_modules/
+
+# Environment files (contain secrets)
+.env
+.env.local
+*.env
