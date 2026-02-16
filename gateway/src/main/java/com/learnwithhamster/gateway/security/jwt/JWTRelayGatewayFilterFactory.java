@@ -1,9 +1,11 @@
 package com.learnwithhamster.gateway.security.jwt;
 
+import static com.learnwithhamster.gateway.security.jwt.JwtCookieConstants.JWT_COOKIE_NAME;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
+import org.springframework.http.HttpCookie;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -25,6 +27,12 @@ public class JWTRelayGatewayFilterFactory extends AbstractGatewayFilterFactory<O
         return (exchange, chain) -> {
             String bearerToken = exchange.getRequest().getHeaders().getFirst(AUTHORIZATION);
             if (bearerToken == null) {
+                // Fallback: check cookie if no Authorization header
+                HttpCookie cookie = exchange.getRequest().getCookies().getFirst(JWT_COOKIE_NAME);
+                if (cookie != null && StringUtils.hasText(cookie.getValue())) {
+                    String token = cookie.getValue();
+                    return jwtDecoder.decode(token).thenReturn(withBearerAuth(exchange, token)).flatMap(chain::filter);
+                }
                 // Allow anonymous requests.
                 return chain.filter(exchange);
             }

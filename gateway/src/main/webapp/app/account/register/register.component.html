@@ -80,6 +80,66 @@
           </div>
 
           <div class="mb-3">
+            <label class="form-label" for="firstName" jhiTranslate="register.form.firstName.label">First Name</label>
+            <input
+              type="text"
+              class="form-control"
+              id="firstName"
+              name="firstName"
+              placeholder="{{ 'register.form.firstName.placeholder' | translate }}"
+              formControlName="firstName"
+              data-cy="firstName"
+            />
+
+            @let firstNameRef = registerForm.get('firstName')!;
+            @if (firstNameRef.invalid && (firstNameRef.dirty || firstNameRef.touched)) {
+              <div>
+                @if (firstNameRef?.errors?.required) {
+                  <small class="form-text text-danger" jhiTranslate="register.messages.validate.firstName.required"
+                    >Your first name is required.</small
+                  >
+                }
+
+                @if (firstNameRef?.errors?.maxlength) {
+                  <small class="form-text text-danger" jhiTranslate="register.messages.validate.firstName.maxlength"
+                    >Your first name cannot be longer than 50 characters.</small
+                  >
+                }
+              </div>
+            }
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="lastName" jhiTranslate="register.form.lastName.label">Last Name</label>
+            <input
+              type="text"
+              class="form-control"
+              id="lastName"
+              name="lastName"
+              placeholder="{{ 'register.form.lastName.placeholder' | translate }}"
+              formControlName="lastName"
+              data-cy="lastName"
+            />
+
+            @let lastNameRef = registerForm.get('lastName')!;
+            @if (lastNameRef.invalid && (lastNameRef.dirty || lastNameRef.touched)) {
+              <div>
+                @if (lastNameRef?.errors?.required) {
+                  <small class="form-text text-danger" jhiTranslate="register.messages.validate.lastName.required"
+                    >Your last name is required.</small
+                  >
+                }
+
+                @if (lastNameRef?.errors?.maxlength) {
+                  <small class="form-text text-danger" jhiTranslate="register.messages.validate.lastName.maxlength"
+                    >Your last name cannot be longer than 50 characters.</small
+                  >
+                }
+              </div>
+            }
+          </div>
+
+          <div class="mb-3">
             <label class="form-label" for="email" jhiTranslate="global.form.email.label">Email</label>
             <input
               type="email"

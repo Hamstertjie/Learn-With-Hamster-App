@@ -69,9 +69,15 @@ spring:
     url: jdbc:h2:file:./target/h2db/db/gateway;DB_CLOSE_DELAY=-1;MODE=MYSQL
   mail:
     host: localhost
-    port: 25
+    port: 1025
     username:
     password:
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
   messages:
     cache-duration: PT1S # 1 second, see the ISO 8601 standard
   r2dbc:

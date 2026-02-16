@@ -3,6 +3,7 @@ package com.learnwithhamster.gateway.web.rest;
 import static com.learnwithhamster.gateway.security.SecurityUtils.AUTHORITIES_CLAIM;
 import static com.learnwithhamster.gateway.security.SecurityUtils.JWT_ALGORITHM;
 import static com.learnwithhamster.gateway.security.SecurityUtils.USER_ID_CLAIM;
+import static com.learnwithhamster.gateway.security.jwt.JwtCookieConstants.JWT_COOKIE_NAME;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.learnwithhamster.gateway.security.DomainUserDetailsService.UserWithId;
@@ -17,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -59,13 +61,44 @@ public class AuthenticateController {
             .flatMap(login ->
                 authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(login.getUsername(), login.getPassword()))
-                    .flatMap(auth -> Mono.fromCallable(() -> this.createToken(auth, login.isRememberMe())))
+                    .flatMap(auth -> Mono.fromCallable(() -> new Object[] {
+                        this.createToken(auth, login.isRememberMe()),
+                        login.isRememberMe(),
+                    }))
             )
-            .map(jwt -> {
+            .map(arr -> {
+                String jwt = (String) arr[0];
+                boolean rememberMe = (boolean) arr[1];
+                long maxAge = rememberMe ? this.tokenValidityInSecondsForRememberMe : this.tokenValidityInSeconds;
+
+                ResponseCookie cookie = ResponseCookie.from(JWT_COOKIE_NAME, jwt)
+                    .httpOnly(true)
+                    .secure(false)
+                    .path("/")
+                    .maxAge(maxAge)
+                    .sameSite("Lax")
+                    .build();
+
                 HttpHeaders httpHeaders = new HttpHeaders();
                 httpHeaders.setBearerAuth(jwt);
+                httpHeaders.add(HttpHeaders.SET_COOKIE, cookie.toString());
                 return new ResponseEntity<>(new JWTToken(jwt), httpHeaders, HttpStatus.OK);
             });
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout() {
+        ResponseCookie cookie = ResponseCookie.from(JWT_COOKIE_NAME, "")
+            .httpOnly(true)
+            .secure(false)
+            .path("/")
+            .maxAge(0)
+            .sameSite("Lax")
+            .build();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.SET_COOKIE, cookie.toString());
+        return new ResponseEntity<>(headers, HttpStatus.OK);
     }
 
     /**
