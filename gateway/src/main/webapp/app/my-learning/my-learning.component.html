@@ -6,17 +6,48 @@
 
   <div class="my-learning-content">
     <div class="container">
-      <!-- Continue Learning (placeholder) -->
+      <!-- Enrolled Courses -->
       <section class="ml-section">
         <h3 jhiTranslate="myLearning.continueLearning.title">Continue Learning</h3>
-        <div class="empty-state">
-          <fa-icon icon="book-open" class="empty-icon"></fa-icon>
-          <p jhiTranslate="myLearning.continueLearning.empty">You haven't started any courses yet. Browse the catalog to find something interesting!</p>
-          <a routerLink="/catalog" class="btn btn-primary">
-            <fa-icon icon="compass"></fa-icon>
-            <span jhiTranslate="myLearning.continueLearning.browseCatalog">Browse Catalog</span>
-          </a>
-        </div>
+        @if (loading()) {
+          <div class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        } @else if (enrolledCourses().length === 0) {
+          <div class="empty-state">
+            <fa-icon icon="book-open" class="empty-icon"></fa-icon>
+            <p jhiTranslate="myLearning.continueLearning.empty">You haven't enrolled in any courses yet. Browse the catalog to find something interesting!</p>
+            <a routerLink="/catalog" class="btn btn-primary">
+              <fa-icon icon="compass"></fa-icon>
+              <span jhiTranslate="myLearning.continueLearning.browseCatalog">Browse Catalog</span>
+            </a>
+          </div>
+        } @else {
+          <div class="course-grid">
+            @for (ec of enrolledCourses(); track ec.course.id) {
+              <a [routerLink]="['/catalog/course', ec.course.id]" class="course-card">
+                <div class="card-accent"></div>
+                <div class="card-body">
+                  <h5>{{ ec.course.courseTitle }}</h5>
+                  <p class="card-description">{{ ec.course.courseDescription }}</p>
+                  <div class="progress-section">
+                    <div class="progress-bar-bg">
+                      <div class="progress-bar-fill" [style.width.%]="ec.progressPercent"></div>
+                    </div>
+                    <span class="progress-text" jhiTranslate="myLearning.lessonsCompleted" [translateValues]="{ done: ec.lessonsCompleted, total: ec.lessonsTotal }">
+                      {{ ec.lessonsCompleted }} / {{ ec.lessonsTotal }} completed
+                    </span>
+                  </div>
+                  @if (ec.course.courseLevel) {
+                    <span class="badge-level">{{ ec.course.courseLevel }}</span>
+                  }
+                </div>
+              </a>
+            }
+          </div>
+        }
       </section>
 
       <!-- Quick Links -->

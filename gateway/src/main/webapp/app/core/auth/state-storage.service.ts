@@ -19,22 +19,17 @@ export class StateStorageService {
     sessionStorage.removeItem(this.previousUrlKey);
   }
 
-  storeAuthenticationToken(authenticationToken: string, rememberMe: boolean): void {
-    authenticationToken = JSON.stringify(authenticationToken);
-    this.clearAuthenticationToken();
-    if (rememberMe) {
-      localStorage.setItem(this.authenticationKey, authenticationToken);
-    } else {
-      sessionStorage.setItem(this.authenticationKey, authenticationToken);
-    }
+  storeAuthenticationToken(_authenticationToken: string, _rememberMe: boolean): void {
+    // No-op: JWT is now stored in an HttpOnly cookie by the server
   }
 
   getAuthenticationToken(): string | null {
-    const authenticationToken = localStorage.getItem(this.authenticationKey) ?? sessionStorage.getItem(this.authenticationKey);
-    return authenticationToken ? (JSON.parse(authenticationToken) as string | null) : authenticationToken;
+    // JWT is in HttpOnly cookie, not accessible from JS
+    return null;
   }
 
   clearAuthenticationToken(): void {
+    // Clean up any legacy tokens from localStorage/sessionStorage
     sessionStorage.removeItem(this.authenticationKey);
     localStorage.removeItem(this.authenticationKey);
   }

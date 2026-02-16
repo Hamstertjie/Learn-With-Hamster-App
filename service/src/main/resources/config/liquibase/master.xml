@@ -25,6 +25,7 @@
     <include file="config/liquibase/changelog/20260212100929_added_entity_Lesson.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20260212100930_added_entity_Resource.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20260213210000_added_entity_UserLessonProgress.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20260216000000_added_entity_UserCourseEnrollment.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
     <include file="config/liquibase/changelog/20260212100926_added_entity_constraints_Discipline.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20260212100927_added_entity_constraints_Program.xml" relativeToChangelogFile="false"/>

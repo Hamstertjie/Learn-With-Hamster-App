@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 
 import { Login } from 'app/login/login.model';
 import { ApplicationConfigService } from '../config/application-config.service';
@@ -18,23 +18,23 @@ export class AuthServerProvider {
   private readonly applicationConfigService = inject(ApplicationConfigService);
 
   getToken(): string {
-    return this.stateStorageService.getAuthenticationToken() ?? '';
+    return '';
   }
 
   login(credentials: Login): Observable<void> {
     return this.http
-      .post<JwtToken>(this.applicationConfigService.getEndpointFor('api/authenticate'), credentials)
-      .pipe(map(response => this.authenticateSuccess(response, credentials.rememberMe)));
+      .post<JwtToken>(this.applicationConfigService.getEndpointFor('api/authenticate'), credentials, {
+        withCredentials: true,
+      })
+      .pipe(map(() => {}));
   }
 
   logout(): Observable<void> {
-    return new Observable(observer => {
-      this.stateStorageService.clearAuthenticationToken();
-      observer.complete();
-    });
-  }
-
-  private authenticateSuccess(response: JwtToken, rememberMe: boolean): void {
-    this.stateStorageService.storeAuthenticationToken(response.id_token, rememberMe);
+    this.stateStorageService.clearAuthenticationToken();
+    return this.http
+      .post<void>(this.applicationConfigService.getEndpointFor('api/logout'), {}, { withCredentials: true })
+      .pipe(
+        catchError(() => of(undefined)),
+      );
   }
 }

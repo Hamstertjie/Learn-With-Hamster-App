@@ -76,6 +76,33 @@
   margin-top: 0.5rem;
 }
 
+.hero-enroll {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1.5rem;
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+  }
+}
+
+.badge-enrolled {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(34, 197, 94, 0.2);
+  color: #bbf7d0;
+  padding: 0.4rem 1rem;
+  border-radius: 2rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
 .browse-content {
   padding: 2.5rem 1rem;
 }

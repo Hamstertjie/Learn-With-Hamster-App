@@ -4,9 +4,10 @@
     "welcome": "Welcome back, {{ username }}!",
     "continueLearning": {
       "title": "Continue Learning",
-      "empty": "You haven't started any courses yet. Browse the catalog to find something interesting!",
+      "empty": "You haven't enrolled in any courses yet. Browse the catalog to find something interesting!",
       "browseCatalog": "Browse Catalog"
     },
+    "lessonsCompleted": "{{ done }} / {{ total }} completed",
     "quickLinks": {
       "title": "Quick Links",
       "exploreCatalog": "Explore Catalog",

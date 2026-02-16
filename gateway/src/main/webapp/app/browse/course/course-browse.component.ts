@@ -6,6 +6,7 @@ import { AccountService } from 'app/core/auth/account.service';
 import { CourseService } from 'app/entities/service/course/service/course.service';
 import { LessonService } from 'app/entities/service/lesson/service/lesson.service';
 import { ResourceService } from 'app/entities/service/resource/service/resource.service';
+import { UserCourseEnrollmentService } from 'app/entities/service/user-course-enrollment/service/user-course-enrollment.service';
 import { ICourse } from 'app/entities/service/course/course.model';
 import { ILesson } from 'app/entities/service/lesson/lesson.model';
 import { IResource } from 'app/entities/service/resource/resource.model';
@@ -23,6 +24,8 @@ export default class CourseBrowseComponent implements OnInit {
   isAuthenticated = signal(false);
   loading = signal(true);
   expandedLessons = signal<Set<number>>(new Set());
+  enrolled = signal(false);
+  enrolling = signal(false);
 
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -30,6 +33,7 @@ export default class CourseBrowseComponent implements OnInit {
   private readonly courseService = inject(CourseService);
   private readonly lessonService = inject(LessonService);
   private readonly resourceService = inject(ResourceService);
+  private readonly enrollmentService = inject(UserCourseEnrollmentService);
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -62,6 +66,21 @@ export default class CourseBrowseComponent implements OnInit {
     return this.expandedLessons().has(lessonId);
   }
 
+  enroll(): void {
+    const c = this.course();
+    if (!c) return;
+    this.enrolling.set(true);
+    this.enrollmentService.enroll(c.id).subscribe({
+      next: () => {
+        this.enrolled.set(true);
+        this.enrolling.set(false);
+      },
+      error: () => {
+        this.enrolling.set(false);
+      },
+    });
+  }
+
   private loadData(id: number): void {
     this.courseService.find(id).subscribe(res => {
       this.course.set(res.body);
@@ -78,6 +97,10 @@ export default class CourseBrowseComponent implements OnInit {
         this.resources.set(allResources.filter(r => r.course?.id === id));
         this.loading.set(false);
       });
+    });
+
+    this.enrollmentService.isEnrolled(id).subscribe(res => {
+      this.enrolled.set(res.body === true);
     });
   }
 }

@@ -32,7 +32,10 @@
       "free": "Free",
       "viewLesson": "View Lesson",
       "expandAll": "Expand All",
-      "collapseAll": "Collapse All"
+      "collapseAll": "Collapse All",
+      "enroll": "Enroll Now",
+      "enrolled": "Enrolled",
+      "continueLearning": "Continue Learning"
     },
     "lesson": {
       "title": "Lesson",

@@ -4,6 +4,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 import static org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers.pathMatchers;
 
 import com.learnwithhamster.gateway.security.AuthoritiesConstants;
+import com.learnwithhamster.gateway.security.jwt.CookieJwtFilter;
 import com.learnwithhamster.gateway.web.filter.SpaWebFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,9 +28,11 @@ import tech.jhipster.config.JHipsterProperties;
 public class SecurityConfiguration {
 
     private final JHipsterProperties jHipsterProperties;
+    private final CookieJwtFilter cookieJwtFilter;
 
-    public SecurityConfiguration(JHipsterProperties jHipsterProperties) {
+    public SecurityConfiguration(JHipsterProperties jHipsterProperties, CookieJwtFilter cookieJwtFilter) {
         this.jHipsterProperties = jHipsterProperties;
+        this.cookieJwtFilter = cookieJwtFilter;
     }
 
     @Bean
@@ -57,6 +60,7 @@ public class SecurityConfiguration {
             .cors(withDefaults())
             .csrf(csrf -> csrf.disable())
             .addFilterAfter(new SpaWebFilter(), SecurityWebFiltersOrder.HTTPS_REDIRECT)
+            .addFilterBefore(cookieJwtFilter, SecurityWebFiltersOrder.AUTHENTICATION)
             .headers(headers ->
                 headers
                     .contentSecurityPolicy(csp -> csp.policyDirectives(jHipsterProperties.getSecurity().getContentSecurityPolicy()))
@@ -76,6 +80,7 @@ public class SecurityConfiguration {
                     .pathMatchers("/").permitAll()
                     .pathMatchers("/*.*").permitAll()
                     .pathMatchers("/api/authenticate").permitAll()
+                    .pathMatchers("/api/logout").permitAll()
                     .pathMatchers("/api/register").permitAll()
                     .pathMatchers("/api/activate").permitAll()
                     .pathMatchers("/api/account/reset-password/init").permitAll()
