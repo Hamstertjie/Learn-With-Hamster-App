@@ -208,7 +208,7 @@ jhipster:
   #   allow-credentials: true
   #   max-age: 1800
   mail:
-    from: ${MAIL_FROM:gateway@localhost}
+    from: ${MAIL_FROM:hamster@learnwithhamster.com}
   api-docs:
     default-include-pattern: /api/**
     management-include-pattern: /management/**
@@ -222,7 +222,7 @@ jhipster:
     license: unlicensed
     license-url:
   security:
-    content-security-policy: "default-src 'self'; frame-src 'self' data:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://storage.googleapis.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:"
+    content-security-policy: "default-src 'self'; frame-src 'self' https://www.youtube.com data:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://storage.googleapis.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:"
 
 # jhipster-needle-add-application-yaml-document
 ---

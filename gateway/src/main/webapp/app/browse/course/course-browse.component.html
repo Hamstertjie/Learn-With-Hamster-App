@@ -34,6 +34,21 @@
       }
       <span class="badge-count">{{ lessons().length }} lesson(s)</span>
     </div>
+    @if (enrolled()) {
+      @if (courseComplete()) {
+        <div class="trophy-badge">
+          <fa-icon icon="trophy"></fa-icon>
+          <span jhiTranslate="browse.course.courseComplete">Course Complete!</span>
+        </div>
+      } @else if (completedLessonIds().size > 0) {
+        <div class="progress-indicator">
+          <div class="progress-track">
+            <div class="progress-fill" [style.width.%]="progressPercent()"></div>
+          </div>
+          <span class="progress-label">{{ completedLessonIds().size }} / {{ lessons().length }} lessons completed</span>
+        </div>
+      }
+    }
     <div class="hero-enroll">
       @if (enrolled()) {
         <span class="badge-enrolled">
@@ -47,12 +62,24 @@
           </a>
         }
       } @else {
-        <button class="btn btn-light btn-lg" (click)="enroll()" [disabled]="enrolling()">
-          @if (enrolling()) {
-            <span class="spinner-border spinner-border-sm" role="status"></span>
-          }
-          <span jhiTranslate="browse.course.enroll">Enroll Now</span>
-        </button>
+        @if (isFree) {
+          <button class="btn btn-enroll btn-lg" (click)="enroll()" [disabled]="enrolling()">
+            @if (enrolling()) {
+              <span class="spinner-border spinner-border-sm" role="status"></span>
+            }
+            <span jhiTranslate="browse.course.enroll">Enroll Now</span>
+          </button>
+        } @else if (isCourseInCart()) {
+          <a routerLink="/cart" class="btn btn-light btn-lg">
+            <fa-icon icon="shopping-cart"></fa-icon>
+            <span jhiTranslate="cart.viewCart">View Cart</span>
+          </a>
+        } @else {
+          <button class="btn btn-enroll btn-lg" (click)="addToCart()">
+            <fa-icon icon="shopping-cart"></fa-icon>
+            <span jhiTranslate="cart.addToCart">Add to Cart</span>
+          </button>
+        }
       }
     </div>
   </div>
@@ -76,6 +103,15 @@
                       <fa-icon icon="chevron-right"></fa-icon>
                     }
                   </div>
+                  @if (enrolled()) {
+                    <span class="curriculum-check">
+                      @if (isLessonCompleted(lesson.id)) {
+                        <fa-icon icon="check-circle" class="completed"></fa-icon>
+                      } @else {
+                        <fa-icon icon="circle" class="incomplete"></fa-icon>
+                      }
+                    </span>
+                  }
                   <div class="curriculum-number">{{ i + 1 }}</div>
                   <div class="curriculum-title">{{ lesson.lessonTitle }}</div>
                   @if (lesson.language) {

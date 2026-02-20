@@ -1,0 +1,67 @@
+<div class="checkout-page">
+  <div class="checkout-hero">
+    <h1 jhiTranslate="cart.checkout.title">Checkout</h1>
+    <p jhiTranslate="cart.checkout.subtitle">Complete your purchase to start learning.</p>
+  </div>
+
+  <div class="checkout-content">
+    <div class="container">
+      <div class="checkout-layout">
+        <div class="checkout-form-section">
+          <h3 jhiTranslate="cart.checkout.billingInfo">Billing Information</h3>
+          <div class="billing-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label jhiTranslate="cart.checkout.firstName">First Name</label>
+                <input type="text" class="form-control" [value]="firstName()" readonly />
+              </div>
+              <div class="form-group">
+                <label jhiTranslate="cart.checkout.lastName">Last Name</label>
+                <input type="text" class="form-control" [value]="lastName()" readonly />
+              </div>
+            </div>
+            <div class="form-group">
+              <label jhiTranslate="cart.checkout.email">Email</label>
+              <input type="email" class="form-control" [value]="email()" readonly />
+            </div>
+          </div>
+
+          <!-- Payment gateway integration point -->
+          <div class="payment-placeholder">
+            <fa-icon icon="lock" class="payment-icon"></fa-icon>
+            <p jhiTranslate="cart.checkout.paymentNote">Payment processing will be available soon. For now, courses will be enrolled directly.</p>
+          </div>
+        </div>
+
+        <div class="order-summary">
+          <h4 jhiTranslate="cart.checkout.orderSummary">Order Summary</h4>
+          @for (item of items(); track item.courseId) {
+            <div class="summary-item">
+              <span class="item-title">{{ item.courseTitle }}</span>
+              <span class="item-price">${{ item.coursePrice }}</span>
+            </div>
+          }
+          <hr />
+          <div class="summary-total">
+            <span jhiTranslate="cart.total">Total</span>
+            <span class="total-price">${{ total() }}</span>
+          </div>
+          <button
+            class="btn btn-primary btn-lg w-100 mt-3"
+            (click)="placeOrder()"
+            [disabled]="processing()"
+          >
+            @if (processing()) {
+              <span class="spinner-border spinner-border-sm" role="status"></span>
+            }
+            <span jhiTranslate="cart.checkout.placeOrder">Place Order</span>
+          </button>
+          <a routerLink="/cart" class="btn btn-link w-100 mt-2">
+            <fa-icon icon="arrow-left"></fa-icon>
+            <span jhiTranslate="cart.checkout.backToCart">Back to Cart</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

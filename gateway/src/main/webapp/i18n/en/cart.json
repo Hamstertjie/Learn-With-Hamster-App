@@ -1,0 +1,34 @@
+{
+  "cart": {
+    "title": "Shopping Cart",
+    "subtitle": "Review your selected courses before checkout.",
+    "empty": "Your cart is empty.",
+    "browseCatalog": "Browse Catalog",
+    "remove": "Remove",
+    "orderSummary": "Order Summary",
+    "subtotal": "Subtotal",
+    "total": "Total",
+    "proceedToCheckout": "Proceed to Checkout",
+    "addToCart": "Add to Cart",
+    "viewCart": "View Cart",
+    "checkout": {
+      "title": "Checkout",
+      "subtitle": "Complete your purchase to start learning.",
+      "billingInfo": "Billing Information",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "orderSummary": "Order Summary",
+      "placeOrder": "Place Order",
+      "backToCart": "Back to Cart",
+      "paymentNote": "Payment processing will be available soon. For now, courses will be enrolled directly."
+    },
+    "confirmation": {
+      "title": "Order Confirmed!",
+      "heading": "You're all set!",
+      "message": "Your courses have been enrolled successfully. Start learning right away!",
+      "goToLearning": "Go to My Learning",
+      "browsMore": "Browse More Courses"
+    }
+  }
+}

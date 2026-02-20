@@ -35,7 +35,9 @@
       "collapseAll": "Collapse All",
       "enroll": "Enroll Now",
       "enrolled": "Enrolled",
-      "continueLearning": "Continue Learning"
+      "continueLearning": "Continue Learning",
+      "courseComplete": "Course Complete!",
+      "lessonsCompleted": "{{ done }} / {{ total }} lessons completed"
     },
     "lesson": {
       "title": "Lesson",
