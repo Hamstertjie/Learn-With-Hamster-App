@@ -5,10 +5,13 @@
       <h1 class="hero-title" jhiTranslate="home.title">Learn without limits</h1>
       <p class="hero-subtitle" jhiTranslate="home.subtitle">Start, switch, or advance your career with thousands of courses</p>
       <div class="hero-actions">
-        <a class="btn btn-primary btn-lg hero-btn" (click)="login()" jhiTranslate="home.cta.signin">Sign In</a>
+        <a class="btn btn-accent btn-lg hero-btn" (click)="login()" jhiTranslate="home.cta.signin">Sign In</a>
         <a class="btn btn-outline-light btn-lg hero-btn" routerLink="/catalog" jhiTranslate="home.cta.browse">Browse Catalog</a>
       </div>
     </div>
+    <svg class="hero-wave" viewBox="0 0 1440 120" preserveAspectRatio="none">
+      <path d="M0,64L48,69.3C96,75,192,85,288,80C384,75,480,53,576,48C672,43,768,53,864,64C960,75,1056,85,1152,80C1248,75,1344,53,1392,42.7L1440,32L1440,120L0,120Z" fill="var(--color-bg)"/>
+    </svg>
   </div>
 
   <!-- Feature Highlights -->
@@ -28,7 +31,7 @@
         </div>
         <div class="col-md-4">
           <div class="feature-card">
-            <div class="feature-icon-wrapper">
+            <div class="feature-icon-wrapper icon-coral">
               <fa-icon icon="sitemap" class="feature-icon"></fa-icon>
             </div>
             <h5 class="feature-title" jhiTranslate="home.features.programs.title">Structured Programs</h5>
@@ -39,7 +42,7 @@
         </div>
         <div class="col-md-4">
           <div class="feature-card">
-            <div class="feature-icon-wrapper">
+            <div class="feature-icon-wrapper icon-success">
               <fa-icon icon="chart-line" class="feature-icon"></fa-icon>
             </div>
             <h5 class="feature-title" jhiTranslate="home.features.progress.title">Track Progress</h5>
@@ -55,7 +58,7 @@
   <!-- Bottom CTA -->
   <div class="cta-section">
     <h2 class="cta-title" jhiTranslate="home.cta.bottomTitle">Ready to start learning?</h2>
-    <a class="btn btn-primary btn-lg hero-btn" (click)="login()" jhiTranslate="home.cta.signin">Sign In</a>
+    <a class="btn btn-accent btn-lg hero-btn" (click)="login()" jhiTranslate="home.cta.signin">Sign In</a>
   </div>
 } @else {
   @if (account(); as accountRef) {
@@ -71,7 +74,6 @@
         <div class="row dashboard-grid">
           <div class="col-lg-6 col-md-6 mb-4">
             <a routerLink="/catalog" class="dashboard-card card-explore">
-              <div class="card-accent"></div>
               <div class="card-body">
                 <fa-icon icon="compass" class="dashboard-icon"></fa-icon>
                 <h5 class="card-title">Explore Catalog</h5>
@@ -81,7 +83,6 @@
           </div>
           <div class="col-lg-6 col-md-6 mb-4">
             <a routerLink="/my-learning" class="dashboard-card card-learning">
-              <div class="card-accent"></div>
               <div class="card-body">
                 <fa-icon icon="book-open" class="dashboard-icon"></fa-icon>
                 <h5 class="card-title">My Learning</h5>
@@ -97,7 +98,6 @@
           <div class="row">
             <div class="col-lg-4 col-md-6 mb-3">
               <a routerLink="/discipline" class="dashboard-card dashboard-card-sm card-discipline">
-                <div class="card-accent"></div>
                 <div class="card-body">
                   <fa-icon icon="graduation-cap" class="dashboard-icon-sm"></fa-icon>
                   <h6 class="card-title">Disciplines</h6>
@@ -106,7 +106,6 @@
             </div>
             <div class="col-lg-4 col-md-6 mb-3">
               <a routerLink="/program" class="dashboard-card dashboard-card-sm card-program">
-                <div class="card-accent"></div>
                 <div class="card-body">
                   <fa-icon icon="sitemap" class="dashboard-icon-sm"></fa-icon>
                   <h6 class="card-title">Programs</h6>
@@ -115,7 +114,6 @@
             </div>
             <div class="col-lg-4 col-md-6 mb-3">
               <a routerLink="/course" class="dashboard-card dashboard-card-sm card-course">
-                <div class="card-accent"></div>
                 <div class="card-body">
                   <fa-icon icon="book" class="dashboard-icon-sm"></fa-icon>
                   <h6 class="card-title">Courses</h6>
@@ -124,7 +122,6 @@
             </div>
             <div class="col-lg-4 col-md-6 mb-3">
               <a routerLink="/lesson" class="dashboard-card dashboard-card-sm card-lesson">
-                <div class="card-accent"></div>
                 <div class="card-body">
                   <fa-icon icon="chalkboard-teacher" class="dashboard-icon-sm"></fa-icon>
                   <h6 class="card-title">Lessons</h6>
@@ -133,7 +130,6 @@
             </div>
             <div class="col-lg-4 col-md-6 mb-3">
               <a routerLink="/resource" class="dashboard-card dashboard-card-sm card-resource">
-                <div class="card-accent"></div>
                 <div class="card-body">
                   <fa-icon icon="file-alt" class="dashboard-icon-sm"></fa-icon>
                   <h6 class="card-title">Resources</h6>

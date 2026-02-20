@@ -124,6 +124,18 @@
         </li>
       </ul>
       <ul class="navbar-nav">
+        @if (account() !== null) {
+          <li class="nav-item" routerLinkActive="active">
+            <a class="nav-link cart-link" routerLink="/cart" (click)="collapseNavbar()">
+              <span class="cart-icon-wrapper">
+                <fa-icon icon="shopping-cart"></fa-icon>
+                @if (cartCount() > 0) {
+                  <span class="cart-badge">{{ cartCount() }}</span>
+                }
+              </span>
+            </a>
+          </li>
+        }
         <li
           *jhiHasAnyAuthority="'ROLE_ADMIN'"
           ngbDropdown

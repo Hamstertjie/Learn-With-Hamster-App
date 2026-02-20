@@ -1,0 +1,29 @@
+<div class="confirmation-page">
+  <div class="confirmation-hero">
+    <h1 jhiTranslate="cart.confirmation.title">Order Confirmed!</h1>
+  </div>
+
+  <div class="confirmation-content">
+    <div class="container">
+      <div class="confirmation-card">
+        <div class="success-icon-wrapper">
+          <fa-icon icon="check-circle" class="success-icon"></fa-icon>
+        </div>
+        <h2 jhiTranslate="cart.confirmation.heading">You're all set!</h2>
+        <p jhiTranslate="cart.confirmation.message">
+          Your courses have been enrolled successfully. Start learning right away!
+        </p>
+        <div class="confirmation-actions">
+          <a routerLink="/my-learning" class="btn btn-primary btn-lg">
+            <fa-icon icon="book-open"></fa-icon>
+            <span jhiTranslate="cart.confirmation.goToLearning">Go to My Learning</span>
+          </a>
+          <a routerLink="/catalog" class="btn btn-outline-primary btn-lg">
+            <fa-icon icon="compass"></fa-icon>
+            <span jhiTranslate="cart.confirmation.browsMore">Browse More Courses</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

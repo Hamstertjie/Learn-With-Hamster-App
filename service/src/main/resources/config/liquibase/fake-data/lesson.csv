@@ -9,3 +9,18 @@ id;lesson_title;lesson_description;language
 8;Choosing Your First Road Bike;Understand endurance, race, and gravel geometry. Learn frame sizing, component groupsets, and how to test ride before buying your first road bike.;ENGLISH
 9;Basic Riding Position and Posture;Set saddle height using the heel method, adjust reach and handlebar drop, and maintain a relaxed upper body for efficient, injury-free riding.;ENGLISH
 10;Freestyle Stroke Fundamentals;Break down freestyle into body position, arm entry, catch and pull, rotation, and kick. Practice each element separately before combining into a smooth stroke.;ENGLISH
+11;Shifting and Cadence;Learn how to shift gears smoothly and maintain an efficient cadence of 80-100 RPM. Covers when to shift, cross-chaining, and cadence drills for climbing and flats.;ENGLISH
+12;Group Riding Essentials;Master hand signals, verbal calls, and paceline etiquette for safe group riding. Covers drafting, rotating through, and common group ride formations.;ENGLISH
+13;Bilateral Breathing Technique;Develop balanced breathing on both sides during freestyle. Drills to build comfort breathing every three strokes and improve body rotation symmetry.;ENGLISH
+14;Flip Turn Fundamentals;Break down the freestyle flip turn into approach, somersault, push-off, and streamline. Wall drills and timing exercises to build speed and confidence.;ENGLISH
+15;Endurance Swim Sets;Structure a complete swim workout with warm-up, main set, and cool-down. Learn interval training, pacing, and how to read a pace clock for effective solo practice.;ENGLISH
+16;Holding Your Guitar and Tuning;Proper sitting and standing posture for acoustic guitar. Learn to tune using a clip-on tuner and the relative tuning method. Covers string names and fret numbering.;ENGLISH
+17;Open Chords - E A D;Master the three most common open chords. Finger placement diagrams, common mistakes, and exercises to build clean chord changes between E, A, and D major.;ENGLISH
+18;Strumming Patterns for Beginners;Four essential strumming patterns every beginner needs. Downstroke timing, adding upstrokes, and creating rhythm with muting techniques.;ENGLISH
+19;Play Your First Song;Put chords and strumming together to play a complete song. Step-by-step walkthrough of a simple two-chord song with singing along.;ENGLISH
+20;Fingerpicking Introduction;Learn the basic fingerpicking pattern (PIMA) for acoustic guitar. Thumb alternating bass with simple melody patterns over open chords.;ENGLISH
+21;HTML Structure and Elements;Build your first web page with HTML5. Covers document structure, headings, paragraphs, links, images, lists, and semantic elements like header, main, and footer.;ENGLISH
+22;CSS Selectors and Box Model;Style your HTML with CSS selectors, properties, and the box model. Covers classes, IDs, specificity, margin, padding, border, and display types.;ENGLISH
+23;CSS Flexbox Layout;Master Flexbox for modern responsive layouts. Covers flex container, direction, justify-content, align-items, flex-grow, and building a responsive navigation bar.;ENGLISH
+24;JavaScript and the DOM;Add interactivity with JavaScript. Variables, functions, event listeners, and DOM manipulation. Build a dynamic button counter and toggle dark mode.;ENGLISH
+25;Mini Project - To-Do List App;Combine HTML, CSS, and JavaScript to build a functional to-do list. Add items, mark complete, delete, and persist data with localStorage.;ENGLISH

@@ -106,9 +106,14 @@ This starts the Angular dev server on port 4200 with HMR, proxying API calls to 
 | Route | Description |
 |-------|-------------|
 | `/my-learning` | Personal dashboard with quick links |
+| `/cart` | Shopping cart with item list and checkout link |
+| `/checkout` | Order summary, billing info, place order |
+| `/order-confirmation` | Success message with link to My Learning |
 | `/account/settings` | Profile settings |
 
 **Lesson Progress Tracking**: When a logged-in user views a lesson within a course, their visit is automatically recorded server-side. The course sidebar shows a progress bar and green checkmarks next to completed lessons. Progress persists across sessions.
+
+**Shopping Cart**: Priced courses show "Add to Cart" instead of "Enroll Now". Items are stored in localStorage with a reactive signal-based service. The navbar displays a cart icon with a badge count. Checkout enrolls all cart items via the enrollment API. Free courses bypass the cart entirely.
 
 ### Admin Only (ROLE_ADMIN)
 
@@ -193,6 +198,7 @@ Learn-With-Hamster-App/
 │       │   │   ├── course/           # Course detail + curriculum
 │       │   │   └── lesson/           # Lesson viewer
 │       │   ├── my-learning/          # Authenticated dashboard
+│       │   ├── cart/                 # Shopping cart, checkout, confirmation
 │       │   ├── entities/             # Admin CRUD + user-lesson-progress service
 │       │   ├── home/                 # Landing page
 │       │   ├── layouts/navbar/       # Navigation bar

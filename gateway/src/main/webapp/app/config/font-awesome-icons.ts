@@ -59,6 +59,9 @@ import {
   faChevronLeft,
   faCheckCircle,
   faCircle,
+  faTimesCircle,
+  faTrophy,
+  faShoppingCart,
   // jhipster-needle-add-icon-import
 } from '@fortawesome/free-solid-svg-icons';
 
@@ -123,5 +126,8 @@ export const fontAwesomeIcons = [
   faChevronLeft,
   faCheckCircle,
   faCircle,
+  faTimesCircle,
+  faTrophy,
+  faShoppingCart,
   // jhipster-needle-add-icon-import
 ];

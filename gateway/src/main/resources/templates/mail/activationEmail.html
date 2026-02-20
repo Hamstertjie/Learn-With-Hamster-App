@@ -1,20 +1,65 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" lang="en">
   <head>
-    <title th:text="#{email.activation.title}">JHipster activation</title>
+    <title th:text="#{email.activation.title}">Verify Your Account</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" th:href="@{|${baseUrl}/favicon.ico|}" />
   </head>
-  <body>
-    <p th:text="#{email.activation.greeting(${user.login})}">Dear</p>
-    <p th:text="#{email.activation.text1}">Your JHipster account has been created, please click on the URL below to activate it:</p>
-    <p>
-      <a th:with="url=(@{|${baseUrl}/account/activate?key=${user.activationKey}|})" th:href="${url}" th:text="${url}">Activation link</a>
-    </p>
-    <p>
-      <span th:text="#{email.activation.text2}">Regards, </span>
-      <br />
-      <em th:text="#{email.signature}">JHipster.</em>
-    </p>
+  <body style="margin: 0; padding: 0; background-color: #fafafa; font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #fafafa; padding: 40px 0;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="600" cellpadding="0" cellspacing="0"
+                 style="background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); overflow: hidden; max-width: 600px; width: 100%;">
+            <!-- Header -->
+            <tr>
+              <td style="background: linear-gradient(135deg, #3b82f6, #60a5fa); padding: 32px 40px; text-align: center;">
+                <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 700; letter-spacing: 0.5px;">
+                  Learn With Hamster
+                </h1>
+              </td>
+            </tr>
+            <!-- Body -->
+            <tr>
+              <td style="padding: 40px;">
+                <p style="margin: 0 0 20px; font-size: 18px; font-weight: 600; color: #1e293b;"
+                   th:text="#{email.activation.greeting(${user.login})}">Hi there,</p>
+                <p style="margin: 0 0 28px; font-size: 15px; line-height: 1.7; color: #64748b;"
+                   th:text="#{email.activation.text1}">Welcome! Click below to verify your account.</p>
+                <!-- Button -->
+                <table role="presentation" cellpadding="0" cellspacing="0" style="margin: 0 auto 28px;">
+                  <tr>
+                    <td align="center" style="border-radius: 8px; background-color: #60a5fa;">
+                      <a th:href="@{|${baseUrl}/account/activate?key=${user.activationKey}|}"
+                         style="display: inline-block; padding: 14px 40px; color: #ffffff; font-size: 16px; font-weight: 700; text-decoration: none; border-radius: 8px; background-color: #60a5fa;"
+                         th:text="#{email.activation.button}">
+                        Verify My Account
+                      </a>
+                    </td>
+                  </tr>
+                </table>
+                <p style="margin: 0; font-size: 13px; line-height: 1.6; color: #94a3b8;"
+                   th:text="#{email.activation.text2}">If you didn't create this account, you can safely ignore this email.</p>
+              </td>
+            </tr>
+            <!-- Divider -->
+            <tr>
+              <td style="padding: 0 40px;">
+                <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 0;" />
+              </td>
+            </tr>
+            <!-- Footer -->
+            <tr>
+              <td style="padding: 24px 40px 32px; text-align: center;">
+                <p style="margin: 0; font-size: 13px; color: #94a3b8;">
+                  <span th:text="#{email.signature}">The Learn With Hamster Team</span>
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
   </body>
 </html>

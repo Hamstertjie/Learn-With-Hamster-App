@@ -68,16 +68,16 @@ spring:
     contexts: dev, faker
     url: jdbc:h2:file:./target/h2db/db/gateway;DB_CLOSE_DELAY=-1;MODE=MYSQL
   mail:
-    host: ${MAIL_HOST:smtp.gmail.com}
-    port: ${MAIL_PORT:587}
-    username: ${MAIL_USERNAME:}
-    password: ${MAIL_PASSWORD:}
+    host: ${MAIL_HOST:localhost}
+    port: ${MAIL_PORT:1025}
+    username:
+    password:
     properties:
       mail:
         smtp:
-          auth: true
+          auth: false
           starttls:
-            enable: true
+            enable: false
   messages:
     cache-duration: PT1S # 1 second, see the ISO 8601 standard
   r2dbc:

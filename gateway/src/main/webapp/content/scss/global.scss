@@ -3,20 +3,123 @@
 @import 'bootstrap/scss/variables';
 
 /* ==============================================================
+Design tokens — CSS custom properties
+===============================================================*/
+
+:root {
+  --color-primary: #2d6a4f;
+  --color-primary-light: #52b788;
+  --color-primary-dark: #1b4332;
+  --color-primary-50: #f0fdf4;
+  --color-primary-100: #d1fae5;
+
+  --color-accent: #d4a574;
+  --color-accent-light: #e6c9a8;
+  --color-accent-dark: #b8860b;
+
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+  --color-info: #0ea5e9;
+
+  --color-bg: #faf8f5;
+  --color-surface: #fffef9;
+  --color-surface-raised: #ffffff;
+  --color-surface-overlay: rgba(255, 254, 249, 0.8);
+  --color-border: #e7e0d8;
+
+  --color-text: #2c1810;
+  --color-text-secondary: #6b5b4f;
+  --color-text-muted: #9c8b7a;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.12);
+  --shadow-glow: 0 0 20px rgba(45, 106, 79, 0.15);
+
+  --radius: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-pill: 9999px;
+
+  --transition: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration: 250ms;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-primary: #52b788;
+    --color-primary-light: #74c69d;
+    --color-primary-dark: #2d6a4f;
+    --color-primary-50: #1a2e1f;
+    --color-primary-100: #243b2a;
+
+    --color-accent: #e6c9a8;
+
+    --color-bg: #1a1410;
+    --color-surface: #2a2118;
+    --color-surface-raised: #3a3028;
+    --color-surface-overlay: rgba(42, 33, 24, 0.85);
+    --color-border: #3a3028;
+
+    --color-text: #f1f5f9;
+    --color-text-secondary: #94a3b8;
+    --color-text-muted: #64748b;
+
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.4);
+    --shadow-glow: 0 0 24px rgba(82, 183, 136, 0.2);
+  }
+}
+
+/* ==============================================================
+Global animations
+===============================================================*/
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ==============================================================
 Bootstrap tweaks
 ===============================================================*/
 
-body,
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.6;
+}
+
 h1,
 h2,
 h3,
 h4 {
-  font-weight: 300;
+  font-weight: 700;
+  color: var(--color-text);
 }
 
 a {
-  color: #401b9c;
-  font-weight: bold;
+  color: var(--color-primary);
+  font-weight: 500;
+  transition: color var(--duration) var(--transition);
 }
 
 a:not([href]):not([tabindex]):hover.dropdown-item {
@@ -24,12 +127,12 @@ a:not([href]):not([tabindex]):hover.dropdown-item {
 }
 
 .dropdown-item.active:hover {
-  background-color: #f0e6fc;
-  color: #a435f0;
+  background-color: var(--color-primary-50);
+  color: var(--color-primary);
 }
 
 a:hover {
-  color: #a435f0;
+  color: var(--color-primary-dark);
   cursor: pointer;
 }
 
@@ -43,16 +146,16 @@ Generic styles
 
 .ng-valid[required],
 .ng-valid.required {
-  border-left: 5px solid green;
+  border-left: 5px solid var(--color-success);
 }
 
 .ng-invalid:not(form) {
-  border-left: 5px solid red;
+  border-left: 5px solid var(--color-danger);
 }
 
 .error {
   color: white;
-  background-color: red;
+  background-color: var(--color-danger);
 }
 
 .pad {
@@ -73,12 +176,67 @@ Generic styles
 }
 
 .form-control {
-  background-color: #fff;
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  transition: border-color var(--duration) var(--transition), box-shadow var(--duration) var(--transition);
+
+  &:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.15);
+  }
 }
 
 .readonly {
-  background-color: #eee;
+  background-color: var(--color-surface-raised);
   opacity: 1;
+}
+
+/* ==========================================================================
+Button enhancements
+========================================================================== */
+
+.btn {
+  border-radius: var(--radius);
+  font-weight: 600;
+  transition: all var(--duration) var(--transition);
+
+  &:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: var(--shadow-md);
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.98);
+  }
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+
+  &:hover {
+    background-color: var(--color-primary-dark);
+    border-color: var(--color-primary-dark);
+  }
+}
+
+/* ==========================================================================
+Card enhancements
+========================================================================== */
+
+.card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  transition: all 300ms var(--transition);
+
+  &:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+  }
 }
 
 /* ==========================================================================
@@ -92,8 +250,9 @@ Main content wrapper
 Footer
 ========================================================================== */
 .site-footer {
-  background: #1c1d1f;
-  color: #fff;
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-top: 1px solid var(--color-border);
   padding: 3rem 2rem 0;
 }
 
@@ -108,18 +267,18 @@ Footer
 .footer-brand {
   font-weight: 700;
   font-size: 1.1rem;
-  color: #fff;
+  color: var(--color-primary);
   margin-bottom: 0.75rem;
 }
 
 .footer-tagline {
-  color: #9da3a7;
+  color: var(--color-text-secondary);
   font-size: 0.9rem;
   line-height: 1.6;
 }
 
 .footer-heading {
-  color: #fff;
+  color: var(--color-text);
   font-weight: 700;
   font-size: 0.9rem;
   text-transform: uppercase;
@@ -137,23 +296,23 @@ Footer
   }
 
   a {
-    color: #9da3a7;
+    color: var(--color-text-secondary);
     font-weight: 400;
     font-size: 0.9rem;
     text-decoration: none;
-    transition: color 0.15s ease;
+    transition: color var(--duration) var(--transition);
 
     &:hover {
-      color: #fff;
+      color: var(--color-primary);
     }
   }
 }
 
 .footer-bottom {
-  border-top: 1px solid #3e4143;
+  border-top: 1px solid var(--color-border);
   padding: 1.25rem 0;
   text-align: center;
-  color: #6a6f73;
+  color: var(--color-text-muted);
   font-size: 0.85rem;
 }
 
@@ -237,7 +396,7 @@ entity detail page css
       padding: 0.5em 0;
     }
     dd {
-      border-bottom: 1px solid #eee;
+      border-bottom: 1px solid var(--color-border);
       padding: 0.5em 0;
       margin-left: 0;
     }
@@ -263,6 +422,10 @@ ui bootstrap tweaks
 
 .dropdown-menu {
   padding-left: 0;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
 }
 
 /* ==========================================================================
@@ -303,5 +466,53 @@ Responsive table improvements
       }
     }
   }
+}
+/* ==========================================================================
+Login & Register card layout
+========================================================================== */
+.login-page,
+.register-page {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 3rem 1rem;
+  min-height: calc(100vh - 200px);
+}
+
+.login-card,
+.register-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 480px;
+  animation: fadeInUp 0.4s var(--transition) both;
+
+  h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: var(--color-text);
+    text-align: center;
+  }
+
+  hr {
+    border-color: var(--color-border);
+    margin: 1.5rem 0;
+  }
+
+  a {
+    color: var(--color-primary);
+
+    &:hover {
+      color: var(--color-accent);
+    }
+  }
+}
+
+.register-card {
+  max-width: 560px;
 }
 /* jhipster-needle-scss-add-main JHipster will add new css style */

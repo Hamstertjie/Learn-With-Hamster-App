@@ -1,0 +1,55 @@
+<div class="cart-page">
+  <div class="cart-hero">
+    <h1 jhiTranslate="cart.title">Shopping Cart</h1>
+    <p jhiTranslate="cart.subtitle">Review your selected courses before checkout.</p>
+  </div>
+
+  <div class="cart-content">
+    <div class="container">
+      @if (cartService.cartCount() === 0) {
+        <div class="cart-empty">
+          <fa-icon icon="shopping-cart" class="empty-icon"></fa-icon>
+          <p jhiTranslate="cart.empty">Your cart is empty.</p>
+          <a routerLink="/catalog" class="btn btn-primary">
+            <fa-icon icon="compass"></fa-icon>
+            <span jhiTranslate="cart.browseCatalog">Browse Catalog</span>
+          </a>
+        </div>
+      } @else {
+        <div class="cart-layout">
+          <div class="cart-items">
+            @for (item of cartService.cartItems(); track item.courseId) {
+              <div class="cart-item">
+                <div class="item-info">
+                  <h5>{{ item.courseTitle }}</h5>
+                  <span class="item-price">${{ item.coursePrice }}</span>
+                </div>
+                <button class="btn btn-sm btn-outline-danger" (click)="removeItem(item.courseId)">
+                  <fa-icon icon="trash-alt"></fa-icon>
+                  <span jhiTranslate="cart.remove">Remove</span>
+                </button>
+              </div>
+            }
+          </div>
+
+          <div class="cart-summary">
+            <h4 jhiTranslate="cart.orderSummary">Order Summary</h4>
+            <div class="summary-row">
+              <span jhiTranslate="cart.subtotal">Subtotal</span>
+              <span class="summary-price">${{ cartService.cartTotal() }}</span>
+            </div>
+            <hr />
+            <div class="summary-row summary-total">
+              <span jhiTranslate="cart.total">Total</span>
+              <span class="summary-price">${{ cartService.cartTotal() }}</span>
+            </div>
+            <a routerLink="/checkout" class="btn btn-primary btn-lg w-100 mt-3">
+              <span jhiTranslate="cart.proceedToCheckout">Proceed to Checkout</span>
+              <fa-icon icon="arrow-right"></fa-icon>
+            </a>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

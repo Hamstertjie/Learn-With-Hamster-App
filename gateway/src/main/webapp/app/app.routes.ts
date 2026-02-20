@@ -38,6 +38,24 @@ const routes: Routes = [
     canActivate: [UserRouteAccessService],
   },
   {
+    path: 'cart',
+    loadComponent: () => import('./cart/cart.component'),
+    canActivate: [UserRouteAccessService],
+    title: 'cart.title',
+  },
+  {
+    path: 'checkout',
+    loadComponent: () => import('./cart/checkout/checkout.component'),
+    canActivate: [UserRouteAccessService],
+    title: 'cart.checkout.title',
+  },
+  {
+    path: 'order-confirmation',
+    loadComponent: () => import('./cart/confirmation/confirmation.component'),
+    canActivate: [UserRouteAccessService],
+    title: 'cart.confirmation.title',
+  },
+  {
     path: 'login',
     loadComponent: () => import('./login/login.component'),
     title: 'login.title',

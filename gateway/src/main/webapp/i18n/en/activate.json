@@ -1,9 +1,13 @@
 {
   "activate": {
-    "title": "Activation",
+    "title": "Account Verification",
     "messages": {
-      "success": "<strong>Your user account has been activated.</strong> Please ",
-      "error": "<strong>Your user could not be activated.</strong> Please use the registration form to sign up."
+      "heading": "Verified!",
+      "success": "Your account has been verified! Enjoy your learning.",
+      "error": "<strong>Your user could not be activated.</strong> Please use the registration form to sign up.",
+      "homepage": "Go to Homepage",
+      "redirect": "Redirecting to homepage in a few seconds...",
+      "register": "Register"
     }
   }
 }

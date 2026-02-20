@@ -1,26 +1,51 @@
-@import 'bootstrap/scss/functions';
-@import 'bootstrap/scss/variables';
-
 /* ==========================================================================
-Navbar
+Navbar — Teal & Coral design system
 ========================================================================== */
 
 .navbar {
-  background: #fff;
-  border-bottom: 1px solid #e8e9eb;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
   padding: 0 1.5rem;
   min-height: 4rem;
+  transition: background-color var(--duration) var(--transition), box-shadow var(--duration) var(--transition);
 
   a.nav-link {
     font-weight: 500;
-    color: #1c1d1f;
+    color: var(--color-text);
     padding: 0.5rem 0.75rem;
     font-size: 0.9rem;
-    transition: color 0.15s ease;
+    position: relative;
+    transition: color var(--duration) var(--transition);
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 0;
+      height: 2px;
+      background: var(--color-primary);
+      border-radius: var(--radius-pill);
+      transition: width 300ms var(--transition), left 300ms var(--transition);
+    }
 
     &:hover {
-      color: #a435f0;
+      color: var(--color-primary);
+
+      &::after {
+        width: 60%;
+        left: 20%;
+      }
+    }
+  }
+
+  .nav-item.active > a.nav-link {
+    color: var(--color-primary);
+
+    &::after {
+      width: 60%;
+      left: 20%;
     }
   }
 }
@@ -28,11 +53,12 @@ Navbar
 .navbar-brand {
   font-weight: 700;
   font-size: 1.25rem;
-  color: #a435f0 !important;
+  color: var(--color-primary) !important;
   letter-spacing: -0.5px;
+  transition: color var(--duration) var(--transition);
 
   &:hover {
-    color: #8710d8 !important;
+    color: var(--color-primary-dark) !important;
   }
 }
 
@@ -45,39 +71,41 @@ Navbar
 Dropdown styles
 ========================================================================== */
 .dropdown-menu {
-  border: 1px solid #e8e9eb;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  border-radius: 0.5rem;
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-md);
+  border-radius: var(--radius);
   padding: 0.5rem 0;
   margin-top: 0.25rem;
+  background-color: var(--color-surface);
 
   .dropdown-item {
     padding: 0.5rem 1rem;
     font-size: 0.9rem;
-    color: #1c1d1f;
-    transition: background-color 0.15s ease;
+    color: var(--color-text);
+    transition: background-color var(--duration) var(--transition), color var(--duration) var(--transition);
 
     fa-icon {
-      color: #6a6f73;
+      color: var(--color-text-muted);
       margin-right: 0.5rem;
+      transition: color var(--duration) var(--transition);
     }
 
     &:hover {
-      background-color: #f7f9fa;
-      color: #a435f0;
+      background-color: var(--color-primary-50);
+      color: var(--color-primary);
 
       fa-icon {
-        color: #a435f0;
+        color: var(--color-primary);
       }
     }
 
     &.active,
     &.active:hover {
-      background-color: #f0e6fc;
-      color: #a435f0;
+      background-color: var(--color-primary-100);
+      color: var(--color-primary);
 
       fa-icon {
-        color: #a435f0;
+        color: var(--color-primary);
       }
     }
   }
@@ -89,9 +117,51 @@ Mobile toggler
 .navbar-toggler {
   border: none;
   padding: 0.5rem;
-  color: #1c1d1f;
+  color: var(--color-text);
 
   &:focus {
     box-shadow: none;
+  }
+}
+
+/* ==========================================================================
+Cart badge
+========================================================================== */
+.cart-link {
+  position: relative;
+}
+
+.cart-icon-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -8px;
+  right: -10px;
+  background: var(--color-accent);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  border-radius: var(--radius-pill);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  line-height: 1;
+}
+
+/* ==========================================================================
+Dark mode — glassmorphism
+========================================================================== */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: var(--color-surface-overlay);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom-color: rgba(255, 255, 255, 0.06);
   }
 }

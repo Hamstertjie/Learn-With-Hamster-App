@@ -50,12 +50,19 @@
           <span jhiTranslate="browse.lesson.courseContents">Course Contents</span>
         </div>
         @if (courseLessons().length > 0) {
-          <div class="progress-section">
-            <div class="progress-track">
-              <div class="progress-fill" [style.width.%]="progressPercent()"></div>
+          @if (progressPercent() === 100) {
+            <div class="sidebar-trophy">
+              <fa-icon icon="trophy"></fa-icon>
+              <span jhiTranslate="browse.course.courseComplete">Course Complete!</span>
             </div>
-            <div class="progress-text">{{ completedLessonIds().size }} / {{ courseLessons().length }}</div>
-          </div>
+          } @else {
+            <div class="progress-section">
+              <div class="progress-track">
+                <div class="progress-fill" [style.width.%]="progressPercent()"></div>
+              </div>
+              <div class="progress-text">{{ completedLessonIds().size }} / {{ courseLessons().length }}</div>
+            </div>
+          }
         }
         @if (course(); as c) {
           <a [routerLink]="['/catalog/course', c.id]" class="sidebar-course-title">

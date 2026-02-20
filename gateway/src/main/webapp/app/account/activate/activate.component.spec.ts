@@ -1,6 +1,6 @@
 import { TestBed, fakeAsync, inject, tick, waitForAsync } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 
 import { ActivateService } from './activate.service';
@@ -8,8 +8,11 @@ import ActivateComponent from './activate.component';
 
 describe('ActivateComponent', () => {
   let comp: ActivateComponent;
+  let mockRouter: { navigate: jest.Mock };
 
   beforeEach(waitForAsync(() => {
+    mockRouter = { navigate: jest.fn() };
+
     TestBed.configureTestingModule({
       imports: [ActivateComponent],
       providers: [
@@ -17,6 +20,10 @@ describe('ActivateComponent', () => {
         {
           provide: ActivatedRoute,
           useValue: { queryParams: of({ key: 'ABC123' }) },
+        },
+        {
+          provide: Router,
+          useValue: mockRouter,
         },
       ],
     })
@@ -35,7 +42,7 @@ describe('ActivateComponent', () => {
       jest.spyOn(service, 'get').mockReturnValue(of());
 
       comp.ngOnInit();
-      tick();
+      tick(3000);
 
       expect(service.get).toHaveBeenCalledWith('ABC123');
     }),
@@ -47,10 +54,11 @@ describe('ActivateComponent', () => {
       jest.spyOn(service, 'get').mockReturnValue(of({}));
 
       comp.ngOnInit();
-      tick();
+      tick(3000);
 
       expect(comp.error()).toBe(false);
       expect(comp.success()).toBe(true);
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/']);
     }),
   ));
 
@@ -64,6 +72,7 @@ describe('ActivateComponent', () => {
 
       expect(comp.error()).toBe(true);
       expect(comp.success()).toBe(false);
+      expect(mockRouter.navigate).not.toHaveBeenCalled();
     }),
   ));
 });

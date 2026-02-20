@@ -10,7 +10,7 @@
   justify-content: center;
   align-items: center;
   min-height: 400px;
-  background: linear-gradient(135deg, #f8f5ff 0%, #ede9fe 100%);
+  background: linear-gradient(135deg, var(--color-primary-50) 0%, var(--color-primary-100) 100%);
   padding: 2rem;
 }
 
@@ -21,20 +21,21 @@
 
 .prompt-icon {
   font-size: 3rem;
-  color: #a435f0;
+  color: var(--color-primary);
   margin-bottom: 1.5rem;
 }
 
 .browse-hero {
-  background: linear-gradient(135deg, #a435f0 0%, #6d28d9 50%, #4c1d95 100%);
+  background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
   color: #fff;
   padding: 3rem 2rem;
   text-align: center;
 
   h1 {
-    font-size: 2.25rem;
+    font-size: clamp(1.75rem, 4vw, 2.25rem);
     font-weight: 700;
     margin-bottom: 0.75rem;
+    color: #fff;
   }
 
   p {
@@ -78,6 +79,7 @@
 
 .browse-content {
   padding: 2.5rem 1rem;
+  animation: fadeInUp 0.5s var(--transition) both;
 }
 
 .browse-section {
@@ -87,31 +89,31 @@
     font-weight: 700;
     font-size: 1.4rem;
     margin-bottom: 1.25rem;
-    color: #1c1d1f;
+    color: var(--color-text);
   }
 }
 
 .course-card {
   display: block;
-  background: #fff;
-  border: 1px solid #e8e9eb;
-  border-radius: 0.75rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
   text-decoration: none;
-  color: #1c1d1f;
+  color: var(--color-text);
   overflow: hidden;
   height: 100%;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: all 300ms var(--transition);
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
     text-decoration: none;
-    color: #1c1d1f;
+    color: var(--color-text);
   }
 
   .card-accent {
     height: 4px;
-    background: #e95b2e;
+    background: linear-gradient(90deg, var(--color-accent), var(--color-accent-light));
   }
 
   .card-body {
@@ -122,10 +124,11 @@
     font-weight: 700;
     font-size: 1.1rem;
     margin-bottom: 0.5rem;
+    color: var(--color-text);
   }
 
   .card-description {
-    color: #6a6f73;
+    color: var(--color-text-secondary);
     font-size: 0.9rem;
     margin-bottom: 1rem;
     display: -webkit-box;
@@ -145,35 +148,35 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: #a435f0;
+    color: var(--color-primary);
     font-weight: 600;
     font-size: 0.9rem;
   }
 }
 
 .badge-price {
-  background: #f0e6fc;
-  color: #6d28d9;
+  background: rgba(212, 165, 116, 0.12);
+  color: var(--color-accent);
   padding: 0.25rem 0.75rem;
-  border-radius: 1rem;
+  border-radius: var(--radius-pill);
   font-weight: 600;
   font-size: 0.85rem;
 }
 
 .badge-free {
-  background: #d1fae5;
-  color: #065f46;
+  background: rgba(16, 185, 129, 0.12);
+  color: var(--color-success);
   padding: 0.25rem 0.75rem;
-  border-radius: 1rem;
+  border-radius: var(--radius-pill);
   font-weight: 600;
   font-size: 0.85rem;
 }
 
 .badge-level {
-  background: #fef3c7;
-  color: #92400e;
+  background: rgba(245, 158, 11, 0.12);
+  color: #b45309;
   padding: 0.25rem 0.75rem;
-  border-radius: 1rem;
+  border-radius: var(--radius-pill);
   font-weight: 600;
   font-size: 0.8rem;
   text-transform: capitalize;
@@ -195,19 +198,24 @@
   align-items: center;
   gap: 1rem;
   padding: 1rem 1.25rem;
-  background: #fff;
-  border: 1px solid #e8e9eb;
-  border-radius: 0.5rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  transition: box-shadow 300ms var(--transition);
+
+  &:hover {
+    box-shadow: var(--shadow-sm);
+  }
 
   .resource-icon {
     width: 40px;
     height: 40px;
-    background: #f0e6fc;
+    background: var(--color-primary-100);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #a435f0;
+    color: var(--color-primary);
     flex-shrink: 0;
   }
 
@@ -218,12 +226,24 @@
       font-weight: 600;
       margin-bottom: 0.25rem;
       font-size: 0.95rem;
+      color: var(--color-text);
     }
 
     p {
-      color: #6a6f73;
+      color: var(--color-text-secondary);
       font-size: 0.85rem;
       margin-bottom: 0;
     }
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .browse-hero {
+    background: linear-gradient(135deg, #1a2e1f 0%, #243b2a 100%);
+  }
+
+  .badge-level {
+    background: rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
   }
 }

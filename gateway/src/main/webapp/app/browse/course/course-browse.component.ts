@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 
 import SharedModule from 'app/shared/shared.module';
@@ -7,9 +7,11 @@ import { CourseService } from 'app/entities/service/course/service/course.servic
 import { LessonService } from 'app/entities/service/lesson/service/lesson.service';
 import { ResourceService } from 'app/entities/service/resource/service/resource.service';
 import { UserCourseEnrollmentService } from 'app/entities/service/user-course-enrollment/service/user-course-enrollment.service';
+import { UserLessonProgressService } from 'app/entities/service/user-lesson-progress/service/user-lesson-progress.service';
 import { ICourse } from 'app/entities/service/course/course.model';
 import { ILesson } from 'app/entities/service/lesson/lesson.model';
 import { IResource } from 'app/entities/service/resource/resource.model';
+import { CartService } from 'app/cart/cart.service';
 
 @Component({
   selector: 'jhi-course-browse',
@@ -26,6 +28,18 @@ export default class CourseBrowseComponent implements OnInit {
   expandedLessons = signal<Set<number>>(new Set());
   enrolled = signal(false);
   enrolling = signal(false);
+  completedLessonIds = signal<Set<number>>(new Set());
+
+  courseComplete = computed(() => {
+    const total = this.lessons().length;
+    return total > 0 && this.completedLessonIds().size >= total;
+  });
+
+  progressPercent = computed(() => {
+    const total = this.lessons().length;
+    if (total === 0) return 0;
+    return (this.completedLessonIds().size / total) * 100;
+  });
 
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -34,6 +48,8 @@ export default class CourseBrowseComponent implements OnInit {
   private readonly lessonService = inject(LessonService);
   private readonly resourceService = inject(ResourceService);
   private readonly enrollmentService = inject(UserCourseEnrollmentService);
+  private readonly progressService = inject(UserLessonProgressService);
+  readonly cartService = inject(CartService);
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -81,6 +97,27 @@ export default class CourseBrowseComponent implements OnInit {
     });
   }
 
+  isLessonCompleted(lessonId: number): boolean {
+    return this.completedLessonIds().has(lessonId);
+  }
+
+  isCourseInCart(): boolean {
+    const c = this.course();
+    return c ? this.cartService.isInCart(c.id) : false;
+  }
+
+  addToCart(): void {
+    const c = this.course();
+    if (c) {
+      this.cartService.addToCart(c.id, c.courseTitle ?? '', c.coursePrice ?? 0);
+    }
+  }
+
+  get isFree(): boolean {
+    const c = this.course();
+    return !c?.coursePrice || c.coursePrice <= 0;
+  }
+
   private loadData(id: number): void {
     this.courseService.find(id).subscribe(res => {
       this.course.set(res.body);
@@ -101,6 +138,12 @@ export default class CourseBrowseComponent implements OnInit {
 
     this.enrollmentService.isEnrolled(id).subscribe(res => {
       this.enrolled.set(res.body === true);
+      if (res.body === true) {
+        this.progressService.getCourseProgress(id).subscribe(progressRes => {
+          const ids = new Set((progressRes.body ?? []).map(p => p.lessonId).filter((lid): lid is number => lid != null));
+          this.completedLessonIds.set(ids);
+        });
+      }
     });
   }
 }

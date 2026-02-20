@@ -56,13 +56,35 @@ services:
       timeout: 10s
       retries: 10
 
-  # Mail server for development (captures all emails)
+  # MailHog: catches all emails in web UI, no real delivery
+  # Usage: docker compose --profile mail-dev up -d
   # Web UI: http://localhost:8025  |  SMTP: localhost:1025
   mailhog:
     image: mailhog/mailhog:v1.0.1
     ports:
       - 127.0.0.1:8025:8025
       - 127.0.0.1:1025:1025
+    profiles:
+      - mail-dev
+    labels:
+      org.springframework.boot.ignore: true
+
+  # Postfix relay: sends real emails via Brevo SMTP relay
+  # Usage: docker compose --profile mail-relay up -d
+  # Requires: docker/smtp-relay.env with Brevo credentials (see docker/smtp-relay.env.example)
+  smtp-relay:
+    image: boky/postfix:latest
+    ports:
+      - 127.0.0.1:1025:587
+    environment:
+      - RELAYHOST=[smtp-relay.brevo.com]:587
+      - POSTFIX_smtp_tls_security_level=encrypt
+      - ALLOW_EMPTY_SENDER_DOMAINS=true
+      - POSTFIX_myhostname=learnwithhamster.com
+    env_file:
+      - ./docker/smtp-relay.env
+    profiles:
+      - mail-relay
     labels:
       org.springframework.boot.ignore: true
 
