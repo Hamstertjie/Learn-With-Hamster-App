@@ -20,49 +20,39 @@ describe('Auth JWT', () => {
   });
 
   describe('Get Token', () => {
-    it('should return empty token if not found in local storage nor session storage', () => {
+    it('should return empty token since HttpOnly cookie auth is used', () => {
       const result = service.getToken();
       expect(result).toEqual('');
-    });
-
-    it('should return token from session storage if local storage is empty', () => {
-      sessionStorage.setItem('jhi-authenticationToken', JSON.stringify('sessionStorageToken'));
-      const result = service.getToken();
-      expect(result).toEqual('sessionStorageToken');
-    });
-
-    it('should return token from localstorage storage', () => {
-      localStorage.setItem('jhi-authenticationToken', JSON.stringify('localStorageToken'));
-      const result = service.getToken();
-      expect(result).toEqual('localStorageToken');
     });
   });
 
   describe('Login', () => {
-    it('should clear session storage and save in local storage when rememberMe is true', () => {
-      // GIVEN
-      mockStorageService.storeAuthenticationToken = jest.fn();
-
+    it('should post credentials with withCredentials and complete', () => {
       // WHEN
-      service.login({ username: 'John', password: '123', rememberMe: true }).subscribe();
+      let completed = false;
+      service.login({ username: 'John', password: '123', rememberMe: true }).subscribe({
+        complete: () => (completed = true),
+      });
       httpMock.expectOne('api/authenticate').flush({ id_token: '1' });
 
       // THEN
       httpMock.verify();
-      expect(mockStorageService.storeAuthenticationToken).toHaveBeenCalledWith('1', true);
+      expect(completed).toBe(true);
     });
 
-    it('should clear local storage and save in session storage when rememberMe is false', () => {
-      // GIVEN
-      mockStorageService.storeAuthenticationToken = jest.fn();
-
+    it('should post credentials when rememberMe is false', () => {
       // WHEN
-      service.login({ username: 'John', password: '123', rememberMe: false }).subscribe();
-      httpMock.expectOne('api/authenticate').flush({ id_token: '1' });
+      let completed = false;
+      service.login({ username: 'John', password: '123', rememberMe: false }).subscribe({
+        complete: () => (completed = true),
+      });
+      const req = httpMock.expectOne('api/authenticate');
+      expect(req.request.body).toEqual({ username: 'John', password: '123', rememberMe: false });
+      req.flush({ id_token: '1' });
 
       // THEN
       httpMock.verify();
-      expect(mockStorageService.storeAuthenticationToken).toHaveBeenCalledWith('1', false);
+      expect(completed).toBe(true);
     });
   });
 

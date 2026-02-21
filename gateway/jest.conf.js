@@ -5,6 +5,8 @@ const {
 } = require('./tsconfig.json');
 
 module.exports = {
+  preset: 'jest-preset-angular',
+  setupFilesAfterEnv: ['<rootDir>/setup-jest.ts'],
   transformIgnorePatterns: ['node_modules/(?!.*\\.mjs$|dayjs/esm)'],
   resolver: 'jest-preset-angular/build/resolvers/ng-jest-resolver.js',
   globals: {
