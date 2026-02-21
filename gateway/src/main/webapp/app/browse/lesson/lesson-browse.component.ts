@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
+import { Component, HostListener, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
@@ -10,6 +10,7 @@ import { LessonService } from 'app/entities/service/lesson/service/lesson.servic
 import { ResourceService } from 'app/entities/service/resource/service/resource.service';
 import { CourseService } from 'app/entities/service/course/service/course.service';
 import { UserLessonProgressService } from 'app/entities/service/user-lesson-progress/service/user-lesson-progress.service';
+import { BookmarkService } from '../bookmark.service';
 import { ILesson } from 'app/entities/service/lesson/lesson.model';
 import { IResource } from 'app/entities/service/resource/resource.model';
 import { ICourse } from 'app/entities/service/course/course.model';
@@ -32,11 +33,30 @@ export default class LessonBrowseComponent implements OnInit, OnDestroy {
   isAuthenticated = signal(false);
   loading = signal(true);
   sidebarOpen = signal(false);
+  noteText = signal('');
 
   progressPercent = computed(() => {
     const total = this.courseLessons().length;
     if (total === 0) return 0;
     return (this.completedLessonIds().size / total) * 100;
+  });
+
+  readingTime = computed(() => {
+    const desc = this.lesson()?.lessonDescription ?? '';
+    const wordCount = desc.split(/\s+/).filter(w => w.length > 0).length;
+    const textMinutes = Math.ceil(wordCount / 200);
+    const videoCount = this.resources().filter(r => r.resourceType === 'VIDEO').length;
+    return Math.max(1, textMinutes + videoCount * 5);
+  });
+
+  isBookmarked = computed(() => {
+    const id = this.lesson()?.id;
+    return id != null ? this.bookmarkService.isBookmarked(id) : false;
+  });
+
+  private readonly noteKey = computed(() => {
+    const id = this.lesson()?.id;
+    return id != null ? `lesson-notes-${id}` : null;
   });
 
   private readonly route = inject(ActivatedRoute);
@@ -47,8 +67,24 @@ export default class LessonBrowseComponent implements OnInit, OnDestroy {
   private readonly courseService = inject(CourseService);
   private readonly progressService = inject(UserLessonProgressService);
   private readonly sanitizer = inject(DomSanitizer);
+  readonly bookmarkService = inject(BookmarkService);
 
   private paramSub?: Subscription;
+
+  @HostListener('document:keydown', ['$event'])
+  onKeydown(event: KeyboardEvent): void {
+    const tag = (event.target as HTMLElement).tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+    const idx = this.getCurrentLessonIndex();
+    if (idx < 0 || this.courseLessons().length === 0) return;
+    if (event.key === 'ArrowLeft' && idx > 0) {
+      event.preventDefault();
+      this.navigateToLesson(this.courseLessons()[idx - 1].id);
+    } else if (event.key === 'ArrowRight' && idx < this.courseLessons().length - 1) {
+      event.preventDefault();
+      this.navigateToLesson(this.courseLessons()[idx + 1].id);
+    }
+  }
 
   ngOnInit(): void {
     this.accountService.identity().subscribe(account => {
@@ -95,6 +131,38 @@ export default class LessonBrowseComponent implements OnInit, OnDestroy {
     return this.courseLessons().findIndex(l => l.id === currentId);
   }
 
+  saveNote(value: string): void {
+    this.noteText.set(value);
+    const key = this.noteKey();
+    if (key) {
+      localStorage.setItem(key, value);
+    }
+  }
+
+  toggleBookmark(): void {
+    const id = this.lesson()?.id;
+    if (id != null) {
+      this.bookmarkService.toggle(id);
+    }
+  }
+
+  resourceActionLabel(type: string | null | undefined): string {
+    switch (type) {
+      case 'VIDEO': return 'browse.lesson.watchVideo';
+      case 'TOOL': return 'browse.lesson.launchTool';
+      case 'TUTORIAL': return 'browse.lesson.startTutorial';
+      case 'IMAGE': return 'browse.lesson.viewImage';
+      default: return 'browse.lesson.openResource';
+    }
+  }
+
+  private loadNote(): void {
+    const key = this.noteKey();
+    if (key) {
+      this.noteText.set(localStorage.getItem(key) ?? '');
+    }
+  }
+
   private subscribeToParams(): void {
     this.paramSub = this.route.paramMap
       .pipe(switchMap(params => {
@@ -106,6 +174,7 @@ export default class LessonBrowseComponent implements OnInit, OnDestroy {
         const lesson = res.body;
         this.lesson.set(lesson);
         if (lesson) {
+          this.loadNote();
           this.loadResources(lesson.id);
           this.loadCourseContext(lesson);
           this.recordProgress(lesson.id);
@@ -123,12 +192,11 @@ export default class LessonBrowseComponent implements OnInit, OnDestroy {
         .sort((a, b) => (a.weight ?? 0) - (b.weight ?? 0));
       this.resources.set(filtered);
 
-      // Select primary resource: prefer first VIDEO, else first by weight
       const videoResource = filtered.find(r => r.resourceType === 'VIDEO');
-      const primary = videoResource ?? (filtered.length > 0 ? filtered[0] : null);
+      const tutorialResource = filtered.find(r => r.resourceType === 'TUTORIAL');
+      const primary = videoResource ?? tutorialResource ?? (filtered.length > 0 ? filtered[0] : null);
       this.primaryResource.set(primary);
 
-      // Build safe YouTube URL if primary is a video
       if (primary?.resourceType === 'VIDEO' && primary.resourceURL) {
         const videoId = this.getYouTubeVideoId(primary.resourceURL);
         if (videoId) {
@@ -142,7 +210,6 @@ export default class LessonBrowseComponent implements OnInit, OnDestroy {
         this.safeVideoUrl.set(null);
       }
 
-      // Additional resources = all except primary
       if (primary) {
         this.additionalResources.set(filtered.filter(r => r.id !== primary.id));
       } else {
@@ -169,7 +236,6 @@ export default class LessonBrowseComponent implements OnInit, OnDestroy {
   }
 
   private loadCourseContext(lesson: ILesson): void {
-    // Try query param first, fall back to lesson's course associations
     const courseIdParam = this.route.snapshot.queryParamMap.get('course');
     const courseId = courseIdParam
       ? Number(courseIdParam)
@@ -183,7 +249,6 @@ export default class LessonBrowseComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Load progress data for this course
     this.progressService.getCourseProgress(courseId).subscribe(progressRes => {
       const ids = new Set((progressRes.body ?? []).map(p => p.lessonId).filter((id): id is number => id != null));
       this.completedLessonIds.set(ids);
@@ -206,10 +271,8 @@ export default class LessonBrowseComponent implements OnInit, OnDestroy {
   }
 
   private getYouTubeVideoId(url: string): string | null {
-    // Handle youtube.com/watch?v=VIDEO_ID
     const watchMatch = url.match(/[?&]v=([^&]+)/);
     if (watchMatch) return watchMatch[1];
-    // Handle youtu.be/VIDEO_ID
     const shortMatch = url.match(/youtu\.be\/([^?&]+)/);
     if (shortMatch) return shortMatch[1];
     return null;

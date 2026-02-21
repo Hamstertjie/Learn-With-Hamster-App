@@ -6,7 +6,36 @@
 
   <div class="my-learning-content">
     <div class="container">
-      <!-- Enrolled Courses -->
+
+      <!-- Stats Row -->
+      @if (!loading() && enrolledCourses().length > 0) {
+        <div class="stats-row">
+          <div class="stat-chip">
+            <fa-icon icon="book-open"></fa-icon>
+            <span>{{ enrolledCourses().length }} enrolled</span>
+          </div>
+          @if (inProgressCourses().length > 0) {
+            <div class="stat-chip stat-chip-progress">
+              <fa-icon icon="chart-line"></fa-icon>
+              <span>{{ inProgressCourses().length }} in progress</span>
+            </div>
+          }
+          @if (completedCourses().length > 0) {
+            <div class="stat-chip stat-chip-complete">
+              <fa-icon icon="trophy"></fa-icon>
+              <span>{{ completedCourses().length }} completed</span>
+            </div>
+          }
+          @if (bookmarkedLessons().length > 0) {
+            <div class="stat-chip stat-chip-bookmark">
+              <fa-icon icon="bookmark"></fa-icon>
+              <span>{{ bookmarkedLessons().length }} bookmarked</span>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- In-Progress Courses -->
       <section class="ml-section">
         <h3 jhiTranslate="myLearning.continueLearning.title">Continue Learning</h3>
         @if (loading()) {
@@ -24,9 +53,9 @@
               <span jhiTranslate="myLearning.continueLearning.browseCatalog">Browse Catalog</span>
             </a>
           </div>
-        } @else {
+        } @else if (inProgressCourses().length > 0) {
           <div class="course-grid">
-            @for (ec of enrolledCourses(); track ec.course.id) {
+            @for (ec of inProgressCourses(); track ec.course.id) {
               <a [routerLink]="['/catalog/course', ec.course.id]" class="course-card">
                 <div class="card-accent"></div>
                 <div class="card-body">
@@ -47,8 +76,70 @@
               </a>
             }
           </div>
+        } @else {
+          <p class="text-muted">All your courses are completed! See below.</p>
         }
       </section>
+
+      <!-- Completed Courses -->
+      @if (!loading() && completedCourses().length > 0) {
+        <section class="ml-section">
+          <h3>
+            <fa-icon icon="trophy" class="section-trophy-icon"></fa-icon>
+            Completed Courses
+          </h3>
+          <div class="course-grid">
+            @for (ec of completedCourses(); track ec.course.id) {
+              <a [routerLink]="['/catalog/course', ec.course.id]" class="course-card course-card-complete">
+                <div class="card-accent card-accent-complete"></div>
+                <div class="card-body">
+                  <div class="complete-trophy-row">
+                    <fa-icon icon="trophy" class="trophy-inline"></fa-icon>
+                    <span class="complete-label">Completed</span>
+                  </div>
+                  <h5>{{ ec.course.courseTitle }}</h5>
+                  <p class="card-description">{{ ec.course.courseDescription }}</p>
+                  <div class="progress-section">
+                    <div class="progress-bar-bg">
+                      <div class="progress-bar-fill progress-bar-complete" style="width: 100%"></div>
+                    </div>
+                    <span class="progress-text">{{ ec.lessonsTotal }} / {{ ec.lessonsTotal }} lessons</span>
+                  </div>
+                  @if (ec.course.courseLevel) {
+                    <span class="badge-level">{{ ec.course.courseLevel }}</span>
+                  }
+                </div>
+              </a>
+            }
+          </div>
+        </section>
+      }
+
+      <!-- Bookmarked Lessons -->
+      @if (bookmarkedLessons().length > 0) {
+        <section class="ml-section">
+          <h3>
+            <fa-icon icon="bookmark" class="section-bookmark-icon"></fa-icon>
+            Bookmarked Lessons
+          </h3>
+          <div class="bookmark-list">
+            @for (bl of bookmarkedLessons(); track bl.id) {
+              <a [routerLink]="['/catalog/lesson', bl.id]" class="bookmark-item">
+                <div class="bookmark-icon-wrap">
+                  <fa-icon icon="bookmark"></fa-icon>
+                </div>
+                <div class="bookmark-info">
+                  <span class="bookmark-title">{{ bl.lessonTitle }}</span>
+                  @if (bl.language) {
+                    <span class="bookmark-lang">{{ bl.language }}</span>
+                  }
+                </div>
+                <fa-icon icon="arrow-right" class="bookmark-arrow"></fa-icon>
+              </a>
+            }
+          </div>
+        </section>
+      }
 
       <!-- Quick Links -->
       <section class="ml-section">
@@ -76,6 +167,7 @@
           </div>
         </div>
       </section>
+
     </div>
   </div>
 }

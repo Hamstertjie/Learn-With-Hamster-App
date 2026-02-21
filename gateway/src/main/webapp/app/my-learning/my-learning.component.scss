@@ -146,6 +146,162 @@
   text-transform: capitalize;
 }
 
+/* Stats Row */
+.stats-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-bottom: 2rem;
+}
+
+.stat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  padding: 0.3rem 0.85rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+
+  fa-icon { font-size: 0.8rem; }
+}
+
+.stat-chip-progress {
+  background: var(--color-primary-50);
+  border-color: var(--color-primary-100);
+  color: var(--color-primary-dark);
+}
+
+.stat-chip-complete {
+  background: rgba(245, 158, 11, 0.08);
+  border-color: rgba(245, 158, 11, 0.2);
+  color: #b45309;
+}
+
+.stat-chip-bookmark {
+  background: rgba(99, 102, 241, 0.07);
+  border-color: rgba(99, 102, 241, 0.2);
+  color: #4f46e5;
+}
+
+/* Section heading icons */
+.section-trophy-icon {
+  color: #d97706;
+  margin-right: 0.5rem;
+  font-size: 1rem;
+}
+
+.section-bookmark-icon {
+  color: #4f46e5;
+  margin-right: 0.5rem;
+  font-size: 1rem;
+}
+
+/* Completed course card */
+.course-card-complete {
+  opacity: 0.92;
+
+  &:hover { opacity: 1; }
+}
+
+.card-accent-complete {
+  background: linear-gradient(90deg, #d97706, #f59e0b) !important;
+}
+
+.complete-trophy-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.trophy-inline {
+  color: #d97706;
+  font-size: 0.9rem;
+}
+
+.complete-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #d97706;
+}
+
+.progress-bar-complete {
+  background: linear-gradient(90deg, #d97706, #f59e0b) !important;
+}
+
+/* Bookmarked Lessons */
+.bookmark-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.bookmark-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  text-decoration: none;
+  color: var(--color-text);
+  transition: all 200ms var(--transition);
+
+  &:hover {
+    background: var(--color-primary-50);
+    border-color: var(--color-primary-100);
+    color: var(--color-text);
+    text-decoration: none;
+    transform: translateX(3px);
+  }
+}
+
+.bookmark-icon-wrap {
+  width: 36px;
+  height: 36px;
+  background: rgba(99, 102, 241, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4f46e5;
+  flex-shrink: 0;
+  font-size: 0.9rem;
+}
+
+.bookmark-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.bookmark-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--color-text);
+}
+
+.bookmark-lang {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.bookmark-arrow {
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+
 /* Quick Links */
 .quick-link-card {
   display: block;

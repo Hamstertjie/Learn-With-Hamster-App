@@ -49,20 +49,18 @@
           <fa-icon icon="list-ol"></fa-icon>
           <span jhiTranslate="browse.lesson.courseContents">Course Contents</span>
         </div>
-        @if (courseLessons().length > 0) {
-          @if (progressPercent() === 100) {
-            <div class="sidebar-trophy">
-              <fa-icon icon="trophy"></fa-icon>
-              <span jhiTranslate="browse.course.courseComplete">Course Complete!</span>
+        @if (progressPercent() === 100) {
+          <div class="sidebar-trophy">
+            <fa-icon icon="trophy"></fa-icon>
+            <span jhiTranslate="browse.course.courseComplete">Course Complete!</span>
+          </div>
+        } @else {
+          <div class="progress-section">
+            <div class="progress-track">
+              <div class="progress-fill" [style.width.%]="progressPercent()"></div>
             </div>
-          } @else {
-            <div class="progress-section">
-              <div class="progress-track">
-                <div class="progress-fill" [style.width.%]="progressPercent()"></div>
-              </div>
-              <div class="progress-text">{{ completedLessonIds().size }} / {{ courseLessons().length }}</div>
-            </div>
-          }
+            <div class="progress-text">{{ completedLessonIds().size }} / {{ courseLessons().length }}</div>
+          </div>
         }
         @if (course(); as c) {
           <a [routerLink]="['/catalog/course', c.id]" class="sidebar-course-title">
@@ -112,21 +110,16 @@
                   ></iframe>
                 </div>
               } @else {
-                <!-- Video URL not embeddable, show as card -->
                 <div class="mini-player-card">
-                  <div class="card-icon">
-                    <fa-icon icon="video"></fa-icon>
-                  </div>
+                  <div class="card-icon"><fa-icon icon="video"></fa-icon></div>
                   <div class="card-info">
                     <h5>{{ pr.resourceName }}</h5>
-                    @if (pr.resourceDescription) {
-                      <p>{{ pr.resourceDescription }}</p>
-                    }
+                    @if (pr.resourceDescription) { <p>{{ pr.resourceDescription }}</p> }
                   </div>
                   @if (pr.resourceURL) {
                     <a [href]="pr.resourceURL" target="_blank" rel="noopener" class="btn btn-primary">
                       <fa-icon icon="external-link-alt"></fa-icon>
-                      <span jhiTranslate="browse.lesson.openInNewTab">Open in New Tab</span>
+                      <span jhiTranslate="browse.lesson.watchVideo">Watch Video</span>
                     </a>
                   }
                 </div>
@@ -135,6 +128,30 @@
             @case ('IMAGE') {
               <div class="mini-player-image">
                 <img [src]="pr.resourceURL" [alt]="pr.resourceName ?? 'Lesson image'" />
+              </div>
+            }
+            @case ('TUTORIAL') {
+              <div class="mini-player-tutorial">
+                <div class="tutorial-header">
+                  <div class="tutorial-icon"><fa-icon icon="chalkboard-teacher"></fa-icon></div>
+                  <div class="tutorial-meta">
+                    <span class="tutorial-badge" jhiTranslate="browse.lesson.openTutorial">Interactive Tutorial</span>
+                    <h4>{{ pr.resourceName }}</h4>
+                  </div>
+                </div>
+                @if (pr.resourceDescription) {
+                  <p class="tutorial-desc">{{ pr.resourceDescription }}</p>
+                }
+                <div class="tutorial-steps-hint">
+                  <fa-icon icon="list-ol"></fa-icon>
+                  <span>Follow the step-by-step instructions in the tutorial to build along.</span>
+                </div>
+                @if (pr.resourceURL) {
+                  <a [href]="pr.resourceURL" target="_blank" rel="noopener" class="btn btn-primary btn-launch">
+                    <fa-icon icon="external-link-alt"></fa-icon>
+                    <span jhiTranslate="browse.lesson.startTutorial">Start Tutorial</span>
+                  </a>
+                }
               </div>
             }
             @default {
@@ -147,17 +164,17 @@
                 </div>
                 <div class="card-info">
                   <h5>{{ pr.resourceName }}</h5>
-                  @if (pr.resourceDescription) {
-                    <p>{{ pr.resourceDescription }}</p>
-                  }
-                  @if (pr.resourceType) {
-                    <span class="resource-type-badge">{{ pr.resourceType }}</span>
-                  }
+                  @if (pr.resourceDescription) { <p>{{ pr.resourceDescription }}</p> }
+                  @if (pr.resourceType) { <span class="resource-type-badge">{{ pr.resourceType }}</span> }
                 </div>
                 @if (pr.resourceURL) {
                   <a [href]="pr.resourceURL" target="_blank" rel="noopener" class="btn btn-primary">
                     <fa-icon icon="external-link-alt"></fa-icon>
-                    <span jhiTranslate="browse.lesson.openInNewTab">Open in New Tab</span>
+                    @if (pr.resourceType === 'TOOL') {
+                      <span jhiTranslate="browse.lesson.launchTool">Launch Tool</span>
+                    } @else {
+                      <span jhiTranslate="browse.lesson.openInNewTab">Open in New Tab</span>
+                    }
                   </a>
                 }
               </div>
@@ -173,7 +190,18 @@
 
       <!-- Lesson Info -->
       <div class="lesson-info">
-        <h2>{{ l.lessonTitle }}</h2>
+        <div class="lesson-title-row">
+          <h2>{{ l.lessonTitle }}</h2>
+          <button
+            class="bookmark-btn"
+            [class.bookmarked]="isBookmarked()"
+            (click)="toggleBookmark()"
+            [title]="isBookmarked() ? ('browse.lesson.removeBookmark' | translate) : ('browse.lesson.bookmark' | translate)"
+            aria-label="Bookmark this lesson"
+          >
+            <fa-icon icon="bookmark"></fa-icon>
+          </button>
+        </div>
         <div class="lesson-meta">
           @if (l.language) {
             <span class="badge-language">
@@ -189,6 +217,17 @@
               </span>
             }
           }
+          <span class="badge-reading-time">
+            <fa-icon icon="clock"></fa-icon>
+            <span jhiTranslate="browse.lesson.readingTime" [translateValues]="{ minutes: readingTime() }">{{ readingTime() }} min read</span>
+          </span>
+          @if (courseLessons().length > 1) {
+            <span class="badge-keyboard-hint">
+              <fa-icon icon="arrow-left"></fa-icon>
+              <fa-icon icon="arrow-right"></fa-icon>
+              <span jhiTranslate="browse.lesson.keyboardHint">Arrow keys to navigate</span>
+            </span>
+          }
         </div>
       </div>
 
@@ -198,6 +237,22 @@
           <p>{{ l.lessonDescription }}</p>
         </div>
       }
+
+      <!-- My Notes -->
+      <div class="lesson-notes">
+        <h4 class="notes-title">
+          <fa-icon icon="pencil-alt"></fa-icon>
+          <span jhiTranslate="browse.lesson.notesTitle">My Notes</span>
+        </h4>
+        <textarea
+          class="form-control notes-textarea"
+          rows="4"
+          [value]="noteText()"
+          (input)="saveNote($any($event.target).value)"
+          [placeholder]="'browse.lesson.notesPlaceholder' | translate"
+        ></textarea>
+        <small class="notes-hint" jhiTranslate="browse.lesson.notesSavedLocally">Notes are saved locally in your browser.</small>
+      </div>
 
       <!-- Lesson Navigation (prev/next) -->
       @if (courseLessons().length > 1) {
@@ -226,12 +281,13 @@
           <h4 jhiTranslate="browse.lesson.additionalResources">Additional Resources</h4>
           <div class="resource-list">
             @for (resource of additionalResources(); track resource.id) {
-              <div class="resource-item">
+              <div class="resource-item" [class.resource-item-tutorial]="resource.resourceType === 'TUTORIAL'" [class.resource-item-tool]="resource.resourceType === 'TOOL'">
                 <div class="resource-icon">
                   @switch (resource.resourceType) {
                     @case ('VIDEO') { <fa-icon icon="video"></fa-icon> }
                     @case ('IMAGE') { <fa-icon icon="image"></fa-icon> }
                     @case ('TOOL') { <fa-icon icon="tools"></fa-icon> }
+                    @case ('TUTORIAL') { <fa-icon icon="chalkboard-teacher"></fa-icon> }
                     @default { <fa-icon icon="file-alt"></fa-icon> }
                   }
                 </div>
@@ -243,9 +299,10 @@
                   }
                 </div>
                 @if (resource.resourceURL) {
-                  <a [href]="resource.resourceURL" target="_blank" rel="noopener" class="btn btn-sm btn-primary">
+                  <a [href]="resource.resourceURL" target="_blank" rel="noopener"
+                    [class]="resource.resourceType === 'TUTORIAL' ? 'btn btn-sm btn-success' : resource.resourceType === 'TOOL' ? 'btn btn-sm btn-warning' : 'btn btn-sm btn-primary'">
                     <fa-icon icon="external-link-alt"></fa-icon>
-                    <span jhiTranslate="browse.lesson.openResource">Open Resource</span>
+                    <span [jhiTranslate]="resourceActionLabel(resource.resourceType)">Open</span>
                   </a>
                 }
               </div>

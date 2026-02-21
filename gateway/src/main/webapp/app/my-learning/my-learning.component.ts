@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
 import SharedModule from 'app/shared/shared.module';
@@ -6,7 +6,10 @@ import { AccountService } from 'app/core/auth/account.service';
 import { UserCourseEnrollmentService } from 'app/entities/service/user-course-enrollment/service/user-course-enrollment.service';
 import { UserLessonProgressService } from 'app/entities/service/user-lesson-progress/service/user-lesson-progress.service';
 import { CourseService } from 'app/entities/service/course/service/course.service';
+import { LessonService } from 'app/entities/service/lesson/service/lesson.service';
+import { BookmarkService } from 'app/browse/bookmark.service';
 import { ICourse } from 'app/entities/service/course/course.model';
+import { ILesson } from 'app/entities/service/lesson/lesson.model';
 
 export interface EnrolledCourse {
   course: ICourse;
@@ -24,14 +27,21 @@ export interface EnrolledCourse {
 export default class MyLearningComponent implements OnInit {
   account = inject(AccountService).trackCurrentAccount();
   enrolledCourses = signal<EnrolledCourse[]>([]);
+  bookmarkedLessons = signal<ILesson[]>([]);
   loading = signal(true);
+
+  inProgressCourses = computed(() => this.enrolledCourses().filter(ec => ec.progressPercent < 100));
+  completedCourses = computed(() => this.enrolledCourses().filter(ec => ec.progressPercent === 100));
 
   private readonly enrollmentService = inject(UserCourseEnrollmentService);
   private readonly progressService = inject(UserLessonProgressService);
   private readonly courseService = inject(CourseService);
+  private readonly lessonService = inject(LessonService);
+  readonly bookmarkService = inject(BookmarkService);
 
   ngOnInit(): void {
     this.loadEnrollments();
+    this.loadBookmarkedLessons();
   }
 
   private loadEnrollments(): void {
@@ -76,5 +86,31 @@ export default class MyLearningComponent implements OnInit {
         });
       }
     });
+  }
+
+  private loadBookmarkedLessons(): void {
+    const ids = this.bookmarkService.getBookmarkedIds();
+    if (ids.length === 0) return;
+
+    let loaded = 0;
+    const lessons: ILesson[] = [];
+
+    for (const id of ids) {
+      this.lessonService.find(id).subscribe({
+        next: res => {
+          if (res.body) lessons.push(res.body);
+          loaded++;
+          if (loaded === ids.length) {
+            this.bookmarkedLessons.set(lessons);
+          }
+        },
+        error: () => {
+          loaded++;
+          if (loaded === ids.length) {
+            this.bookmarkedLessons.set(lessons);
+          }
+        },
+      });
+    }
   }
 }

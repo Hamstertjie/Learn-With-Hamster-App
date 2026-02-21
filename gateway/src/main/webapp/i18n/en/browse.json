@@ -54,7 +54,20 @@
       "nextLesson": "Next Lesson",
       "previousLesson": "Previous Lesson",
       "completed": "completed",
-      "progressCount": "{{ done }} / {{ total }} completed"
+      "progressCount": "{{ done }} / {{ total }} completed",
+      "readingTime": "{{ minutes }} min read",
+      "keyboardHint": "Use ← → arrow keys to navigate between lessons",
+      "bookmark": "Bookmark",
+      "bookmarked": "Bookmarked",
+      "removeBookmark": "Remove bookmark",
+      "watchVideo": "Watch Video",
+      "launchTool": "Launch Tool",
+      "startTutorial": "Start Tutorial",
+      "viewImage": "View Image",
+      "notesTitle": "My Notes",
+      "notesPlaceholder": "Write your notes for this lesson here...",
+      "notesSavedLocally": "Notes are saved locally in your browser.",
+      "openTutorial": "Open Tutorial"
     }
   }
 }
