@@ -64,7 +64,7 @@ spring:
       port: 8500
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:h2:file:./target/h2db/db/service;DB_CLOSE_DELAY=-1;MODE=MYSQL
+    url: jdbc:h2:file:./target/h2db/db/service;DB_CLOSE_DELAY=-1;MODE=MYSQL;NON_KEYWORDS=RESOURCE
     username: service
     password:
     hikari:
