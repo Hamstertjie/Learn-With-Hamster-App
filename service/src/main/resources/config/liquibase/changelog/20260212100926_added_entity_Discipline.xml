@@ -43,6 +43,10 @@
 
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->
 
+    <changeSet id="20260212100926-2-widen-description" author="jhipster">
+        <modifyDataType tableName="discipline" columnName="discipline_description" newDataType="${clobType}"/>
+    </changeSet>
+
     <!--
         Load sample data generated with Faker.js
         - This data can be easily edited using a CSV editor (or even MS Excel) and

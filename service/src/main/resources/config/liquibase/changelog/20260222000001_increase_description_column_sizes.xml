@@ -9,7 +9,7 @@
         JDL String fields default to VARCHAR(255); rich course/lesson descriptions
         can exceed that limit. Use ${clobType} (clob on H2, clob/TEXT on MySQL).
     -->
-    <changeSet id="20260222000001-1" author="jhipster">
+    <changeSet id="20260222000001-1" author="jhipster" failOnError="false">
         <modifyDataType tableName="discipline" columnName="discipline_description" newDataType="${clobType}"/>
         <modifyDataType tableName="program"    columnName="program_description"    newDataType="${clobType}"/>
         <modifyDataType tableName="course"     columnName="course_description"     newDataType="${clobType}"/>
