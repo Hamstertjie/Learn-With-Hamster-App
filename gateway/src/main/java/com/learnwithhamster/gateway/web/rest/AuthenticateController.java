@@ -48,6 +48,9 @@ public class AuthenticateController {
     @Value("${jhipster.security.authentication.jwt.token-validity-in-seconds-for-remember-me:0}")
     private long tokenValidityInSecondsForRememberMe;
 
+    @Value("${jhipster.security.authentication.jwt.cookie-secure:true}")
+    private boolean cookieSecure;
+
     private final ReactiveAuthenticationManager authenticationManager;
 
     public AuthenticateController(JwtEncoder jwtEncoder, ReactiveAuthenticationManager authenticationManager) {
@@ -73,7 +76,7 @@ public class AuthenticateController {
 
                 ResponseCookie cookie = ResponseCookie.from(JWT_COOKIE_NAME, jwt)
                     .httpOnly(true)
-                    .secure(false)
+                    .secure(cookieSecure)
                     .path("/")
                     .maxAge(maxAge)
                     .sameSite("Lax")
@@ -90,7 +93,7 @@ public class AuthenticateController {
     public ResponseEntity<Void> logout() {
         ResponseCookie cookie = ResponseCookie.from(JWT_COOKIE_NAME, "")
             .httpOnly(true)
-            .secure(false)
+            .secure(cookieSecure)
             .path("/")
             .maxAge(0)
             .sameSite("Lax")
