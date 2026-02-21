@@ -48,7 +48,7 @@ public class AuthenticateController {
     @Value("${jhipster.security.authentication.jwt.token-validity-in-seconds-for-remember-me:0}")
     private long tokenValidityInSecondsForRememberMe;
 
-    @Value("${jhipster.security.authentication.jwt.cookie-secure:true}")
+    @Value("${application.security.cookie-secure:true}")
     private boolean cookieSecure;
 
     private final ReactiveAuthenticationManager authenticationManager;
