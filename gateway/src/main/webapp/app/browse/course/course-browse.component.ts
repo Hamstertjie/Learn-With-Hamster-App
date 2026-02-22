@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 
 import SharedModule from 'app/shared/shared.module';
+import { CurrencyLocalePipe } from '../currency.pipe';
 import { AccountService } from 'app/core/auth/account.service';
 import { CourseService } from 'app/entities/service/course/service/course.service';
 import { LessonService } from 'app/entities/service/lesson/service/lesson.service';
@@ -17,7 +18,7 @@ import { CartService } from 'app/cart/cart.service';
   selector: 'jhi-course-browse',
   templateUrl: './course-browse.component.html',
   styleUrl: './course-browse.component.scss',
-  imports: [SharedModule, RouterModule],
+  imports: [SharedModule, RouterModule, CurrencyLocalePipe],
 })
 export default class CourseBrowseComponent implements OnInit {
   course = signal<ICourse | null>(null);

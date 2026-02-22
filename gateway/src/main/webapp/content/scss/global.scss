@@ -3,74 +3,117 @@
 @import 'bootstrap/scss/variables';
 
 /* ==============================================================
-Design tokens — CSS custom properties
+Design tokens — Glassmorphism Dark Palette
+Electric Teal #06b6d4 · Violet #8b5cf6 · Deep Navy #080e1a
 ===============================================================*/
 
 :root {
-  --color-primary: #2d6a4f;
-  --color-primary-light: #52b788;
-  --color-primary-dark: #1b4332;
-  --color-primary-50: #f0fdf4;
-  --color-primary-100: #d1fae5;
+  /* Background & surfaces */
+  --color-bg:              #080e1a;
+  --color-surface:         rgba(255, 255, 255, 0.07);
+  --color-surface-raised:  rgba(255, 255, 255, 0.12);
+  --color-surface-overlay: rgba(8, 14, 26, 0.75);
+  --color-border:          rgba(255, 255, 255, 0.12);
 
-  --color-accent: #d4a574;
-  --color-accent-light: #e6c9a8;
-  --color-accent-dark: #b8860b;
+  /* Primary — Electric Teal */
+  --color-primary:         #06b6d4;
+  --color-primary-light:   #67e8f9;
+  --color-primary-dark:    #0891b2;
+  --color-primary-50:      rgba(6, 182, 212, 0.10);
+  --color-primary-100:     rgba(6, 182, 212, 0.20);
 
-  --color-success: #10b981;
-  --color-warning: #f59e0b;
-  --color-danger: #ef4444;
-  --color-info: #0ea5e9;
+  /* Accent — Violet */
+  --color-accent:          #8b5cf6;
+  --color-accent-light:    #c4b5fd;
+  --color-accent-dark:     #7c3aed;
 
-  --color-bg: #faf8f5;
-  --color-surface: #fffef9;
-  --color-surface-raised: #ffffff;
-  --color-surface-overlay: rgba(255, 254, 249, 0.8);
-  --color-border: #e7e0d8;
+  /* Semantic */
+  --color-success:         #10b981;
+  --color-warning:         #f59e0b;
+  --color-danger:          #ef4444;
+  --color-info:            #67e8f9;
 
-  --color-text: #2c1810;
-  --color-text-secondary: #6b5b4f;
-  --color-text-muted: #9c8b7a;
+  /* Text */
+  --color-text:            #f1f5f9;
+  --color-text-secondary:  #94a3b8;
+  --color-text-muted:      #64748b;
 
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.12);
-  --shadow-glow: 0 0 20px rgba(45, 106, 79, 0.15);
+  /* Shadows */
+  --shadow-sm:   0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md:   0 4px 20px rgba(0, 0, 0, 0.4);
+  --shadow-lg:   0 12px 40px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 30px rgba(6, 182, 212, 0.25);
+  --shadow-glow-violet: 0 0 30px rgba(139, 92, 246, 0.25);
 
-  --radius: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
+  /* Glassmorphism — dark navy panels (correct for dark bg) */
+  --glass-bg:     rgba(15, 23, 42, 0.55);
+  --glass-border: rgba(6, 182, 212, 0.15);       /* teal-tinted rim */
+  --glass-blur:   blur(12px) saturate(180%);     /* saturate boosts color bleed */
+  --glass-inner:  inset 0 1px 0 rgba(255, 255, 255, 0.08); /* top highlight */
+
+  /* Shape */
+  --radius:      12px;
+  --radius-lg:   16px;
+  --radius-xl:   24px;
   --radius-pill: 9999px;
 
+  /* Motion */
   --transition: cubic-bezier(0.4, 0, 0.2, 1);
-  --duration: 250ms;
+  --duration:   250ms;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-primary: #52b788;
-    --color-primary-light: #74c69d;
-    --color-primary-dark: #2d6a4f;
-    --color-primary-50: #1a2e1f;
-    --color-primary-100: #243b2a;
+/* ==============================================================
+Animated blob background — behind all glass cards
+===============================================================*/
 
-    --color-accent: #e6c9a8;
+body {
+  position: relative;
+  overflow-x: hidden;
+}
 
-    --color-bg: #1a1410;
-    --color-surface: #2a2118;
-    --color-surface-raised: #3a3028;
-    --color-surface-overlay: rgba(42, 33, 24, 0.85);
-    --color-border: #3a3028;
+body::before,
+body::after {
+  content: '';
+  position: fixed;
+  z-index: -1;
+  pointer-events: none;
+  will-change: transform;
+}
 
-    --color-text: #f1f5f9;
-    --color-text-secondary: #94a3b8;
-    --color-text-muted: #64748b;
+body::before {
+  width: 700px;
+  height: 700px;
+  background: rgba(6, 182, 212, 0.22);
+  border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  top: -220px;
+  left: -200px;
+  filter: blur(80px);                            /* soft radial glow — cheaper than backdrop-filter */
+  animation: blob-drift-a 32s ease-in-out infinite alternate;
+}
 
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
-    --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.4);
-    --shadow-glow: 0 0 24px rgba(82, 183, 136, 0.2);
-  }
+body::after {
+  width: 580px;
+  height: 580px;
+  background: rgba(139, 92, 246, 0.18);
+  border-radius: 40% 60% 70% 30% / 40% 70% 30% 60%;
+  bottom: -200px;
+  right: -180px;
+  filter: blur(70px);
+  animation: blob-drift-b 28s ease-in-out infinite alternate;
+}
+
+@keyframes blob-drift-a {
+  0%   { transform: scale(1)    translate(0, 0);     border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+  33%  { transform: scale(1.1)  translate(40px, -30px); border-radius: 40% 60% 70% 30% / 40% 70% 30% 60%; }
+  66%  { transform: scale(0.92) translate(-25px, 50px); border-radius: 50% 50% 40% 60% / 50% 40% 60% 50%; }
+  100% { transform: scale(1.06) translate(25px, -40px); border-radius: 30% 70% 60% 40% / 70% 40% 60% 30%; }
+}
+
+@keyframes blob-drift-b {
+  0%   { transform: scale(1)    translate(0, 0);     border-radius: 40% 60% 70% 30% / 40% 70% 30% 60%; }
+  33%  { transform: scale(1.08) translate(-30px, 25px); border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+  66%  { transform: scale(0.95) translate(35px, -40px); border-radius: 50% 50% 60% 40% / 60% 50% 40% 50%; }
+  100% { transform: scale(1.04) translate(-20px, 30px); border-radius: 70% 30% 40% 60% / 30% 60% 40% 70%; }
 }
 
 /* ==============================================================
@@ -89,11 +132,27 @@ Global animations
 }
 
 @keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+/* ==============================================================
+Glassmorphism card utility
+===============================================================*/
+
+.glass-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md), var(--glass-inner);
+  transition: transform 300ms var(--transition), box-shadow 300ms var(--transition), border-color 300ms var(--transition);
+
+  &:hover {
+    transform: perspective(1000px) translateY(-10px) rotateX(3deg) scale(1.01);
+    box-shadow: var(--shadow-lg), var(--shadow-glow), var(--glass-inner);
+    border-color: rgba(6, 182, 212, 0.35);
   }
 }
 
@@ -132,7 +191,7 @@ a:not([href]):not([tabindex]):hover.dropdown-item {
 }
 
 a:hover {
-  color: var(--color-primary-dark);
+  color: var(--color-primary-light);
   cursor: pointer;
 }
 
@@ -176,15 +235,21 @@ Generic styles
 }
 
 .form-control {
-  background-color: var(--color-surface);
+  background-color: rgba(255, 255, 255, 0.06);
   color: var(--color-text);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   transition: border-color var(--duration) var(--transition), box-shadow var(--duration) var(--transition);
 
   &:focus {
+    background-color: rgba(255, 255, 255, 0.10);
     border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.15);
+    color: var(--color-text);
+    box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.20);
+  }
+
+  &::placeholder {
+    color: var(--color-text-muted);
   }
 }
 
@@ -215,10 +280,22 @@ Button enhancements
 .btn-primary {
   background-color: var(--color-primary);
   border-color: var(--color-primary);
+  color: #080e1a;
 
   &:hover {
-    background-color: var(--color-primary-dark);
-    border-color: var(--color-primary-dark);
+    background-color: var(--color-primary-light);
+    border-color: var(--color-primary-light);
+    color: #080e1a;
+  }
+}
+
+.btn-outline-primary {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+
+  &:hover {
+    background-color: var(--color-primary);
+    color: #080e1a;
   }
 }
 
@@ -227,15 +304,18 @@ Card enhancements
 ========================================================================== */
 
 .card {
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-sm), var(--glass-inner);
   transition: all 300ms var(--transition);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
 
   &:hover {
-    transform: translateY(-6px);
+    transform: perspective(1000px) translateY(-8px) rotateX(2deg);
     box-shadow: var(--shadow-lg), var(--shadow-glow);
+    border-color: rgba(6, 182, 212, 0.3);
   }
 }
 
@@ -250,7 +330,9 @@ Main content wrapper
 Footer
 ========================================================================== */
 .site-footer {
-  background: var(--color-surface);
+  background: rgba(8, 14, 26, 0.9);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   color: var(--color-text);
   border-top: 1px solid var(--color-border);
   padding: 3rem 2rem 0;
@@ -422,7 +504,9 @@ ui bootstrap tweaks
 
 .dropdown-menu {
   padding-left: 0;
-  background-color: var(--color-surface);
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   box-shadow: var(--shadow-md);
@@ -467,6 +551,7 @@ Responsive table improvements
     }
   }
 }
+
 /* ==========================================================================
 Login & Register card layout
 ========================================================================== */
@@ -481,8 +566,10 @@ Login & Register card layout
 
 .login-card,
 .register-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
   padding: 2.5rem;
@@ -507,7 +594,7 @@ Login & Register card layout
     color: var(--color-primary);
 
     &:hover {
-      color: var(--color-accent);
+      color: var(--color-primary-light);
     }
   }
 }
@@ -515,4 +602,5 @@ Login & Register card layout
 .register-card {
   max-width: 560px;
 }
+
 /* jhipster-needle-scss-add-main JHipster will add new css style */

@@ -24,11 +24,6 @@
     <h1>{{ d.disciplineName }}</h1>
     <p>{{ d.disciplineDescription }}</p>
     <div class="hero-meta">
-      @if (d.disciplinePrice && d.disciplinePrice > 0) {
-        <span class="badge-price">${{ d.disciplinePrice }}</span>
-      } @else {
-        <span class="badge-free" jhiTranslate="browse.discipline.free">Free</span>
-      }
       <span class="badge-count">{{ courses().length }} course(s)</span>
     </div>
   </div>
@@ -54,7 +49,7 @@
                         <span class="badge-level">{{ course.courseLevel }}</span>
                       }
                       @if (course.coursePrice && course.coursePrice > 0) {
-                        <span class="badge-price">${{ course.coursePrice }}</span>
+                        <span class="badge-price">{{ course.coursePrice | localCurrency }}</span>
                       } @else {
                         <span class="badge-free" jhiTranslate="browse.discipline.free">Free</span>
                       }

@@ -1,18 +1,23 @@
 /* ==========================================================================
-Navbar — Teal & Coral design system
+Navbar — Glassmorphism dark
 ========================================================================== */
 
 .navbar {
-  background: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
-  box-shadow: var(--shadow-sm);
+  background: rgba(8, 14, 26, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.35);
   padding: 0 1.5rem;
   min-height: 4rem;
-  transition: background-color var(--duration) var(--transition), box-shadow var(--duration) var(--transition);
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  transition: background var(--duration) var(--transition), box-shadow var(--duration) var(--transition);
 
   a.nav-link {
     font-weight: 500;
-    color: var(--color-text);
+    color: var(--color-text-secondary);
     padding: 0.5rem 0.75rem;
     font-size: 0.9rem;
     position: relative;
@@ -25,13 +30,13 @@ Navbar — Teal & Coral design system
       left: 50%;
       width: 0;
       height: 2px;
-      background: var(--color-primary);
+      background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
       border-radius: var(--radius-pill);
       transition: width 300ms var(--transition), left 300ms var(--transition);
     }
 
     &:hover {
-      color: var(--color-primary);
+      color: var(--color-text);
 
       &::after {
         width: 60%;
@@ -51,14 +56,17 @@ Navbar — Teal & Coral design system
 }
 
 .navbar-brand {
-  font-weight: 700;
-  font-size: 1.25rem;
-  color: var(--color-primary) !important;
+  font-weight: 800;
+  font-size: 1.2rem;
   letter-spacing: -0.5px;
-  transition: color var(--duration) var(--transition);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: filter var(--duration) var(--transition);
 
   &:hover {
-    color: var(--color-primary-dark) !important;
+    filter: brightness(1.2);
   }
 }
 
@@ -68,20 +76,22 @@ Navbar — Teal & Coral design system
 }
 
 /* ==========================================================================
-Dropdown styles
+Dropdown
 ========================================================================== */
 .dropdown-menu {
-  border: 1px solid var(--color-border);
-  box-shadow: var(--shadow-md);
+  background: rgba(12, 20, 38, 0.95);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.10);
   border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
   padding: 0.5rem 0;
   margin-top: 0.25rem;
-  background-color: var(--color-surface);
 
   .dropdown-item {
     padding: 0.5rem 1rem;
     font-size: 0.9rem;
-    color: var(--color-text);
+    color: var(--color-text-secondary);
     transition: background-color var(--duration) var(--transition), color var(--duration) var(--transition);
 
     fa-icon {
@@ -91,12 +101,10 @@ Dropdown styles
     }
 
     &:hover {
-      background-color: var(--color-primary-50);
+      background-color: rgba(6, 182, 212, 0.10);
       color: var(--color-primary);
 
-      fa-icon {
-        color: var(--color-primary);
-      }
+      fa-icon { color: var(--color-primary); }
     }
 
     &.active,
@@ -104,9 +112,7 @@ Dropdown styles
       background-color: var(--color-primary-100);
       color: var(--color-primary);
 
-      fa-icon {
-        color: var(--color-primary);
-      }
+      fa-icon { color: var(--color-primary); }
     }
   }
 }
@@ -115,12 +121,13 @@ Dropdown styles
 Mobile toggler
 ========================================================================== */
 .navbar-toggler {
-  border: none;
+  border: 1px solid var(--color-border);
   padding: 0.5rem;
-  color: var(--color-text);
+  color: var(--color-text-secondary);
+  border-radius: var(--radius);
 
   &:focus {
-    box-shadow: none;
+    box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.25);
   }
 }
 
@@ -140,7 +147,7 @@ Cart badge
   position: absolute;
   top: -8px;
   right: -10px;
-  background: var(--color-accent);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-dark) 100%);
   color: #fff;
   font-size: 0.65rem;
   font-weight: 700;
@@ -152,16 +159,5 @@ Cart badge
   justify-content: center;
   padding: 0 4px;
   line-height: 1;
-}
-
-/* ==========================================================================
-Dark mode — glassmorphism
-========================================================================== */
-@media (prefers-color-scheme: dark) {
-  .navbar {
-    background: var(--color-surface-overlay);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom-color: rgba(255, 255, 255, 0.06);
-  }
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.5);
 }

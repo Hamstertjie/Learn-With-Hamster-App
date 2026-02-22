@@ -1,19 +1,21 @@
+/* Hero */
 .my-learning-hero {
-  background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
-  color: #fff;
-  padding: 3rem 2rem;
+  padding: 3.5rem 2rem 2.5rem;
   text-align: center;
 
   h1 {
     font-size: clamp(1.75rem, 4vw, 2.25rem);
-    font-weight: 700;
+    font-weight: 800;
     margin-bottom: 0.5rem;
-    color: #fff;
+    background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-accent-light) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
   p {
     font-size: 1.1rem;
-    opacity: 0.9;
+    color: var(--color-text-secondary);
   }
 }
 
@@ -36,9 +38,11 @@
 .empty-state {
   text-align: center;
   padding: 3rem 2rem;
-  background: var(--color-surface);
-  border-radius: var(--radius);
-  border: 2px dashed var(--color-border);
+  background: var(--glass-bg);
+  border-radius: var(--radius-lg);
+  border: 1px dashed rgba(6, 182, 212, 0.25);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 
   p {
     color: var(--color-text-secondary);
@@ -60,6 +64,49 @@
   margin-bottom: 1rem;
 }
 
+/* Stats Row — glass pills */
+.stats-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-bottom: 2rem;
+}
+
+.stat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: var(--radius-pill);
+  padding: 0.35rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+
+  fa-icon { font-size: 0.8rem; }
+}
+
+.stat-chip-progress {
+  background: var(--color-primary-50);
+  border-color: rgba(6, 182, 212, 0.25);
+  color: var(--color-primary-light);
+}
+
+.stat-chip-complete {
+  background: rgba(245, 158, 11, 0.08);
+  border-color: rgba(245, 158, 11, 0.25);
+  color: #fbbf24;
+}
+
+.stat-chip-bookmark {
+  background: rgba(139, 92, 246, 0.08);
+  border-color: rgba(139, 92, 246, 0.2);
+  color: var(--color-accent-light);
+}
+
 /* Enrolled Course Cards */
 .course-grid {
   display: grid;
@@ -69,29 +116,41 @@
 
 .course-card {
   display: block;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-radius: var(--radius-lg);
   text-decoration: none;
   color: var(--color-text);
   overflow: hidden;
-  transition: all 300ms var(--transition);
+  box-shadow: var(--shadow-md);
+  transition: transform 300ms var(--transition), box-shadow 300ms var(--transition), border-color 300ms var(--transition);
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+    opacity: 0.7;
+    transition: opacity 300ms var(--transition);
+  }
 
   &:hover {
-    transform: translateY(-6px);
+    transform: perspective(900px) translateY(-8px) rotateX(2deg);
     box-shadow: var(--shadow-lg), var(--shadow-glow);
+    border-color: rgba(6, 182, 212, 0.3);
     text-decoration: none;
     color: var(--color-text);
+
+    &::before { opacity: 1; }
   }
 
-  .card-accent {
-    height: 4px;
-    background: linear-gradient(90deg, var(--color-primary), var(--color-primary-light));
-  }
+  .card-accent { display: none; }
 
-  .card-body {
-    padding: 1.5rem;
-  }
+  .card-body { padding: 1.5rem; }
 
   h5 {
     font-weight: 700;
@@ -116,8 +175,8 @@
 }
 
 .progress-bar-bg {
-  height: 6px;
-  background: var(--color-border);
+  height: 5px;
+  background: rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-pill);
   overflow: hidden;
   margin-bottom: 0.4rem;
@@ -125,7 +184,7 @@
 
 .progress-bar-fill {
   height: 100%;
-  background: var(--color-primary);
+  background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
   border-radius: var(--radius-pill);
   transition: width 0.6s ease;
 }
@@ -138,64 +197,24 @@
 .badge-level {
   display: inline-block;
   background: rgba(245, 158, 11, 0.12);
-  color: #b45309;
+  color: #fbbf24;
   padding: 0.2rem 0.6rem;
   border-radius: var(--radius-pill);
   font-weight: 600;
   font-size: 0.75rem;
   text-transform: capitalize;
-}
-
-/* Stats Row */
-.stats-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.65rem;
-  margin-bottom: 2rem;
-}
-
-.stat-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-pill);
-  padding: 0.3rem 0.85rem;
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--color-text-secondary);
-
-  fa-icon { font-size: 0.8rem; }
-}
-
-.stat-chip-progress {
-  background: var(--color-primary-50);
-  border-color: var(--color-primary-100);
-  color: var(--color-primary-dark);
-}
-
-.stat-chip-complete {
-  background: rgba(245, 158, 11, 0.08);
-  border-color: rgba(245, 158, 11, 0.2);
-  color: #b45309;
-}
-
-.stat-chip-bookmark {
-  background: rgba(99, 102, 241, 0.07);
-  border-color: rgba(99, 102, 241, 0.2);
-  color: #4f46e5;
+  border: 1px solid rgba(245, 158, 11, 0.25);
 }
 
 /* Section heading icons */
 .section-trophy-icon {
-  color: #d97706;
+  color: #fbbf24;
   margin-right: 0.5rem;
   font-size: 1rem;
 }
 
 .section-bookmark-icon {
-  color: #4f46e5;
+  color: var(--color-accent-light);
   margin-right: 0.5rem;
   font-size: 1rem;
 }
@@ -203,12 +222,14 @@
 /* Completed course card */
 .course-card-complete {
   opacity: 0.92;
-
   &:hover { opacity: 1; }
 }
 
 .card-accent-complete {
-  background: linear-gradient(90deg, #d97706, #f59e0b) !important;
+  &::before {
+    background: linear-gradient(90deg, #d97706, #f59e0b) !important;
+    opacity: 1 !important;
+  }
 }
 
 .complete-trophy-row {
@@ -219,7 +240,7 @@
 }
 
 .trophy-inline {
-  color: #d97706;
+  color: #fbbf24;
   font-size: 0.9rem;
 }
 
@@ -228,7 +249,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #d97706;
+  color: #fbbf24;
 }
 
 .progress-bar-complete {
@@ -247,8 +268,10 @@
   align-items: center;
   gap: 1rem;
   padding: 0.85rem 1rem;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-radius: var(--radius);
   text-decoration: none;
   color: var(--color-text);
@@ -256,22 +279,23 @@
 
   &:hover {
     background: var(--color-primary-50);
-    border-color: var(--color-primary-100);
+    border-color: rgba(6, 182, 212, 0.3);
     color: var(--color-text);
     text-decoration: none;
-    transform: translateX(3px);
+    transform: translateX(4px);
   }
 }
 
 .bookmark-icon-wrap {
   width: 36px;
   height: 36px;
-  background: rgba(99, 102, 241, 0.1);
+  background: rgba(139, 92, 246, 0.12);
+  border: 1px solid rgba(139, 92, 246, 0.2);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #4f46e5;
+  color: var(--color-accent-light);
   flex-shrink: 0;
   font-size: 0.9rem;
 }
@@ -305,37 +329,31 @@
 /* Quick Links */
 .quick-link-card {
   display: block;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-radius: var(--radius-lg);
   text-decoration: none;
   color: var(--color-text);
   overflow: hidden;
   height: 100%;
-  transition: all 300ms var(--transition);
+  box-shadow: var(--shadow-md);
+  transition: transform 300ms var(--transition), box-shadow 300ms var(--transition);
+  position: relative;
 
   &:hover {
-    transform: translateY(-6px);
+    transform: perspective(900px) translateY(-8px) rotateX(2deg);
     box-shadow: var(--shadow-lg), var(--shadow-glow);
     text-decoration: none;
     color: var(--color-text);
   }
 
-  .card-accent {
-    height: 4px;
-  }
+  .card-accent { height: 2px; }
+  .accent-explore { background: linear-gradient(90deg, var(--color-primary), var(--color-primary-light)); }
+  .accent-profile { background: linear-gradient(90deg, var(--color-info), var(--color-primary)); }
 
-  .accent-explore {
-    background: linear-gradient(90deg, var(--color-primary), var(--color-primary-light));
-  }
-
-  .accent-profile {
-    background: linear-gradient(90deg, var(--color-info), #38bdf8);
-  }
-
-  .card-body {
-    padding: 1.5rem;
-  }
+  .card-body { padding: 1.5rem; }
 
   h5 {
     font-weight: 700;
@@ -355,15 +373,4 @@
   font-size: 1.75rem;
   color: var(--color-primary);
   margin-bottom: 0.75rem;
-}
-
-@media (prefers-color-scheme: dark) {
-  .my-learning-hero {
-    background: linear-gradient(135deg, #1a2e1f 0%, #243b2a 100%);
-  }
-
-  .badge-level {
-    background: rgba(245, 158, 11, 0.2);
-    color: #fbbf24;
-  }
 }

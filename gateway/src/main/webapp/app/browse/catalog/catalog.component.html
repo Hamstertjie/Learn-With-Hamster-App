@@ -35,11 +35,6 @@
                   <h5 class="card-title">{{ discipline.disciplineName }}</h5>
                   <p class="card-description">{{ discipline.disciplineDescription }}</p>
                   <div class="card-meta">
-                    @if (discipline.disciplinePrice && discipline.disciplinePrice > 0) {
-                      <span class="badge-price">${{ discipline.disciplinePrice }}</span>
-                    } @else {
-                      <span class="badge-free" jhiTranslate="browse.discipline.free">Free</span>
-                    }
                     <span class="badge-courses">
                       {{ courseCountMap()[discipline.id] || 0 }}
                       <span>course(s)</span>

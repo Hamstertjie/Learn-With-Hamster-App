@@ -6,7 +6,6 @@
  */
 
 // Options:
-// Quickly modify global styling by enabling or disabling optional features.
 $enable-rounded: true;
 $enable-shadows: true;
 $enable-gradients: false;
@@ -15,31 +14,27 @@ $enable-hover-media-query: false;
 $enable-grid-classes: true;
 $enable-print-styles: true;
 
-// Theme colors:
-$primary: #2d6a4f;
-$success: #10b981;
-$info: #0ea5e9;
-$warning: #f59e0b;
-$danger: #ef4444;
+// Theme colors — Electric Teal + Violet on Deep Navy
+$primary:   #06b6d4;   // cyan-500
+$success:   #10b981;
+$info:      #67e8f9;   // cyan-300
+$warning:   #f59e0b;
+$danger:    #ef4444;
 
-// Components:
-// Define common padding and border radius sizes and more.
-
-$border-radius: 0.75rem;
+// Components
+$border-radius:    0.75rem;
 $border-radius-lg: 1rem;
 $border-radius-sm: 0.5rem;
 
-// Body:
-// Settings for the `<body>` element.
+// Body — always dark
+$body-bg:    #080e1a;
+$body-color: #f1f5f9;
 
-$body-bg: #faf8f5;
-
-// Typography:
-// Font, line-height, and color for body text, headings, and more.
-
+// Typography
 $font-family-sans-serif: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-$font-size-base: 1rem;
+$font-size-base:    1rem;
 $headings-font-weight: 700;
 
-$dropdown-link-hover-color: #2d6a4f;
-$dropdown-link-hover-bg: #f0fdf4;
+// Dropdowns
+$dropdown-link-hover-color: #06b6d4;
+$dropdown-link-hover-bg:    rgba(6, 182, 212, 0.12);

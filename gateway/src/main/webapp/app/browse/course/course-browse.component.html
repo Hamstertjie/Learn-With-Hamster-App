@@ -28,7 +28,7 @@
         <span class="badge-level">{{ c.courseLevel }}</span>
       }
       @if (c.coursePrice && c.coursePrice > 0) {
-        <span class="badge-price">${{ c.coursePrice }}</span>
+        <span class="badge-price">{{ c.coursePrice | localCurrency }}</span>
       } @else {
         <span class="badge-free" jhiTranslate="browse.course.free">Free</span>
       }

@@ -87,21 +87,28 @@ module.exports = async (config, options, targetOptions) => {
     );
   }
 
-  const patterns = [
-    {
-      // https://github.com/swagger-api/swagger-ui/blob/v4.6.1/swagger-ui-dist-package/README.md
-      context: require('swagger-ui-dist').getAbsoluteFSPath(),
-      from: '*.{js,css,html,png}',
-      to: 'swagger-ui/',
-      globOptions: { ignore: ['**/index.html'] },
-    },
-    {
-      from: path.join(path.dirname(require.resolve('axios/package.json')), 'dist/axios.min.js'),
-      to: 'swagger-ui/',
-    },
-    { from: './src/main/webapp/swagger-ui/', to: 'swagger-ui/' },
-    // jhipster-needle-add-assets-to-webpack - JHipster will add/remove third-party resources in this array
-  ];
+  // Only copy swagger-ui assets in production — skipping in dev speeds up cold builds significantly
+  const isDev = config.mode === 'development';
+  const patterns = isDev
+    ? [
+        // Minimal copy: only the custom gateway swagger-ui page, skip the large dist package
+        { from: './src/main/webapp/swagger-ui/', to: 'swagger-ui/' },
+      ]
+    : [
+        {
+          // https://github.com/swagger-api/swagger-ui/blob/v4.6.1/swagger-ui-dist-package/README.md
+          context: require('swagger-ui-dist').getAbsoluteFSPath(),
+          from: '*.{js,css,html,png}',
+          to: 'swagger-ui/',
+          globOptions: { ignore: ['**/index.html'] },
+        },
+        {
+          from: path.join(path.dirname(require.resolve('axios/package.json')), 'dist/axios.min.js'),
+          to: 'swagger-ui/',
+        },
+        { from: './src/main/webapp/swagger-ui/', to: 'swagger-ui/' },
+        // jhipster-needle-add-assets-to-webpack - JHipster will add/remove third-party resources in this array
+      ];
 
   if (patterns.length > 0) {
     config.plugins.push(new CopyWebpackPlugin({ patterns }));

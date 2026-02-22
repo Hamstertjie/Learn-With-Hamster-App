@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 
 import SharedModule from 'app/shared/shared.module';
+import { CurrencyLocalePipe } from '../currency.pipe';
 import { AccountService } from 'app/core/auth/account.service';
 import { DisciplineService } from 'app/entities/service/discipline/service/discipline.service';
 import { CourseService } from 'app/entities/service/course/service/course.service';
@@ -14,7 +15,7 @@ import { IResource } from 'app/entities/service/resource/resource.model';
   selector: 'jhi-discipline-browse',
   templateUrl: './discipline-browse.component.html',
   styleUrl: './discipline-browse.component.scss',
-  imports: [SharedModule, RouterModule],
+  imports: [SharedModule, RouterModule, CurrencyLocalePipe],
 })
 export default class DisciplineBrowseComponent implements OnInit {
   discipline = signal<IDiscipline | null>(null);
