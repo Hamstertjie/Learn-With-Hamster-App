@@ -12,7 +12,7 @@ import { ICourse } from 'app/entities/service/course/course.model';
   selector: 'jhi-catalog',
   templateUrl: './catalog.component.html',
   styleUrl: './catalog.component.scss',
-  imports: [SharedModule, RouterModule, CurrencyLocalePipe],
+  imports: [SharedModule, RouterModule],
 })
 export default class CatalogComponent implements OnInit {
   disciplines = signal<IDiscipline[]>([]);
