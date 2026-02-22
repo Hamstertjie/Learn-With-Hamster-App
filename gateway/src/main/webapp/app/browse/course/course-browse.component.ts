@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed, effect } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 
 import SharedModule from 'app/shared/shared.module';
@@ -35,6 +35,11 @@ export default class CourseBrowseComponent implements OnInit {
   completedLessonIds = signal<Set<number>>(new Set());
   account = signal<Account | null>(null);
 
+  // Tracks whether both lessons and progress have resolved (needed to detect completion)
+  private lessonsLoaded = false;
+  private progressLoaded = false;
+  private loadedCourseId = 0;
+
   courseComplete = computed(() => {
     const total = this.lessons().length;
     return total > 0 && this.completedLessonIds().size >= total;
@@ -57,19 +62,6 @@ export default class CourseBrowseComponent implements OnInit {
   readonly cartService = inject(CartService);
   private readonly confettiService = inject(ConfettiService);
   private readonly certificateService = inject(CertificateService);
-
-  // Fire confetti once per course per session when all lessons are complete
-  private readonly _confettiEffect = effect(() => {
-    const complete = this.courseComplete();
-    const id = this.course()?.id;
-    if (complete && id) {
-      const key = `confetti-${id}`;
-      if (!sessionStorage.getItem(key)) {
-        sessionStorage.setItem(key, '1');
-        void this.confettiService.fire();
-      }
-    }
-  });
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -149,6 +141,10 @@ export default class CourseBrowseComponent implements OnInit {
   }
 
   private loadData(id: number): void {
+    this.loadedCourseId = id;
+    this.lessonsLoaded = false;
+    this.progressLoaded = false;
+
     this.courseService.find(id).subscribe(res => {
       this.course.set(res.body);
 
@@ -157,6 +153,8 @@ export default class CourseBrowseComponent implements OnInit {
       this.lessonService.query({ size: 1000 }).subscribe(lessonRes => {
         const allLessons: ILesson[] = lessonRes.body ?? [];
         this.lessons.set(allLessons.filter(l => courseLessonIds.has(l.id)));
+        this.lessonsLoaded = true;
+        this.maybeFireConfetti();
       });
 
       this.resourceService.query({ size: 1000 }).subscribe(resourceRes => {
@@ -172,8 +170,27 @@ export default class CourseBrowseComponent implements OnInit {
         this.progressService.getCourseProgress(id).subscribe(progressRes => {
           const ids = new Set((progressRes.body ?? []).map(p => p.lessonId).filter((lid): lid is number => lid != null));
           this.completedLessonIds.set(ids);
+          this.progressLoaded = true;
+          this.maybeFireConfetti();
         });
+      } else {
+        // Not enrolled — progress will never load, mark as resolved so we don't block
+        this.progressLoaded = true;
       }
     });
+  }
+
+  private maybeFireConfetti(): void {
+    if (!this.lessonsLoaded || !this.progressLoaded) return;
+    const total = this.lessons().length;
+    const completed = this.completedLessonIds().size;
+    if (total > 0 && completed >= total) {
+      const key = `confetti-${this.loadedCourseId}`;
+      const forceTest = this.route.snapshot.queryParamMap.get('confetti') === 'test';
+      if (!sessionStorage.getItem(key) || forceTest) {
+        if (!forceTest) sessionStorage.setItem(key, '1');
+        void this.confettiService.fire();
+      }
+    }
   }
 }
