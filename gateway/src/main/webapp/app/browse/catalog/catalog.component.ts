@@ -2,7 +2,6 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 
 import SharedModule from 'app/shared/shared.module';
-import { CurrencyLocalePipe } from '../currency.pipe';
 import { AccountService } from 'app/core/auth/account.service';
 import { DisciplineService } from 'app/entities/service/discipline/service/discipline.service';
 import { CourseService } from 'app/entities/service/course/service/course.service';
