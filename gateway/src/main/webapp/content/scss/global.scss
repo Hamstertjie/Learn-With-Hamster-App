@@ -4,12 +4,12 @@
 
 /* ==============================================================
 Design tokens — Glassmorphism Dark Palette
-Electric Teal #06b6d4 · Violet #8b5cf6 · Deep Navy #080e1a
+Electric Teal #06b6d4 · Violet #8b5cf6 · Deep Navy #111827
 ===============================================================*/
 
 :root {
   /* Background & surfaces */
-  --color-bg:              #080e1a;
+  --color-bg:              #111827;
   --color-surface:         rgba(255, 255, 255, 0.07);
   --color-surface-raised:  rgba(255, 255, 255, 0.12);
   --color-surface-overlay: rgba(8, 14, 26, 0.75);
@@ -42,14 +42,14 @@ Electric Teal #06b6d4 · Violet #8b5cf6 · Deep Navy #080e1a
   --shadow-sm:   0 1px 3px rgba(0, 0, 0, 0.3);
   --shadow-md:   0 4px 20px rgba(0, 0, 0, 0.4);
   --shadow-lg:   0 12px 40px rgba(0, 0, 0, 0.5);
-  --shadow-glow: 0 0 30px rgba(6, 182, 212, 0.25);
-  --shadow-glow-violet: 0 0 30px rgba(139, 92, 246, 0.25);
+  --shadow-glow: 0 0 40px rgba(6, 182, 212, 0.35);
+  --shadow-glow-violet: 0 0 40px rgba(139, 92, 246, 0.32);
 
-  /* Glassmorphism — dark navy panels (correct for dark bg) */
-  --glass-bg:     rgba(15, 23, 42, 0.55);
-  --glass-border: rgba(6, 182, 212, 0.15);       /* teal-tinted rim */
-  --glass-blur:   blur(12px) saturate(180%);     /* saturate boosts color bleed */
-  --glass-inner:  inset 0 1px 0 rgba(255, 255, 255, 0.08); /* top highlight */
+  /* Glassmorphism — white-based glass panels pop on dark bg */
+  --glass-bg:     rgba(255, 255, 255, 0.07);
+  --glass-border: rgba(6, 182, 212, 0.25);       /* teal-tinted rim */
+  --glass-blur:   blur(16px) saturate(200%);     /* stronger frosted effect */
+  --glass-inner:  inset 0 1px 0 rgba(255, 255, 255, 0.14); /* sharper top edge highlight */
 
   /* Shape */
   --radius:      12px;
@@ -83,22 +83,22 @@ body::after {
 body::before {
   width: 700px;
   height: 700px;
-  background: rgba(6, 182, 212, 0.22);
+  background: rgba(6, 182, 212, 0.38);
   border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
   top: -220px;
   left: -200px;
-  filter: blur(80px);                            /* soft radial glow — cheaper than backdrop-filter */
+  filter: blur(100px);                           /* soft radial glow — cheaper than backdrop-filter */
   animation: blob-drift-a 32s ease-in-out infinite alternate;
 }
 
 body::after {
   width: 580px;
   height: 580px;
-  background: rgba(139, 92, 246, 0.18);
+  background: rgba(139, 92, 246, 0.30);
   border-radius: 40% 60% 70% 30% / 40% 70% 30% 60%;
   bottom: -200px;
   right: -180px;
-  filter: blur(70px);
+  filter: blur(90px);
   animation: blob-drift-b 28s ease-in-out infinite alternate;
 }
 
@@ -601,6 +601,29 @@ Login & Register card layout
 
 .register-card {
   max-width: 560px;
+}
+
+/* ==========================================================================
+Glassmorphism enhancements — browse section headers
+========================================================================== */
+
+.browse-section h3 {
+  border-left: 3px solid var(--color-primary);
+  padding-left: 0.75rem;
+  text-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
+}
+
+/* Hero glass wrapper — catalog, discipline, course browse */
+.browse-hero-glass {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(6, 182, 212, 0.18);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border-radius: var(--radius-xl);
+  padding: 2.5rem 3rem;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10), 0 8px 32px rgba(0, 0, 0, 0.3);
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 /* jhipster-needle-scss-add-main JHipster will add new css style */

@@ -16,15 +16,17 @@
 } @else {
   @let d = discipline()!;
   <div class="browse-hero">
-    <div class="hero-breadcrumb">
-      <a routerLink="/catalog">Catalog</a>
-      <fa-icon icon="chevron-right"></fa-icon>
-      <span>{{ d.disciplineName }}</span>
-    </div>
-    <h1>{{ d.disciplineName }}</h1>
-    <p>{{ d.disciplineDescription }}</p>
-    <div class="hero-meta">
-      <span class="badge-count">{{ courses().length }} course(s)</span>
+    <div class="browse-hero-glass">
+      <div class="hero-breadcrumb">
+        <a routerLink="/catalog">Catalog</a>
+        <fa-icon icon="chevron-right"></fa-icon>
+        <span>{{ d.disciplineName }}</span>
+      </div>
+      <h1>{{ d.disciplineName }}</h1>
+      <p>{{ d.disciplineDescription }}</p>
+      <div class="hero-meta">
+        <span class="badge-count">{{ courses().length }} course(s)</span>
+      </div>
     </div>
   </div>
 

@@ -16,71 +16,79 @@
 } @else {
   @let c = course()!;
   <div class="browse-hero">
-    <div class="hero-breadcrumb">
-      <a routerLink="/catalog">Catalog</a>
-      <fa-icon icon="chevron-right"></fa-icon>
-      <span>{{ c.courseTitle }}</span>
-    </div>
-    <h1>{{ c.courseTitle }}</h1>
-    <p>{{ c.courseDescription }}</p>
-    <div class="hero-meta">
-      @if (c.courseLevel) {
-        <span class="badge-level">{{ c.courseLevel }}</span>
-      }
-      @if (c.coursePrice && c.coursePrice > 0) {
-        <span class="badge-price">{{ c.coursePrice | localCurrency }}</span>
-      } @else {
-        <span class="badge-free" jhiTranslate="browse.course.free">Free</span>
-      }
-      <span class="badge-count">{{ lessons().length }} lesson(s)</span>
-    </div>
-    @if (enrolled()) {
-      @if (courseComplete()) {
-        <div class="trophy-badge">
-          <fa-icon icon="trophy"></fa-icon>
-          <span jhiTranslate="browse.course.courseComplete">Course Complete!</span>
-        </div>
-      } @else if (completedLessonIds().size > 0) {
-        <div class="progress-indicator">
-          <div class="progress-track">
-            <div class="progress-fill" [style.width.%]="progressPercent()"></div>
-          </div>
-          <span class="progress-label">{{ completedLessonIds().size }} / {{ lessons().length }} lessons completed</span>
-        </div>
-      }
-    }
-    <div class="hero-enroll">
-      @if (enrolled()) {
-        <span class="badge-enrolled">
-          <fa-icon icon="check-circle"></fa-icon>
-          <span jhiTranslate="browse.course.enrolled">Enrolled</span>
-        </span>
-        @if (lessons().length > 0) {
-          <a [routerLink]="['/catalog/lesson', lessons()[0].id]" [queryParams]="{course: c.id}" class="btn btn-light btn-lg">
-            <span jhiTranslate="browse.course.continueLearning">Continue Learning</span>
-            <fa-icon icon="arrow-right"></fa-icon>
-          </a>
+    <div class="browse-hero-glass">
+      <div class="hero-breadcrumb">
+        <a routerLink="/catalog">Catalog</a>
+        <fa-icon icon="chevron-right"></fa-icon>
+        <span>{{ c.courseTitle }}</span>
+      </div>
+      <h1>{{ c.courseTitle }}</h1>
+      <p>{{ c.courseDescription }}</p>
+      <div class="hero-meta">
+        @if (c.courseLevel) {
+          <span class="badge-level">{{ c.courseLevel }}</span>
         }
-      } @else {
-        @if (isFree) {
-          <button class="btn btn-enroll btn-lg" (click)="enroll()" [disabled]="enrolling()">
-            @if (enrolling()) {
-              <span class="spinner-border spinner-border-sm" role="status"></span>
-            }
-            <span jhiTranslate="browse.course.enroll">Enroll Now</span>
-          </button>
-        } @else if (isCourseInCart()) {
-          <a routerLink="/cart" class="btn btn-light btn-lg">
-            <fa-icon icon="shopping-cart"></fa-icon>
-            <span jhiTranslate="cart.viewCart">View Cart</span>
-          </a>
+        @if (c.coursePrice && c.coursePrice > 0) {
+          <span class="badge-price">{{ c.coursePrice | localCurrency }}</span>
         } @else {
-          <button class="btn btn-enroll btn-lg" (click)="addToCart()">
-            <fa-icon icon="shopping-cart"></fa-icon>
-            <span jhiTranslate="cart.addToCart">Add to Cart</span>
-          </button>
+          <span class="badge-free" jhiTranslate="browse.course.free">Free</span>
+        }
+        <span class="badge-count">{{ lessons().length }} lesson(s)</span>
+      </div>
+      @if (enrolled()) {
+        @if (courseComplete()) {
+          <div class="completion-row">
+            <div class="trophy-badge">
+              <fa-icon icon="trophy"></fa-icon>
+              <span jhiTranslate="browse.course.courseComplete">Course Complete!</span>
+            </div>
+            <button class="btn btn-certificate" (click)="downloadCertificate()">
+              <fa-icon icon="certificate"></fa-icon>
+              Download Certificate
+            </button>
+          </div>
+        } @else if (completedLessonIds().size > 0) {
+          <div class="progress-indicator">
+            <div class="progress-track">
+              <div class="progress-fill" [style.width.%]="progressPercent()"></div>
+            </div>
+            <span class="progress-label">{{ completedLessonIds().size }} / {{ lessons().length }} lessons completed</span>
+          </div>
         }
       }
+      <div class="hero-enroll">
+        @if (enrolled()) {
+          <span class="badge-enrolled">
+            <fa-icon icon="check-circle"></fa-icon>
+            <span jhiTranslate="browse.course.enrolled">Enrolled</span>
+          </span>
+          @if (lessons().length > 0) {
+            <a [routerLink]="['/catalog/lesson', lessons()[0].id]" [queryParams]="{course: c.id}" class="btn btn-light btn-lg">
+              <span jhiTranslate="browse.course.continueLearning">Continue Learning</span>
+              <fa-icon icon="arrow-right"></fa-icon>
+            </a>
+          }
+        } @else {
+          @if (isFree) {
+            <button class="btn btn-enroll btn-lg" (click)="enroll()" [disabled]="enrolling()">
+              @if (enrolling()) {
+                <span class="spinner-border spinner-border-sm" role="status"></span>
+              }
+              <span jhiTranslate="browse.course.enroll">Enroll Now</span>
+            </button>
+          } @else if (isCourseInCart()) {
+            <a routerLink="/cart" class="btn btn-light btn-lg">
+              <fa-icon icon="shopping-cart"></fa-icon>
+              <span jhiTranslate="cart.viewCart">View Cart</span>
+            </a>
+          } @else {
+            <button class="btn btn-enroll btn-lg" (click)="addToCart()">
+              <fa-icon icon="shopping-cart"></fa-icon>
+              <span jhiTranslate="cart.addToCart">Add to Cart</span>
+            </button>
+          }
+        }
+      </div>
     </div>
   </div>
 

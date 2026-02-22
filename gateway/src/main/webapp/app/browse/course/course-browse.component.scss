@@ -128,6 +128,44 @@
   }
 }
 
+/* Completion row — trophy + certificate button */
+.completion-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 0.75rem;
+}
+
+.btn-certificate {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(251, 191, 36, 0.45);
+  color: #fbbf24;
+  padding: 0.5rem 1.25rem;
+  border-radius: var(--radius-pill);
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: all 250ms var(--transition);
+
+  &:hover {
+    background: rgba(251, 191, 36, 0.15);
+    border-color: rgba(251, 191, 36, 0.7);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(251, 191, 36, 0.35);
+    color: #fbbf24;
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
 /* Trophy */
 .trophy-badge {
   display: inline-flex;
@@ -231,7 +269,8 @@
   &:last-child { border-bottom: none; }
 
   &.expanded {
-    background: var(--color-primary-50);
+    background: rgba(6, 182, 212, 0.06);
+    border-left: 2px solid var(--color-primary);
   }
 }
 

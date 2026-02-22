@@ -1,9 +1,10 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, effect } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 
 import SharedModule from 'app/shared/shared.module';
 import { CurrencyLocalePipe } from '../currency.pipe';
 import { AccountService } from 'app/core/auth/account.service';
+import { Account } from 'app/core/auth/account.model';
 import { CourseService } from 'app/entities/service/course/service/course.service';
 import { LessonService } from 'app/entities/service/lesson/service/lesson.service';
 import { ResourceService } from 'app/entities/service/resource/service/resource.service';
@@ -13,6 +14,8 @@ import { ICourse } from 'app/entities/service/course/course.model';
 import { ILesson } from 'app/entities/service/lesson/lesson.model';
 import { IResource } from 'app/entities/service/resource/resource.model';
 import { CartService } from 'app/cart/cart.service';
+import { ConfettiService } from '../confetti.service';
+import { CertificateService } from '../certificate.service';
 
 @Component({
   selector: 'jhi-course-browse',
@@ -30,6 +33,7 @@ export default class CourseBrowseComponent implements OnInit {
   enrolled = signal(false);
   enrolling = signal(false);
   completedLessonIds = signal<Set<number>>(new Set());
+  account = signal<Account | null>(null);
 
   courseComplete = computed(() => {
     const total = this.lessons().length;
@@ -51,12 +55,28 @@ export default class CourseBrowseComponent implements OnInit {
   private readonly enrollmentService = inject(UserCourseEnrollmentService);
   private readonly progressService = inject(UserLessonProgressService);
   readonly cartService = inject(CartService);
+  private readonly confettiService = inject(ConfettiService);
+  private readonly certificateService = inject(CertificateService);
+
+  // Fire confetti once per course per session when all lessons are complete
+  private readonly _confettiEffect = effect(() => {
+    const complete = this.courseComplete();
+    const id = this.course()?.id;
+    if (complete && id) {
+      const key = `confetti-${id}`;
+      if (!sessionStorage.getItem(key)) {
+        sessionStorage.setItem(key, '1');
+        void this.confettiService.fire();
+      }
+    }
+  });
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
 
     this.accountService.identity().subscribe(account => {
       this.isAuthenticated.set(account !== null);
+      this.account.set(account);
       if (account !== null) {
         this.loadData(id);
       } else {
@@ -117,6 +137,15 @@ export default class CourseBrowseComponent implements OnInit {
   get isFree(): boolean {
     const c = this.course();
     return !c?.coursePrice || c.coursePrice <= 0;
+  }
+
+  downloadCertificate(): void {
+    const c = this.course();
+    const acc = this.account();
+    if (!c || !acc) return;
+    const name = [acc.firstName, acc.lastName].filter(Boolean).join(' ') || acc.login;
+    const date = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+    void this.certificateService.download(c.courseTitle ?? 'Course', name, date);
   }
 
   private loadData(id: number): void {
