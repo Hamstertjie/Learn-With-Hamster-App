@@ -29,29 +29,70 @@ export class ConfettiService {
   async fire(): Promise<void> {
     this.cleanup();
 
-    // ── Immediate canvas-confetti burst for instant impact ──────────────────
+    // ── Screen flash — radial gold/teal bloom fading in 600 ms ──────────────
+    this.flashScreen();
+
+    // ── Body shake — 0.45 s physical impact ─────────────────────────────────
+    this.shakeBody();
+
+    // ── canvas-confetti burst waves ──────────────────────────────────────────
     const { default: confetti } = await import('canvas-confetti');
     const burst = (opts: Parameters<typeof confetti>[0]) =>
       confetti({ shapes: ['star', 'circle', 'square'], colors: BURST_COLORS, ...opts });
 
-    burst({ particleCount: 240, spread: 130, origin: { y: 0.45 }, ticks: 450, scalar: 1.35, startVelocity: 55, gravity: 0.85 });
-    setTimeout(() => burst({ particleCount: 180, spread: 110, origin: { y: 0.5 }, ticks: 400, scalar: 1.2, startVelocity: 45 }), 250);
+    // Wave 1 — massive opening starburst
+    burst({ particleCount: 320, spread: 160, origin: { y: 0.42 }, ticks: 500, scalar: 1.5, startVelocity: 75, gravity: 0.8 });
+
+    // Wave 2 — follow-up center (250 ms)
+    setTimeout(() => burst({ particleCount: 220, spread: 130, origin: { y: 0.48 }, ticks: 450, scalar: 1.3, startVelocity: 60 }), 250);
+
+    // Wave 3 — left + right cannons (500 ms)
     setTimeout(() => {
-      burst({ particleCount: 120, angle: 60,  spread: 70, origin: { x: 0, y: 0.6 }, ticks: 380, scalar: 1.3, startVelocity: 60 });
-      burst({ particleCount: 120, angle: 120, spread: 70, origin: { x: 1, y: 0.6 }, ticks: 380, scalar: 1.3, startVelocity: 60 });
+      burst({ particleCount: 150, angle: 60,  spread: 75, origin: { x: 0, y: 0.58 }, ticks: 400, scalar: 1.35, startVelocity: 70 });
+      burst({ particleCount: 150, angle: 120, spread: 75, origin: { x: 1, y: 0.58 }, ticks: 400, scalar: 1.35, startVelocity: 70 });
     }, 500);
+
+    // Wave 4 — angled side volleys (900 ms)
     setTimeout(() => {
-      burst({ particleCount: 90, angle: 65,  spread: 55, origin: { x: 0, y: 0.65 }, ticks: 350, startVelocity: 50 });
-      burst({ particleCount: 90, angle: 115, spread: 55, origin: { x: 1, y: 0.65 }, ticks: 350, startVelocity: 50 });
+      burst({ particleCount: 110, angle: 65,  spread: 60, origin: { x: 0, y: 0.63 }, ticks: 370, startVelocity: 58 });
+      burst({ particleCount: 110, angle: 115, spread: 60, origin: { x: 1, y: 0.63 }, ticks: 370, startVelocity: 58 });
     }, 900);
 
-    // ── Inject CSS for the bounce-settle keyframe ────────────────────────────
+    // Wave 5 — 4-corner simultaneous volley (1 400 ms)
+    setTimeout(() => {
+      burst({ particleCount: 90, angle: 45,  spread: 50, origin: { x: 0, y: 0 }, ticks: 340, scalar: 1.1, startVelocity: 65, gravity: 1.1 });
+      burst({ particleCount: 90, angle: 135, spread: 50, origin: { x: 1, y: 0 }, ticks: 340, scalar: 1.1, startVelocity: 65, gravity: 1.1 });
+      burst({ particleCount: 90, angle: 315, spread: 50, origin: { x: 0, y: 1 }, ticks: 340, scalar: 1.1, startVelocity: 65, gravity: 0.5 });
+      burst({ particleCount: 90, angle: 225, spread: 50, origin: { x: 1, y: 1 }, ticks: 340, scalar: 1.1, startVelocity: 65, gravity: 0.5 });
+    }, 1_400);
+
+    // Wave 6 — secondary center burst to keep the sky full (2 200 ms)
+    setTimeout(() => burst({ particleCount: 180, spread: 120, origin: { y: 0.45 }, ticks: 400, scalar: 1.2, startVelocity: 55, gravity: 0.9 }), 2_200);
+
+    // Wave 7 — final golden rain from the top (4 000 ms)
+    setTimeout(() => {
+      burst({ particleCount: 200, spread: 200, origin: { y: 0 }, ticks: 380, scalar: 1.0, startVelocity: 30, gravity: 1.3, colors: ['#fbbf24', '#f59e0b', '#ffffff', '#06b6d4'] });
+    }, 4_000);
+
+    // ── Inject CSS for bounce-settle keyframe + body shake ───────────────────
     this.styleEl = document.createElement('style');
     this.styleEl.textContent = `
       @keyframes lwh-bounce {
         0%   { transform: translate3d(var(--fx), calc(var(--fy) - 18px), 0) var(--fr); }
         55%  { transform: translate3d(var(--fx), calc(var(--fy) + 6px),  0) var(--fr); }
         100% { transform: translate3d(var(--fx), var(--fy),              0) var(--fr); }
+      }
+      @keyframes lwh-shake {
+        0%   { transform: translate3d(0, 0, 0) rotate(0deg); }
+        10%  { transform: translate3d(-6px, -3px, 0) rotate(-0.4deg); }
+        20%  { transform: translate3d(7px,  4px,  0) rotate(0.5deg); }
+        30%  { transform: translate3d(-5px, 2px,  0) rotate(-0.3deg); }
+        40%  { transform: translate3d(6px, -4px,  0) rotate(0.4deg); }
+        50%  { transform: translate3d(-4px, 3px,  0) rotate(-0.2deg); }
+        60%  { transform: translate3d(4px, -2px,  0) rotate(0.3deg); }
+        70%  { transform: translate3d(-3px, 2px,  0) rotate(-0.15deg); }
+        80%  { transform: translate3d(2px, -1px,  0) rotate(0.1deg); }
+        100% { transform: translate3d(0, 0, 0) rotate(0deg); }
       }
     `;
     document.head.appendChild(this.styleEl);
@@ -71,8 +112,8 @@ export class ConfettiService {
     let elapsed = 0;
     this.intervalId = setInterval(() => {
       elapsed += SPAWN_INTERVAL;
-      // Heavy at the start, tapering off — keeps it exciting and not just a slow drizzle
-      const n = elapsed < 1500 ? 14 : elapsed < 4000 ? 10 : elapsed < 8000 ? 7 : elapsed < 11000 ? 4 : 2;
+      // Heavy at the start, tapering off
+      const n = elapsed < 1500 ? 16 : elapsed < 4000 ? 11 : elapsed < 8000 ? 8 : elapsed < 11000 ? 5 : 2;
       for (let i = 0; i < n; i++) this.spawnPiece();
       if (elapsed >= SPAWN_WINDOW_MS) {
         clearInterval(this.intervalId!);
@@ -88,6 +129,54 @@ export class ConfettiService {
       }
       setTimeout(() => this.cleanup(), 2000);
     }, CLEANUP_MS);
+  }
+
+  /** Full-screen radial flash that fades out in 600 ms */
+  private flashScreen(): void {
+    const flash = document.createElement('div');
+    Object.assign(flash.style, {
+      position: 'fixed',
+      inset: '0',
+      pointerEvents: 'none',
+      zIndex: '10000',
+      background: 'radial-gradient(ellipse at 50% 45%, rgba(251,191,36,0.28) 0%, rgba(6,182,212,0.18) 40%, transparent 70%)',
+      opacity: '1',
+      transition: 'opacity 600ms ease-out',
+    });
+    document.body.appendChild(flash);
+    // Trigger reflow then fade
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        flash.style.opacity = '0';
+        setTimeout(() => flash.remove(), 650);
+      });
+    });
+  }
+
+  /** Apply a CSS body shake for 450 ms then remove */
+  private shakeBody(): void {
+    // Inject the shake keyframe inline (styleEl may not be ready yet)
+    const shakeStyle = document.createElement('style');
+    shakeStyle.textContent = `
+      @keyframes lwh-shake-body {
+        0%   { transform: translate3d(0, 0, 0) rotate(0deg); }
+        10%  { transform: translate3d(-6px, -3px, 0) rotate(-0.4deg); }
+        20%  { transform: translate3d(7px,  4px,  0) rotate(0.5deg); }
+        30%  { transform: translate3d(-5px, 2px,  0) rotate(-0.3deg); }
+        40%  { transform: translate3d(6px, -4px,  0) rotate(0.4deg); }
+        50%  { transform: translate3d(-4px, 3px,  0) rotate(-0.2deg); }
+        60%  { transform: translate3d(4px, -2px,  0) rotate(0.3deg); }
+        70%  { transform: translate3d(-3px, 2px,  0) rotate(-0.15deg); }
+        80%  { transform: translate3d(2px, -1px,  0) rotate(0.1deg); }
+        100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+      }
+    `;
+    document.head.appendChild(shakeStyle);
+    document.body.style.animation = 'lwh-shake-body 450ms ease-out';
+    setTimeout(() => {
+      document.body.style.animation = '';
+      shakeStyle.remove();
+    }, 480);
   }
 
   private spawnPiece(): void {
@@ -169,17 +258,6 @@ export class ConfettiService {
     // ── After landing: CSS bounce-settle then freeze ───────────────────────
     fallAnim.addEventListener('finish', () => {
       if (!el.parentElement) return;
-
-      // Set CSS vars for the bounce keyframe
-      el.style.setProperty('--fx', `${dxPx}px`);
-      el.style.setProperty('--fy', `${dyPx}px`);
-      el.style.setProperty('--fr', `rotateX(${rxDeg}deg) rotateY(${ryDeg}deg) rotateZ(${rzDeg}deg)`);
-
-      const bounceAnim = el.animate(
-        [{ animationName: 'lwh-bounce' }],  // trigger via keyframes below
-        { duration: 0 },                     // dummy — actual below
-      );
-      bounceAnim.cancel();
 
       // Use the keyframe directly
       const settle = el.animate(

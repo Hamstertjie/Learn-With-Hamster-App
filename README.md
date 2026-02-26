@@ -1,298 +1,439 @@
-# Learn With Hamster
+# Learn With Hamster 🐹
 
-A learning management platform built with **JHipster 8.11.0** as a microservices monorepo. Browse disciplines, courses, and lessons in a Udemy-style interface.
+> A modern online learning platform where you browse courses, track your progress, earn certificates, and actually feel good about finishing something.
 
-This is a modernized rebuild of the [Electronic Armory "Armory" project](https://github.com/ElectronicArmory/Armory) by Mike Ziray, upgraded from JHipster 4.x to 8.11.0 with Angular 19, Consul service discovery, and Maven.
+Built as a full-stack microservices application — the kind of thing you'd expect from a production SaaS, but open-source and yours to run.
 
-## Architecture
+---
 
+## What Is This?
+
+Learn With Hamster is a **Udemy-style course platform** with a real backend. You can:
+
+- Browse a catalogue of disciplines, courses, and lessons
+- Enroll in courses (free or paid)
+- Watch videos, read tutorials, and track your progress lesson by lesson
+- Earn a downloadable PDF **certificate of completion** when you finish a course
+- Bookmark lessons, take private notes, and navigate with keyboard shortcuts
+- Add paid courses to a cart and check out
+
+It's built on **JHipster 8.11.0** — a framework that generates production-ready Spring Boot + Angular applications — and structured as two independent microservices that talk to each other via Consul service discovery.
+
+> This is a modernized rebuild of the [Armory project](https://github.com/ElectronicArmory/Armory) by Mike Ziray (Electronic Armory), upgraded from JHipster 4.x → 8.11.0, Angular 2 → 19, Gradle → Maven, and JHipster Registry → Consul.
+
+---
+
+## How It's Built
+
+The system has two independently deployable backend services plus a React-style Angular frontend.
+
+### High-Level Architecture
+
+```mermaid
+graph TB
+    Browser["🌐 Browser\nAngular 19 SPA"]
+
+    subgraph GW["Gateway (port 8081)"]
+        direction TB
+        GWFront["Angular frontend\n(served as static SPA)"]
+        GWBack["Spring Cloud Gateway\nWebFlux · R2DBC · JWT auth\nUser management"]
+    end
+
+    subgraph SVC["Service (port 8080)"]
+        direction TB
+        SVCBack["Spring MVC · JPA · Hibernate\nDisciplines · Courses · Lessons\nProgress tracking · Resources"]
+        ES["Elasticsearch\n(full-text search)"]
+        Cache["Hazelcast\n(entity cache)"]
+        SVCBack --- ES
+        SVCBack --- Cache
+    end
+
+    Consul["Consul\nService Discovery\n+ Shared JWT Secret"]
+    GWMySQL[("MySQL\ngateway DB\nport 3306")]
+    SVCMySQL[("MySQL\nservice DB\nport 3307")]
+
+    Browser -->|"HTTP / WebSocket"| GW
+    GWBack -->|"JWT relay\n/services/service/**"| SVC
+    GW <-->|"Register + config"| Consul
+    SVC <-->|"Register + config"| Consul
+    GWBack --- GWMySQL
+    SVCBack --- SVCMySQL
 ```
-┌─────────────────────────────────────────────────────┐
-│  Gateway (port 8081)                                │
-│  Angular 19 SPA + Spring Cloud Gateway (WebFlux)    │
-│  User management, JWT auth, reactive (R2DBC)        │
-├─────────────────────────────────────────────────────┤
-│              Consul (service discovery)             │
-├─────────────────────────────────────────────────────┤
-│  Service (port 8080)                                │
-│  Domain entities: Discipline, Program, Course,      │
-│  Lesson, Resource, UserLessonProgress               │
-│  Spring MVC, JPA/Hibernate, Elasticsearch           │
-└─────────────────────────────────────────────────────┘
+
+### What Each Part Does
+
+| Part | Responsibility |
+|---|---|
+| **Gateway** | Serves the Angular SPA, handles login/JWT, routes API calls to the Service, manages user accounts |
+| **Service** | Owns all course content (disciplines → courses → lessons), progress tracking, resources |
+| **Consul** | Lets the Gateway find the Service by name instead of hardcoded URLs; also distributes the shared JWT secret |
+| **MySQL (×2)** | Separate databases — one per service — so they can be scaled or moved independently |
+| **Elasticsearch** | Powers the admin search interface for finding entities quickly |
+
+### Content Structure
+
+Everything in the platform hangs off a four-level hierarchy:
+
+```mermaid
+graph LR
+    D["📚 Discipline\ne.g. Technology"]
+    P["📁 Program\ne.g. Web Development"]
+    C["📖 Course\ne.g. Build with JHipster"]
+    L["📄 Lesson\ne.g. Designing with JDL"]
+    R["📎 Resource\nVideo · Tutorial · Tool"]
+
+    D -->|"ManyToMany"| P
+    P -->|"ManyToMany"| C
+    C -->|"ManyToMany"| L
+    D & P & C & L -->|"OneToMany"| R
 ```
 
-### Domain Model
+Each level can have **Resources** attached — videos, images, tutorials, or tool links.
 
-```
-Discipline ──ManyToMany──> Program ──ManyToMany──> Course ──ManyToMany──> Lesson
-    │                        │                       │                      │
-    └───OneToMany──> Resource (each level can have attached resources)
-```
+---
 
-- **Disciplines** - Top-level learning areas (e.g., Sport, Music, Technology)
-- **Programs** - Groupings within a discipline (e.g., Cycling, Swimming)
-- **Courses** - Individual courses with level and pricing (e.g., Trackstand Mastery)
-- **Lessons** - Content units with language support
-- **Resources** - Attachments (VIDEO, IMAGE, TUTORIAL, PAGE, PARTIAL, TOOL)
-- **UserLessonProgress** - Tracks which lessons a user has visited (per course)
+## Getting the App Running
 
-## Prerequisites
+### What You Need First
 
-- Java 17+ (JDK 17, 21, or 24)
-- Node.js >= 22.15.0
-- Docker & Docker Compose
-- Maven 3.2.5+
+- **Java 17+** (JDK 17, 21, or 24 all work)
+- **Node.js 22.15.0+**
+- **Docker & Docker Compose** (for the databases and Consul)
+- **Maven 3.2.5+**
 
-## Quick Start
+### Step 1 — Start the infrastructure
 
-### 1. Start Infrastructure
+Docker handles Consul, both MySQL databases, and Elasticsearch:
 
 ```bash
 docker compose up -d
 ```
 
-This starts Consul, two MySQL instances (gateway on 3306, service on 3307), and Elasticsearch.
+You should see four containers come up: `consul`, `mysql-gateway`, `mysql-service`, and `elasticsearch`.
 
-### 2. Start the Service Module
+### Step 2 — Start the Service
+
+The service owns all the course content. It runs on port 8080:
 
 ```bash
 cd service
 ./mvnw
 ```
 
-Runs on port 8080 with H2 in-memory database (dev profile). Sample data is loaded automatically.
+First run takes a minute because Liquibase sets up the database and loads sample data. You'll see `Started ServiceApp` in the logs when it's ready.
 
-### 3. Start the Gateway
+### Step 3 — Start the Gateway
+
+The gateway serves the Angular frontend and handles authentication. It runs on port 8081:
 
 ```bash
 cd gateway
 ./mvnw
 ```
 
-Runs on port 8081. The Angular frontend is built and served by Spring Boot.
+### Step 4 — Open the App
 
-For frontend development with hot reload:
+- **App**: http://localhost:8081
+- **Admin account**: `admin` / `admin`
+- **Regular user**: `user` / `user`
+
+### Frontend Dev Mode (with hot reload)
+
+If you're working on the Angular frontend, start the dev server separately instead of rebuilding through Maven:
 
 ```bash
 cd gateway
-npm start
+npm start       # serves on port 4200, proxies API to port 8081
 ```
 
-This starts the Angular dev server on port 4200 with HMR, proxying API calls to port 8081.
+---
 
-### 4. Open the App
+## What You Can Do in the App
 
-- **Application**: http://localhost:8081 (or http://localhost:4200 for dev server)
-- **Default accounts**:
-  - Admin: `admin` / `admin`
-  - User: `user` / `user`
+### If you're just browsing (no login needed on the Angular side)
 
-## Screen Flows
+The entire course catalogue is visible to anyone. You'll be prompted to log in before the API returns data, but the routes are open.
 
-### Public (no login required on Angular side)
+```mermaid
+flowchart LR
+    Home["/  Home page"] --> Catalog["/catalog\nAll Disciplines"]
+    Catalog --> Discipline["/catalog/discipline/:id\nDiscipline detail + Courses"]
+    Discipline --> Course["/catalog/course/:id\nCourse detail + Curriculum"]
+    Course --> Lesson["/catalog/lesson/:id\nLesson viewer"]
+```
 
-| Route | Description |
-|-------|-------------|
-| `/` | Landing page with hero section and feature highlights |
-| `/catalog` | Browse all disciplines with course counts |
-| `/catalog/discipline/:id` | Discipline detail with courses and resources |
-| `/catalog/course/:id` | Course detail with expandable lesson curriculum |
-| `/catalog/lesson/:id` | Lesson viewer with resources, notes, bookmarks, and progress |
+**On the lesson page** you get:
+- The lesson content and all its resources (videos, tutorials, tools)
+- **My Notes** — a private textarea that auto-saves to your browser
+- **Bookmarks** — save any lesson to revisit from your dashboard
+- **Keyboard navigation** — press `←` `→` to jump between lessons without touching the mouse
+- **Reading time estimate** — calculated from word count and video resources
+- **Progress tracking** — your visit is automatically recorded the moment you open a lesson
 
-> **Note**: API calls require authentication. Browse pages show a login prompt for anonymous users and load data for authenticated users.
+### When you're logged in
 
-### Authenticated
+**Course page** — you'll see:
+- A progress bar showing how many lessons you've completed
+- Green checkmarks next to finished lessons
+- "Enroll" for free courses or "Add to Cart" for paid ones
+- A gold trophy + **Download Certificate** button when you've finished every lesson (with a confetti celebration 🎉)
 
-| Route | Description |
-|-------|-------------|
-| `/my-learning` | Personal dashboard: in-progress and completed courses, bookmarked lessons |
-| `/cart` | Shopping cart with item list and checkout link |
-| `/checkout` | Order summary, billing info, place order |
-| `/order-confirmation` | Success message with link to My Learning |
-| `/account/settings` | Profile settings |
+**My Learning dashboard** (`/my-learning`):
+- Stats showing how many courses you're enrolled in, in-progress, completed, and bookmarked
+- Your in-progress courses with progress bars — click any to jump back in
+- Your completed courses highlighted in gold
+- Your bookmarked lessons with direct links
 
-**Lesson Progress Tracking**: When a logged-in user views a lesson within a course, their visit is automatically recorded server-side. The course sidebar shows a progress bar and green checkmarks next to completed lessons. Progress persists across sessions.
+**Cart & Checkout** (`/cart` → `/checkout`):
+- Add paid courses to your cart (stored in the browser, no server round-trip)
+- Checkout enrolls you in all cart items in one API call
+- Cart icon in the navbar shows the item count
 
-**Interactive Lesson Features**:
-- **⌨️ Keyboard Navigation** — `←` `→` arrow keys move between lessons (inactive when typing in notes)
-- **📝 My Notes** — Per-lesson textarea, auto-saved to localStorage
-- **⏱ Reading Time** — Estimated from word count + video resources, shown as a badge
-- **🔖 Bookmarks** — Bookmark any lesson; bookmarked lessons appear in My Learning dashboard
-- **🎓 TUTORIAL Resources** — Rendered as a dedicated step-by-step card with a Start Tutorial CTA
-- **Smart Action Buttons** — Watch Video / Launch Tool / Start Tutorial / View Image (context-aware)
+### For admins only
 
-**Shopping Cart**: Priced courses show "Add to Cart" instead of "Enroll Now". Items are stored in localStorage with a reactive signal-based service. The navbar displays a cart icon with a badge count. Checkout enrolls all cart items via the enrollment API. Free courses bypass the cart entirely.
+The `/discipline`, `/course`, `/lesson`, `/resource`, and `/program` routes give you full CRUD management with pagination, sorting, search, and relationship pickers. These routes require `ROLE_ADMIN`.
 
-**My Learning Dashboard**:
-- Stats row showing enrolled / in-progress / completed / bookmarked counts
-- Courses split into **Continue Learning** (in-progress) and **Completed** (with gold trophy accent) sections
-- **Bookmarked Lessons** section with direct links to bookmarked lesson pages
-
-### Admin Only (ROLE_ADMIN)
-
-| Route | Description |
-|-------|-------------|
-| `/discipline` | CRUD management for disciplines |
-| `/program` | CRUD management for programs |
-| `/course` | CRUD management for courses |
-| `/lesson` | CRUD management for lessons |
-| `/resource` | CRUD management for resources |
-| `/admin/*` | User management, metrics, health, logs |
+---
 
 ## Sample Data
 
-The dev profile includes sample data demonstrating the full hierarchy (6 courses, 37 lessons, 39 resources):
+The dev profile loads a realistic hierarchy of content so you can explore immediately:
 
 ```
-Sport (free)
-├── Cycling
-│   ├── Trackstand Mastery (free, Beginner) — 7 lessons
-│   │   ├── What Is a Trackstand?
-│   │   ├── Bike Setup for Balance Training
-│   │   ├── Finding Your Balance Point
-│   │   ├── The Rocking Technique
-│   │   ├── Steering Corrections and Weight Shifts
-│   │   ├── One-Minute Trackstand Challenge
-│   │   └── Trackstands on Different Terrain
-│   └── Road Cycling Fundamentals ($19, Novice) — 4 lessons
-└── Swimming
-    └── Introduction to Freestyle Swimming ($29, Beginner) — 3 lessons
+📚 Sport (free)
+├── 🚴 Cycling
+│   ├── Trackstand Mastery         free · Beginner   · 7 lessons
+│   └── Road Cycling Fundamentals  $19  · Novice     · 4 lessons
+└── 🏊 Swimming
+    └── Intro to Freestyle Swimming $29  · Beginner   · 3 lessons
 
-Music ($49)
-└── Guitar Fundamentals
-    └── Acoustic Guitar for Beginners ($25, Novice) — 5 lessons
+📚 Music ($49)
+└── 🎸 Guitar Fundamentals
+    └── Acoustic Guitar for Beginners $25 · Novice   · 5 lessons
 
-Technology ($99)
-└── Web Development
-    ├── HTML, CSS & JavaScript Essentials ($49, Beginner) — 5 lessons
-    └── Building Full Stack Apps with JHipster (free, Intermediate) — 12 lessons
-        ├── Why JHipster? Architecture and Stack Overview
-        ├── Designing Your Domain Model with JDL
-        ├── Interactive: Generate Your JHipster App from Scratch ← TUTORIAL resource
-        ├── Exploring the Generated Project Structure
-        ├── Entities, DTOs, and the MapStruct Mapper Chain
-        ├── Customizing Angular: Browse Module and SCSS Theming
-        ├── Service Discovery with Consul
-        ├── Database Migrations with Liquibase
-        ├── Security: JWT, HttpOnly Cookies, and CSP Headers
-        ├── Running the Full Stack with Docker Compose
-        ├── Testing: Unit, Integration, and End-to-End
-        └── Building for Production and Deploying
+📚 Technology ($99)
+└── 💻 Web Development
+    ├── HTML, CSS & JS Essentials  $49  · Beginner     · 5 lessons
+    └── Build Full Stack Apps with JHipster
+                                   free · Intermediate · 12 lessons
+        Includes: JDL design, Consul, Liquibase, security,
+        Docker, testing, production deployment
 ```
 
-Resources include YouTube videos, JHipster official docs, JDL Studio, and direct links to this project's GitHub repository (browse module, docker-compose.yml, Liquibase master.xml).
+Resources include YouTube embeds, official docs, tool links, and links to this project's own GitHub repo. The JHipster course has a full **interactive tutorial** resource that renders as a step-by-step card with a "Start Tutorial" CTA.
 
-To reset sample data, delete the H2 database and restart:
+To reset everything back to the sample data:
 
 ```bash
 cd service
 ./mvnw clean spring-boot:run
 ```
 
-## Testing
+---
+
+## How Requests Flow
+
+### Viewing a Course (end-to-end)
+
+```mermaid
+sequenceDiagram
+    participant B as Browser
+    participant A as Angular
+    participant G as Gateway
+    participant S as Service
+    participant DB as MySQL (service)
+
+    B->>A: Navigate to /catalog/course/5
+    A->>G: GET /api/account (check auth)
+    G-->>A: 200 { login, roles, ... }
+    A->>G: GET /services/service/api/courses/5
+    G->>S: Forward + JWT relay
+    S->>DB: SELECT course + lessons
+    DB-->>S: Course entity
+    S-->>G: 200 CourseDTO
+    G-->>A: 200 CourseDTO
+    A->>G: GET /services/service/api/lessons?size=1000
+    G->>S: Forward
+    S-->>G: 200 [lessons...]
+    G-->>A: 200 [lessons...]
+    A->>G: GET /services/service/api/user-course-enrollments/is-enrolled/5
+    G-->>A: true/false
+    Note over A: Filter lessons by course.lessons IDs,<br/>show progress bar, render curriculum
+```
+
+### Completing a Course (certificates + confetti)
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant A as Angular
+    participant G as Gateway
+    participant S as Service
+
+    U->>A: Open last uncompleted lesson
+    A->>G: POST /api/user-lesson-progress/mark
+    G->>S: Forward
+    S-->>G: 201 Created
+    G-->>A: 201
+    A->>A: completedLessonIds.add(lessonId)
+    Note over A: maybeFireConfetti() checks:<br/>lessonsLoaded && progressLoaded<br/>&& completed >= total
+    A->>A: 🎉 Confetti + screen flash + body shake
+    A->>A: Show "Download Certificate" button
+    U->>A: Click Download Certificate
+    A->>A: Generate PDF via jsPDF<br/>(dark glass, gold borders, teal accents)
+    A-->>U: Certificate - Course Name.pdf
+```
+
+### Login Flow
+
+```mermaid
+sequenceDiagram
+    participant B as Browser
+    participant A as Angular
+    participant G as Gateway
+    participant DB as MySQL (gateway)
+
+    B->>A: Click Login
+    A->>G: POST /api/authenticate { username, password }
+    G->>DB: Load user, BCrypt verify
+    DB-->>G: UserDetails
+    G->>G: Sign JWT (HS512, shared secret from Consul)
+    G-->>A: 200 { id_token }
+    A->>A: Store token, set Authorization header
+    A->>G: GET /api/account
+    G-->>A: 200 { login, firstName, roles }
+    A->>A: Update account signal, show navbar items
+    B->>A: Redirect to originally requested URL
+```
+
+---
+
+## Running Tests
 
 ```bash
-# Gateway backend
+# Frontend (Angular, Jest)
 cd gateway
-./mvnw verify                              # unit + integration tests
-./mvnw test                                # unit tests only
+npm test            # Jest + ESLint
+npm run jest        # Jest only, faster
 
-# Gateway frontend
+# Gateway backend (Spring Boot + Testcontainers)
 cd gateway
-npm test                                   # Jest + lint
-npm run jest                               # Jest only
-npm run e2e                                # Cypress e2e
+./mvnw test         # unit tests
+./mvnw verify       # unit + integration tests (needs Docker)
 
 # Service backend
 cd service
-./mvnw verify                              # unit + integration tests
-./mvnw test                                # unit tests only
+./mvnw test
+./mvnw verify
 ```
 
-Integration tests use Testcontainers (requires Docker).
+Integration tests spin up real MySQL containers via Testcontainers — Docker must be running.
 
-### Frontend Test Coverage
+### What the Frontend Tests Cover
 
-| File | Tests |
-|------|-------|
-| `bookmark.service.spec.ts` | localStorage persistence, toggle, multi-bookmark, corrupt data recovery |
-| `lesson-browse.component.spec.ts` | auth state, notes (save/persist/overwrite), reading time, bookmarks, keyboard nav (ArrowLeft/Right, edge cases, input guard), resource action labels |
-| `my-learning.component.spec.ts` | enrollments, in-progress/completed computed split, bookmark loading, null-body resilience |
-| `catalog.component.spec.ts` | create, auth state |
-| `course-browse.component.spec.ts` | create, auth state |
+| Spec file | What it tests |
+|---|---|
+| `bookmark.service.spec.ts` | localStorage bookmark persistence, toggle, multi-bookmark, corrupt data recovery |
+| `lesson-browse.component.spec.ts` | Auth state, notes (save/load/overwrite), reading time, bookmarks, keyboard navigation (arrows, edge cases, input guard), resource action labels |
+| `my-learning.component.spec.ts` | Enrollment loading, in-progress/completed computed split, bookmark loading, null-body resilience |
+| `catalog.component.spec.ts` | Component creation, auth state |
+| `course-browse.component.spec.ts` | Component creation, auth state |
 
-## Project Structure
+---
+
+## Project Layout
 
 ```
 Learn-With-Hamster-App/
+│
 ├── gateway/                          # API Gateway + Angular frontend
-│   └── src/main/webapp/
-│       ├── app/
-│       │   ├── browse/               # Public catalog browsing
-│       │   │   ├── bookmark.service.ts  # Signal-based localStorage bookmark manager
-│       │   │   ├── catalog/          # Discipline grid
-│       │   │   ├── discipline/       # Discipline detail
-│       │   │   ├── course/           # Course detail + curriculum + trophy
-│       │   │   └── lesson/           # Lesson viewer + notes + keyboard nav + bookmarks
-│       │   ├── my-learning/          # Authenticated dashboard (stats, bookmarks, completed)
-│       │   ├── cart/                 # Shopping cart, checkout, confirmation
-│       │   ├── entities/             # Admin CRUD + user-lesson-progress service
-│       │   ├── home/                 # Landing page
-│       │   ├── layouts/navbar/       # Navigation bar
-│       │   └── config/              # Icons, routes, authority
-│       └── i18n/                     # Translations (en, ar-ly)
-├── service/                          # Microservice (domain entities)
-│   └── src/main/resources/config/liquibase/
-│       ├── fake-data/                # Sample CSVs (dev profile)
-│       └── changelog/                # Migration scripts
-├── docker/                           # Docker configs
-│   └── central-server-config/        # Shared Consul config (JWT)
-├── docker-compose.yml                # Infrastructure services
-├── app.jdl                           # Master JDL definitions
-└── CLAUDE.md                         # AI assistant context
+│   └── src/main/
+│       ├── java/                     # Spring Boot (WebFlux, reactive)
+│       │   └── .../config/           # Security, Consul, CORS
+│       └── webapp/app/
+│           ├── browse/               # Public course catalogue
+│           │   ├── catalog/          # Discipline grid
+│           │   ├── discipline/       # Discipline detail page
+│           │   ├── course/           # Course page + curriculum + certificate
+│           │   ├── lesson/           # Lesson viewer (notes, bookmarks, keyboard nav)
+│           │   ├── bookmark.service.ts      # localStorage bookmark manager
+│           │   ├── confetti.service.ts      # Completion celebration
+│           │   └── certificate.service.ts   # PDF certificate generator
+│           ├── my-learning/          # Personal dashboard
+│           ├── cart/                 # Cart, checkout, confirmation
+│           ├── entities/             # Admin CRUD pages + progress service
+│           ├── home/                 # Landing page
+│           └── layouts/navbar/       # Navigation bar
+│
+├── service/                          # Domain microservice (non-reactive)
+│   └── src/main/
+│       ├── java/                     # Spring MVC, JPA, Elasticsearch
+│       └── resources/config/liquibase/
+│           ├── changelog/            # Database migration scripts
+│           └── fake-data/            # Sample data CSVs (dev profile)
+│
+├── docker/
+│   └── central-server-config/
+│       └── application.yml           # Shared JWT secret (picked up by Consul)
+│
+├── docker-compose.yml                # Start everything: Consul, MySQL×2, Elasticsearch
+├── app.jdl                           # Full domain model definition
+└── CLAUDE.md                         # Notes for AI assistants
 ```
 
-## Key Configuration
+---
 
-| File | Purpose |
-|------|---------|
-| `app.jdl` | Master JDL with app + entity definitions |
-| `docker-compose.yml` | Consul, MySQL x2, Elasticsearch |
-| `docker/central-server-config/application.yml` | Shared JWT secret |
-| `gateway/src/main/webapp/app/app.routes.ts` | Angular route definitions |
-| `gateway/src/main/webapp/app/browse/browse.routes.ts` | Catalog browse routes |
-| `service/src/main/resources/config/liquibase/master.xml` | Liquibase migrations |
+## Tech Stack
 
-## Technology Stack
+| What | How |
+|---|---|
+| Frontend | Angular 19 · Bootstrap 5 · FontAwesome · ngx-translate · signal-based state |
+| Gateway | Spring Boot 3 · Spring Cloud Gateway · WebFlux · R2DBC (reactive) |
+| Service | Spring Boot 3 · Spring MVC · JPA/Hibernate · Hazelcast cache |
+| Auth | JWT (HS512) · HttpOnly cookie · shared secret via Consul |
+| Databases | MySQL (production) · H2 file-based (development) |
+| Search | Elasticsearch (admin entity search) |
+| Service Discovery | Consul |
+| Build | Maven · webpack · Liquibase migrations |
+| Testing | Jest · Cypress · JUnit 5 · Testcontainers |
+| PDF generation | jsPDF (browser-side, no server) |
+| Celebrations | canvas-confetti + custom DOM glassmorphism particles |
 
-| Layer | Technology |
-|-------|-----------|
-| Frontend | Angular 19, Bootstrap 5, FontAwesome, ngx-translate |
-| Gateway | Spring Boot 3, Spring Cloud Gateway, WebFlux, R2DBC |
-| Service | Spring Boot 3, Spring MVC, JPA/Hibernate, Elasticsearch |
-| Database | MySQL (prod), H2 (dev) |
-| Cache | Hazelcast (service) |
-| Discovery | Consul |
-| Auth | JWT (shared secret), HttpOnly cookie |
-| Build | Maven, webpack |
-| Testing | Jest, Cypress, JUnit 5, Testcontainers |
+---
 
-## Swim Lane Diagrams
+## Key Configuration Files
 
-Detailed flow diagrams showing every class and component touched per use case. Open in [draw.io](https://app.diagrams.net/) or any `.drawio`-compatible editor. Each diagram uses 4 swim lanes (Browser, Angular, Gateway, Service) to trace the full request lifecycle.
+| File | What it controls |
+|---|---|
+| `app.jdl` | The entire domain model — entities, relationships, enums, app settings |
+| `docker-compose.yml` | Which infrastructure services to run and how |
+| `docker/central-server-config/application.yml` | The JWT secret shared between gateway and service |
+| `gateway/src/main/webapp/app/app.routes.ts` | All Angular routes and their auth guards |
+| `gateway/src/main/resources/config/application.yml` | Gateway Spring config (CSP headers, CORS, Consul) |
+| `service/src/main/resources/config/liquibase/master.xml` | Database migration entry point |
 
-| # | File | Use Case | Key Steps |
-|---|------|----------|-----------|
-| 1 | [`01-app-bootstrap.drawio`](docs/diagrams/01-app-bootstrap.drawio) | App Bootstrap | `index.html` → `main.ts` → `bootstrap.ts` → `AppComponent` → `MainComponent.ngOnInit()` → `GET /api/account` → `NavbarComponent` → route component |
-| 2 | [`02-login-flow.drawio`](docs/diagrams/02-login-flow.drawio) | Login Flow | Guarded route → `UserRouteAccessService` → store URL → `LoginComponent` → `POST /api/authenticate` → `DomainUserDetailsService` → BCrypt → JWT creation (HS512) → store token → `GET /api/account` → redirect to stored URL |
-| 3 | [`03-browse-catalog.drawio`](docs/diagrams/03-browse-catalog.drawio) | Browse Catalog | Auth check → `disciplineService.query()` → Gateway JWT relay → `DisciplineResource` → `courseService.query()` → client-side cross-reference (program ID matching) → render discipline card grid |
-| 4 | [`04-view-discipline.drawio`](docs/diagrams/04-view-discipline.drawio) | View Discipline | 3 parallel API calls: discipline detail + all courses + all resources → filter courses by shared program IDs → filter resources by `discipline.id` → render hero + course cards + resource list |
-| 5 | [`05-view-course.drawio`](docs/diagrams/05-view-course.drawio) | View Course | Course detail + lessons + resources → filter lessons by `course.lessons` IDs → expandable curriculum with `Set<number>` toggle → lesson links to `/catalog/lesson/:id` |
-| 6 | [`06-view-lesson.drawio`](docs/diagrams/06-view-lesson.drawio) | View Lesson | Lesson detail + resources → filter by `resource.lesson.id` → sort by `resourceWeight` → render with type-specific UI (VIDEO embed / TUTORIAL card / TOOL launch) + notes + bookmark + keyboard nav → auto-record progress via `POST /api/user-lesson-progress/mark` → sidebar shows checkmarks + progress bar |
-| 7 | [`07-my-learning.drawio`](docs/diagrams/07-my-learning.drawio) | My Learning | `UserRouteAccessService` guard → redirect to login if anonymous → `AccountService.trackCurrentAccount()` signal → load enrollments + progress → split into in-progress/completed → load bookmarked lessons from `BookmarkService` |
-| 8 | [`08-admin-crud.drawio`](docs/diagrams/08-admin-crud.drawio) | Admin CRUD | `ROLE_ADMIN` guard → List (paginated table) → Create (`POST` + MySQL + Elasticsearch index) → Delete (confirmation modal + MySQL + ES remove) → Search (Elasticsearch full-text) |
-| 9 | [`09-jwt-relay.drawio`](docs/diagrams/09-jwt-relay.drawio) | JWT Relay Mechanism | Consul shared secret distribution → `AuthInterceptor` adds Bearer token → Gateway `SecurityWebFilterChain` validates → `JWTRelayGatewayFilterFactory` forwards → `StripPrefix=2` → Service validates same secret → error handling (401 → `AuthExpiredInterceptor`) |
+---
+
+## Detailed Flow Diagrams
+
+For deep-dives into specific flows, see the `.drawio` files in `docs/diagrams/`:
+
+| # | File | What it traces |
+|---|---|---|
+| 1 | `01-app-bootstrap.drawio` | How the SPA boots: `index.html` → Angular → account check → navbar |
+| 2 | `02-login-flow.drawio` | Full login: form → POST authenticate → BCrypt → JWT → redirect |
+| 3 | `03-browse-catalog.drawio` | Catalogue loading: discipline query → course cross-reference → card render |
+| 4 | `04-view-discipline.drawio` | Discipline page: 3 parallel API calls, client-side join, resource filter |
+| 5 | `05-view-course.drawio` | Course page: lessons filter, curriculum toggle, enrollment check |
+| 6 | `06-view-lesson.drawio` | Lesson viewer: resources sort, type-specific UI, progress mark, notes |
+| 7 | `07-my-learning.drawio` | Dashboard: auth guard, enrollments, progress split, bookmarks |
+| 8 | `08-admin-crud.drawio` | Admin flow: ROLE_ADMIN guard, paginated list, create/delete, ES search |
+| 9 | `09-jwt-relay.drawio` | JWT relay: Consul secret → AuthInterceptor → Gateway filter → Service |
+
+---
 
 ## Credits
 
-Based on the [Armory project](https://github.com/ElectronicArmory/Armory) by [Mike Ziray / Electronic Armory](https://www.youtube.com/@ElectronicArmory). Original tutorial series: [YouTube playlist](https://www.youtube.com/watch?v=3zrQIPwEuOs).
+This project is based on the [Armory](https://github.com/ElectronicArmory/Armory) project by [Mike Ziray / Electronic Armory](https://www.youtube.com/@ElectronicArmory). The original was built as a tutorial series: [YouTube playlist](https://www.youtube.com/watch?v=3zrQIPwEuOs).
+
+Our repository: [Hamstertjie/Learn-With-Hamster-App](https://github.com/Hamstertjie/Learn-With-Hamster-App)

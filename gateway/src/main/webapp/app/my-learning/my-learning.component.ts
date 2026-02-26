@@ -45,46 +45,55 @@ export default class MyLearningComponent implements OnInit {
   }
 
   private loadEnrollments(): void {
-    this.enrollmentService.getEnrollments().subscribe(res => {
-      const enrollments = res.body ?? [];
-      if (enrollments.length === 0) {
-        this.loading.set(false);
-        return;
-      }
+    this.enrollmentService.getEnrollments().subscribe({
+      next: res => {
+        const enrollments = res.body ?? [];
+        if (enrollments.length === 0) {
+          this.loading.set(false);
+          return;
+        }
 
-      let loaded = 0;
-      const courses: EnrolledCourse[] = [];
+        let loaded = 0;
+        const courses: EnrolledCourse[] = [];
 
-      for (const enrollment of enrollments) {
-        const courseId = enrollment.courseId!;
-        this.courseService.find(courseId).subscribe(courseRes => {
-          const course = courseRes.body;
-          if (course) {
-            const totalLessons = course.lessons?.length ?? 0;
-            this.progressService.getCourseProgress(courseId).subscribe(progressRes => {
-              const progress = progressRes.body ?? [];
-              const completedLessons = progress.filter(p => p.completed).length;
-              courses.push({
-                course,
-                lessonsCompleted: completedLessons,
-                lessonsTotal: totalLessons,
-                progressPercent: totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0,
-              });
-              loaded++;
-              if (loaded === enrollments.length) {
-                this.enrolledCourses.set(courses);
-                this.loading.set(false);
-              }
-            });
-          } else {
-            loaded++;
-            if (loaded === enrollments.length) {
-              this.enrolledCourses.set(courses);
-              this.loading.set(false);
-            }
+        const onSettled = (): void => {
+          loaded++;
+          if (loaded === enrollments.length) {
+            this.enrolledCourses.set(courses);
+            this.loading.set(false);
           }
-        });
-      }
+        };
+
+        for (const enrollment of enrollments) {
+          const courseId = enrollment.courseId!;
+          this.courseService.find(courseId).subscribe({
+            next: courseRes => {
+              const course = courseRes.body;
+              if (course) {
+                const totalLessons = course.lessons?.length ?? 0;
+                this.progressService.getCourseProgress(courseId).subscribe({
+                  next: progressRes => {
+                    const progress = progressRes.body ?? [];
+                    const completedLessons = progress.filter(p => p.completed).length;
+                    courses.push({
+                      course,
+                      lessonsCompleted: completedLessons,
+                      lessonsTotal: totalLessons,
+                      progressPercent: totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0,
+                    });
+                    onSettled();
+                  },
+                  error: onSettled,
+                });
+              } else {
+                onSettled();
+              }
+            },
+            error: onSettled,
+          });
+        }
+      },
+      error: () => { this.loading.set(false); },
     });
   }
 

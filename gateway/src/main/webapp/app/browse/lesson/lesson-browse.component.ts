@@ -170,53 +170,59 @@ export default class LessonBrowseComponent implements OnInit, OnDestroy {
         const id = Number(params.get('id'));
         return this.lessonService.find(id);
       }))
-      .subscribe(res => {
-        const lesson = res.body;
-        this.lesson.set(lesson);
-        if (lesson) {
-          this.loadNote();
-          this.loadResources(lesson.id);
-          this.loadCourseContext(lesson);
-          this.recordProgress(lesson.id);
-        } else {
-          this.loading.set(false);
-        }
+      .subscribe({
+        next: res => {
+          const lesson = res.body;
+          this.lesson.set(lesson);
+          if (lesson) {
+            this.loadNote();
+            this.loadResources(lesson.id);
+            this.loadCourseContext(lesson);
+            this.recordProgress(lesson.id);
+          } else {
+            this.loading.set(false);
+          }
+        },
+        error: () => { this.loading.set(false); },
       });
   }
 
   private loadResources(lessonId: number): void {
-    this.resourceService.query({ size: 1000 }).subscribe(resourceRes => {
-      const allResources: IResource[] = resourceRes.body ?? [];
-      const filtered = allResources
-        .filter(r => r.lesson?.id === lessonId)
-        .sort((a, b) => (a.weight ?? 0) - (b.weight ?? 0));
-      this.resources.set(filtered);
+    this.resourceService.query({ size: 1000 }).subscribe({
+      next: resourceRes => {
+        const allResources: IResource[] = resourceRes.body ?? [];
+        const filtered = allResources
+          .filter(r => r.lesson?.id === lessonId)
+          .sort((a, b) => (a.weight ?? 0) - (b.weight ?? 0));
+        this.resources.set(filtered);
 
-      const videoResource = filtered.find(r => r.resourceType === 'VIDEO');
-      const tutorialResource = filtered.find(r => r.resourceType === 'TUTORIAL');
-      const primary = videoResource ?? tutorialResource ?? (filtered.length > 0 ? filtered[0] : null);
-      this.primaryResource.set(primary);
+        const videoResource = filtered.find(r => r.resourceType === 'VIDEO');
+        const tutorialResource = filtered.find(r => r.resourceType === 'TUTORIAL');
+        const primary = videoResource ?? tutorialResource ?? (filtered.length > 0 ? filtered[0] : null);
+        this.primaryResource.set(primary);
 
-      if (primary?.resourceType === 'VIDEO' && primary.resourceURL) {
-        const videoId = this.getYouTubeVideoId(primary.resourceURL);
-        if (videoId) {
-          this.safeVideoUrl.set(
-            this.sanitizer.bypassSecurityTrustResourceUrl(`https://www.youtube.com/embed/${videoId}`),
-          );
+        if (primary?.resourceType === 'VIDEO' && primary.resourceURL) {
+          const videoId = this.getYouTubeVideoId(primary.resourceURL);
+          if (videoId) {
+            this.safeVideoUrl.set(
+              this.sanitizer.bypassSecurityTrustResourceUrl(`https://www.youtube.com/embed/${videoId}`),
+            );
+          } else {
+            this.safeVideoUrl.set(null);
+          }
         } else {
           this.safeVideoUrl.set(null);
         }
-      } else {
-        this.safeVideoUrl.set(null);
-      }
 
-      if (primary) {
-        this.additionalResources.set(filtered.filter(r => r.id !== primary.id));
-      } else {
-        this.additionalResources.set([]);
-      }
+        if (primary) {
+          this.additionalResources.set(filtered.filter(r => r.id !== primary.id));
+        } else {
+          this.additionalResources.set([]);
+        }
 
-      this.loading.set(false);
+        this.loading.set(false);
+      },
+      error: () => { this.loading.set(false); },
     });
   }
 

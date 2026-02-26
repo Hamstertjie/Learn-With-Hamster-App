@@ -145,38 +145,62 @@ export default class CourseBrowseComponent implements OnInit {
     this.lessonsLoaded = false;
     this.progressLoaded = false;
 
-    this.courseService.find(id).subscribe(res => {
-      this.course.set(res.body);
+    this.courseService.find(id).subscribe({
+      next: res => {
+        this.course.set(res.body);
 
-      const courseLessonIds = new Set((res.body?.lessons ?? []).map(l => l.id));
+        const courseLessonIds = new Set((res.body?.lessons ?? []).map(l => l.id));
 
-      this.lessonService.query({ size: 1000 }).subscribe(lessonRes => {
-        const allLessons: ILesson[] = lessonRes.body ?? [];
-        this.lessons.set(allLessons.filter(l => courseLessonIds.has(l.id)));
-        this.lessonsLoaded = true;
-        this.maybeFireConfetti();
-      });
+        this.lessonService.query({ size: 1000 }).subscribe({
+          next: lessonRes => {
+            const allLessons: ILesson[] = lessonRes.body ?? [];
+            this.lessons.set(allLessons.filter(l => courseLessonIds.has(l.id)));
+            this.lessonsLoaded = true;
+            this.maybeFireConfetti();
+          },
+          error: () => {
+            this.lessonsLoaded = true;
+            this.maybeFireConfetti();
+          },
+        });
 
-      this.resourceService.query({ size: 1000 }).subscribe(resourceRes => {
-        const allResources: IResource[] = resourceRes.body ?? [];
-        this.resources.set(allResources.filter(r => r.course?.id === id));
-        this.loading.set(false);
-      });
+        this.resourceService.query({ size: 1000 }).subscribe({
+          next: resourceRes => {
+            const allResources: IResource[] = resourceRes.body ?? [];
+            this.resources.set(allResources.filter(r => r.course?.id === id));
+            this.loading.set(false);
+          },
+          error: () => { this.loading.set(false); },
+        });
+      },
+      error: () => { this.loading.set(false); },
     });
 
-    this.enrollmentService.isEnrolled(id).subscribe(res => {
-      this.enrolled.set(res.body === true);
-      if (res.body === true) {
-        this.progressService.getCourseProgress(id).subscribe(progressRes => {
-          const ids = new Set((progressRes.body ?? []).map(p => p.lessonId).filter((lid): lid is number => lid != null));
-          this.completedLessonIds.set(ids);
+    this.enrollmentService.isEnrolled(id).subscribe({
+      next: res => {
+        this.enrolled.set(res.body === true);
+        if (res.body === true) {
+          this.progressService.getCourseProgress(id).subscribe({
+            next: progressRes => {
+              const ids = new Set((progressRes.body ?? []).map(p => p.lessonId).filter((lid): lid is number => lid != null));
+              this.completedLessonIds.set(ids);
+              this.progressLoaded = true;
+              this.maybeFireConfetti();
+            },
+            error: () => {
+              this.progressLoaded = true;
+              this.maybeFireConfetti();
+            },
+          });
+        } else {
+          // Not enrolled — progress will never load, mark as resolved so we don't block
           this.progressLoaded = true;
-          this.maybeFireConfetti();
-        });
-      } else {
-        // Not enrolled — progress will never load, mark as resolved so we don't block
+        }
+      },
+      error: () => {
+        // Enrollment check failed — treat as not enrolled
         this.progressLoaded = true;
-      }
+      },
     });
   }
 
