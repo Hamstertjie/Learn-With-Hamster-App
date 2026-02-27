@@ -23,6 +23,41 @@ It's built on **JHipster 8.11.0** — a framework that generates production-read
 
 ---
 
+## Screenshots
+
+### Landing Page (logged out)
+![Hero — Learn Without Limits](docs/screenshots/01-hero-logged-out.png)
+
+### Personalized Dashboard (logged in)
+![Home Dashboard — animated stats, progress ring, continue-learning cards](docs/screenshots/02-home-dashboard.png)
+
+### Browse the Catalogue
+![Explore Disciplines](docs/screenshots/03-catalog.png)
+
+### Discipline Detail
+![Discipline Detail — course cards with enroll / add-to-cart](docs/screenshots/04-discipline-detail.png)
+
+### Course Page (full curriculum)
+![Course Page — expandable curriculum, progress bar, certificate button](docs/screenshots/05-course-page.png)
+
+### Lesson Viewer
+![Lesson Page — sidebar navigation, content, resources](docs/screenshots/06-lesson-page.png)
+
+### My Learning Dashboard
+![My Learning — in-progress, completed, bookmarked lessons](docs/screenshots/07-my-learning.png)
+
+### Cart & Admin View
+| Shopping Cart | Admin Dashboard |
+|---|---|
+| ![Cart](docs/screenshots/08-cart.png) | ![Admin view — Manage Content, 100% progress](docs/screenshots/09-home-admin.png) |
+
+### Mobile Responsive
+| Mobile Catalog | Mobile Dashboard |
+|---|---|
+| ![Catalog on mobile](docs/screenshots/10-catalog-mobile.png) | ![Dashboard on mobile](docs/screenshots/02-home-dashboard-mobile.png) |
+
+---
+
 ## How It's Built
 
 The system has two independently deployable backend services plus a React-style Angular frontend.
