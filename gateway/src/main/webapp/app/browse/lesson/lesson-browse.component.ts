@@ -176,6 +176,8 @@ export default class LessonBrowseComponent implements OnInit, OnDestroy {
           this.lesson.set(lesson);
           if (lesson) {
             this.loadNote();
+            // Pass the lesson ID so each async callback can guard against
+            // stale responses arriving after the user navigated to a new lesson
             this.loadResources(lesson.id);
             this.loadCourseContext(lesson);
             this.recordProgress(lesson.id);
@@ -190,6 +192,8 @@ export default class LessonBrowseComponent implements OnInit, OnDestroy {
   private loadResources(lessonId: number): void {
     this.resourceService.query({ size: 1000 }).subscribe({
       next: resourceRes => {
+        // Discard stale response if the user navigated to a different lesson
+        if (this.lesson()?.id !== lessonId) return;
         const allResources: IResource[] = resourceRes.body ?? [];
         const filtered = allResources
           .filter(r => r.lesson?.id === lessonId)
@@ -255,24 +259,36 @@ export default class LessonBrowseComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.progressService.getCourseProgress(courseId).subscribe(progressRes => {
-      const ids = new Set((progressRes.body ?? []).map(p => p.lessonId).filter((id): id is number => id != null));
-      this.completedLessonIds.set(ids);
+    this.progressService.getCourseProgress(courseId).subscribe({
+      next: progressRes => {
+        if (this.lesson()?.id !== lesson.id) return; // stale guard
+        const ids = new Set((progressRes.body ?? []).map(p => p.lessonId).filter((id): id is number => id != null));
+        this.completedLessonIds.set(ids);
+      },
+      error: () => { /* progress stays empty — non-blocking */ },
     });
 
-    this.courseService.find(courseId).subscribe(courseRes => {
-      const course = courseRes.body;
-      this.course.set(course);
+    this.courseService.find(courseId).subscribe({
+      next: courseRes => {
+        if (this.lesson()?.id !== lesson.id) return; // stale guard
+        const course = courseRes.body;
+        this.course.set(course);
 
-      if (course?.lessons && course.lessons.length > 0) {
-        const courseLessonIds = new Set(course.lessons.map(l => l.id));
-        this.lessonService.query({ size: 1000 }).subscribe(lessonRes => {
-          const allLessons: ILesson[] = lessonRes.body ?? [];
-          this.courseLessons.set(allLessons.filter(l => courseLessonIds.has(l.id)));
-        });
-      } else {
-        this.courseLessons.set([]);
-      }
+        if (course?.lessons && course.lessons.length > 0) {
+          const courseLessonIds = new Set(course.lessons.map(l => l.id));
+          this.lessonService.query({ size: 1000 }).subscribe({
+            next: lessonRes => {
+              if (this.lesson()?.id !== lesson.id) return; // stale guard
+              const allLessons: ILesson[] = lessonRes.body ?? [];
+              this.courseLessons.set(allLessons.filter(l => courseLessonIds.has(l.id)));
+            },
+            error: () => { /* sidebar stays empty — non-blocking */ },
+          });
+        } else {
+          this.courseLessons.set([]);
+        }
+      },
+      error: () => { /* course context stays empty — non-blocking */ },
     });
   }
 

@@ -18,6 +18,7 @@ export default class CheckoutComponent implements OnInit {
   items = signal<ICartItem[]>([]);
   total = signal(0);
   processing = signal(false);
+  enrollError = signal(false);
   firstName = signal('');
   lastName = signal('');
   email = signal('');
@@ -36,17 +37,21 @@ export default class CheckoutComponent implements OnInit {
       return;
     }
 
-    this.accountService.identity().subscribe(account => {
-      if (account) {
-        this.firstName.set(account.firstName ?? '');
-        this.lastName.set(account.lastName ?? '');
-        this.email.set(account.email);
-      }
+    this.accountService.identity().subscribe({
+      next: account => {
+        if (account) {
+          this.firstName.set(account.firstName ?? '');
+          this.lastName.set(account.lastName ?? '');
+          this.email.set(account.email);
+        }
+      },
+      error: () => { /* billing fields stay blank — not a blocking error */ },
     });
   }
 
   placeOrder(): void {
     this.processing.set(true);
+    this.enrollError.set(false);
 
     // Enroll in all cart courses
     // TODO: Payment gateway integration point — process payment before enrolling
@@ -59,6 +64,7 @@ export default class CheckoutComponent implements OnInit {
       },
       error: () => {
         this.processing.set(false);
+        this.enrollError.set(true);
       },
     });
   }
