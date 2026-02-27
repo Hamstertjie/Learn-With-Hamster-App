@@ -1,4 +1,5 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 
 import SharedModule from 'app/shared/shared.module';
@@ -30,11 +31,12 @@ export default class DisciplineBrowseComponent implements OnInit {
   private readonly disciplineService = inject(DisciplineService);
   private readonly courseService = inject(CourseService);
   private readonly resourceService = inject(ResourceService);
+  private readonly destroyRef = inject(DestroyRef);
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
 
-    this.accountService.identity().subscribe(account => {
+    this.accountService.identity().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(account => {
       this.isAuthenticated.set(account !== null);
       if (account !== null) {
         this.loadData(id);
@@ -49,22 +51,31 @@ export default class DisciplineBrowseComponent implements OnInit {
   }
 
   private loadData(id: number): void {
-    this.disciplineService.find(id).subscribe(res => {
-      this.discipline.set(res.body);
+    this.disciplineService.find(id).subscribe({
+      next: res => {
+        this.discipline.set(res.body);
 
-      const disciplineProgramIds = new Set((res.body?.programs ?? []).map(p => p.id));
+        const disciplineProgramIds = new Set((res.body?.programs ?? []).map(p => p.id));
 
-      this.courseService.query({ size: 1000, eagerload: true }).subscribe(courseRes => {
-        const allCourses: ICourse[] = courseRes.body ?? [];
-        const filtered = allCourses.filter(course => (course.programs ?? []).some(p => disciplineProgramIds.has(p.id)));
-        this.courses.set(filtered);
-      });
+        this.courseService.query({ size: 1000, eagerload: true }).subscribe({
+          next: courseRes => {
+            const allCourses: ICourse[] = courseRes.body ?? [];
+            const filtered = allCourses.filter(course => (course.programs ?? []).some(p => disciplineProgramIds.has(p.id)));
+            this.courses.set(filtered);
+          },
+          error: () => { /* courses stay empty — resources callback still resolves loading */ },
+        });
 
-      this.resourceService.query({ size: 1000 }).subscribe(resourceRes => {
-        const allResources: IResource[] = resourceRes.body ?? [];
-        this.resources.set(allResources.filter(r => r.discipline?.id === id));
-        this.loading.set(false);
-      });
+        this.resourceService.query({ size: 1000 }).subscribe({
+          next: resourceRes => {
+            const allResources: IResource[] = resourceRes.body ?? [];
+            this.resources.set(allResources.filter(r => r.discipline?.id === id));
+            this.loading.set(false);
+          },
+          error: () => { this.loading.set(false); },
+        });
+      },
+      error: () => { this.loading.set(false); },
     });
   }
 }
