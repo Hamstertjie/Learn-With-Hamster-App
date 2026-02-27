@@ -172,11 +172,17 @@ flowchart LR
 
 ### When you're logged in
 
+**Home dashboard** (`/`) — your personal progress at a glance:
+- Animated stat cards that count up from zero when the page loads (enrolled, completed, lessons done, overall %)
+- An SVG progress ring showing your overall completion across all courses
+- A "Continue Learning" section with your in-progress courses and live progress bars
+- Your completed courses shown as gold chips — click any to revisit
+
 **Course page** — you'll see:
 - A progress bar showing how many lessons you've completed
 - Green checkmarks next to finished lessons
 - "Enroll" for free courses or "Add to Cart" for paid ones
-- A gold trophy + **Download Certificate** button when you've finished every lesson (with a confetti celebration 🎉)
+- A gold trophy + **Download Certificate** button when you've finished every lesson — triggers a full confetti celebration (screen flash, body shake, 7 burst waves, glassmorphism particles that settle on the floor)
 
 **My Learning dashboard** (`/my-learning`):
 - Stats showing how many courses you're enrolled in, in-progress, completed, and bookmarked
@@ -188,6 +194,7 @@ flowchart LR
 - Add paid courses to your cart (stored in the browser, no server round-trip)
 - Checkout enrolls you in all cart items in one API call
 - Cart icon in the navbar shows the item count
+- Clear error message shown if enrollment fails so you're never left guessing
 
 ### For admins only
 
@@ -282,6 +289,29 @@ sequenceDiagram
     U->>A: Click Download Certificate
     A->>A: Generate PDF via jsPDF<br/>(dark glass, gold borders, teal accents)
     A-->>U: Certificate - Course Name.pdf
+```
+
+### Home Dashboard (animated stats on load)
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant A as Angular
+    participant G as Gateway
+    participant S as Service
+
+    U->>A: Navigate to / (logged in)
+    A->>G: GET /services/service/api/user-course-enrollments
+    G->>S: Forward
+    S-->>A: 200 [enrollments...]
+    loop For each enrolled course
+        A->>G: GET /services/service/api/courses/:id
+        A->>G: GET /services/service/api/user-lesson-progress/course/:id
+        G->>S: Both forwarded in parallel
+        S-->>A: Course + progress data
+    end
+    Note over A: Compute stats, then<br/>requestAnimationFrame count-up<br/>0 → target over ~1.5s (ease-out cubic)
+    Note over A: SVG ring animates stroke-dasharray<br/>from 0 → overall%
 ```
 
 ### Login Flow
@@ -397,7 +427,8 @@ Learn-With-Hamster-App/
 | Build | Maven · webpack · Liquibase migrations |
 | Testing | Jest · Cypress · JUnit 5 · Testcontainers |
 | PDF generation | jsPDF (browser-side, no server) |
-| Celebrations | canvas-confetti + custom DOM glassmorphism particles |
+| Celebrations | canvas-confetti (7-wave burst, screen flash, body shake) + DOM glassmorphism particles |
+| Animations | Web Animations API · requestAnimationFrame count-up · SVG stroke-dasharray transitions |
 
 ---
 
