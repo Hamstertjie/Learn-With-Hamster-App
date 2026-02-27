@@ -1,4 +1,5 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, signal, computed } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 
 import SharedModule from 'app/shared/shared.module';
@@ -62,11 +63,12 @@ export default class CourseBrowseComponent implements OnInit {
   readonly cartService = inject(CartService);
   private readonly confettiService = inject(ConfettiService);
   private readonly certificateService = inject(CertificateService);
+  private readonly destroyRef = inject(DestroyRef);
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
 
-    this.accountService.identity().subscribe(account => {
+    this.accountService.identity().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(account => {
       this.isAuthenticated.set(account !== null);
       this.account.set(account);
       if (account !== null) {
