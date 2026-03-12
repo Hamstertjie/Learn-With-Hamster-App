@@ -1,18 +1,18 @@
 import { Injectable } from '@angular/core';
 
-// Glassmorphism colour schemes — bg, border, glow
+// Lando Norris colour schemes — electric yellow, black, white
 const SCHEMES = [
-  { bg: 'rgba(6,182,212,0.20)',   border: 'rgba(103,232,249,0.75)', glow: 'rgba(6,182,212,0.55)'   },
-  { bg: 'rgba(139,92,246,0.20)',  border: 'rgba(196,181,253,0.75)', glow: 'rgba(139,92,246,0.55)'  },
-  { bg: 'rgba(251,191,36,0.22)',  border: 'rgba(251,191,36,0.80)',  glow: 'rgba(251,191,36,0.60)'  },
-  { bg: 'rgba(255,255,255,0.16)', border: 'rgba(255,255,255,0.70)', glow: 'rgba(255,255,255,0.35)' },
-  { bg: 'rgba(240,171,252,0.20)', border: 'rgba(240,171,252,0.75)', glow: 'rgba(240,171,252,0.55)' },
-  { bg: 'rgba(52,211,153,0.20)',  border: 'rgba(52,211,153,0.75)',  glow: 'rgba(52,211,153,0.55)'  },
-  { bg: 'rgba(251,146,60,0.20)',  border: 'rgba(251,146,60,0.75)',  glow: 'rgba(251,146,60,0.55)'  },
-  { bg: 'rgba(245,158,11,0.20)',  border: 'rgba(245,208,11,0.75)',  glow: 'rgba(245,158,11,0.55)'  },
+  { bg: 'rgba(210,255,0,0.90)',   border: 'rgba(210,255,0,1)',      glow: 'rgba(210,255,0,0.70)'   },
+  { bg: 'rgba(255,255,255,0.92)', border: 'rgba(255,255,255,1)',    glow: 'rgba(255,255,255,0.45)' },
+  { bg: 'rgba(17,17,18,0.95)',    border: 'rgba(210,255,0,0.80)',   glow: 'rgba(210,255,0,0.45)'   },
+  { bg: 'rgba(170,220,0,0.90)',   border: 'rgba(200,255,0,0.90)',   glow: 'rgba(170,220,0,0.60)'   },
+  { bg: 'rgba(210,255,0,0.70)',   border: 'rgba(255,255,255,0.80)', glow: 'rgba(210,255,0,0.50)'   },
+  { bg: 'rgba(235,255,80,0.85)',  border: 'rgba(210,255,0,0.90)',   glow: 'rgba(235,255,80,0.55)'  },
+  { bg: 'rgba(255,255,255,0.80)', border: 'rgba(210,255,0,0.70)',   glow: 'rgba(210,255,0,0.35)'   },
+  { bg: 'rgba(17,17,18,0.90)',    border: 'rgba(255,255,255,0.60)', glow: 'rgba(255,255,255,0.30)' },
 ];
 
-const BURST_COLORS = ['#06b6d4', '#67e8f9', '#8b5cf6', '#c4b5fd', '#fbbf24', '#ffffff', '#f0abfc', '#34d399', '#fb923c'];
+const BURST_COLORS = ['#D2FF00', '#ffffff', '#aaf000', '#111112', '#e8ff80', '#ffffff', '#D2FF00', '#ccff00', '#f5ff66'];
 
 // Total experience: 13 s spawn window + up to 8.5 s fall = ~21.5 s visible, cleanup fade at 22 s
 const SPAWN_WINDOW_MS = 13_000;
@@ -71,7 +71,7 @@ export class ConfettiService {
 
     // Wave 7 — final golden rain from the top (4 000 ms)
     setTimeout(() => {
-      burst({ particleCount: 200, spread: 200, origin: { y: 0 }, ticks: 380, scalar: 1.0, startVelocity: 30, gravity: 1.3, colors: ['#fbbf24', '#f59e0b', '#ffffff', '#06b6d4'] });
+      burst({ particleCount: 200, spread: 200, origin: { y: 0 }, ticks: 380, scalar: 1.0, startVelocity: 30, gravity: 1.3, colors: ['#D2FF00', '#aaf000', '#ffffff', '#111112'] });
     }, 4_000);
 
     // ── Inject CSS for bounce-settle keyframe + body shake ───────────────────
@@ -139,7 +139,7 @@ export class ConfettiService {
       inset: '0',
       pointerEvents: 'none',
       zIndex: '10000',
-      background: 'radial-gradient(ellipse at 50% 45%, rgba(251,191,36,0.28) 0%, rgba(6,182,212,0.18) 40%, transparent 70%)',
+      background: 'radial-gradient(ellipse at 50% 45%, rgba(210,255,0,0.35) 0%, rgba(210,255,0,0.12) 40%, transparent 70%)',
       opacity: '1',
       transition: 'opacity 600ms ease-out',
     });

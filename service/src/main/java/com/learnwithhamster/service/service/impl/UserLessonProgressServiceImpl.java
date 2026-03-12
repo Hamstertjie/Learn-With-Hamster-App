@@ -39,24 +39,26 @@ public class UserLessonProgressServiceImpl implements UserLessonProgressService 
             .orElseThrow(() -> new RuntimeException("User not authenticated"));
         LOG.debug("Request to mark progress for user {} on lesson {}", userLogin, lessonId);
 
-        UserLessonProgress progress = userLessonProgressRepository
-            .findByUserLoginAndLessonId(userLogin, lessonId)
-            .orElseGet(() -> {
-                UserLessonProgress newProgress = new UserLessonProgress();
-                newProgress.setUserLogin(userLogin);
-                newProgress.setLessonId(lessonId);
-                newProgress.setCourseId(courseId);
-                newProgress.setStartedAt(Instant.now());
-                newProgress.setCompleted(true);
-                return newProgress;
-            });
+        UserLessonProgress progress = findOrCreate(userLogin, lessonId, courseId);
 
-        // Update course context if it was null before
-        if (progress.getCourseId() == null && courseId != null) {
-            progress.setCourseId(courseId);
+        // Only award points the first time a lesson is completed
+        if (!Boolean.TRUE.equals(progress.getCompleted())) {
+            progress.setCompleted(true);
+            progress.setPointsEarned(10);
         }
-        progress.setCompleted(true);
 
+        progress = userLessonProgressRepository.save(progress);
+        return userLessonProgressMapper.toDto(progress);
+    }
+
+    @Override
+    public UserLessonProgressDTO startLesson(Long lessonId, Long courseId) {
+        String userLogin = SecurityUtils.getCurrentUserLogin()
+            .orElseThrow(() -> new RuntimeException("User not authenticated"));
+        LOG.debug("Request to start lesson for user {} on lesson {}", userLogin, lessonId);
+
+        UserLessonProgress progress = findOrCreate(userLogin, lessonId, courseId);
+        // Do not set completed — just persist the visit record
         progress = userLessonProgressRepository.save(progress);
         return userLessonProgressMapper.toDto(progress);
     }
@@ -71,5 +73,35 @@ public class UserLessonProgressServiceImpl implements UserLessonProgressService 
         return userLessonProgressMapper.toDto(
             userLessonProgressRepository.findByUserLoginAndCourseId(userLogin, courseId)
         );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public int getMyTotalPoints() {
+        String userLogin = SecurityUtils.getCurrentUserLogin()
+            .orElseThrow(() -> new RuntimeException("User not authenticated"));
+        LOG.debug("Request to get total points for user {}", userLogin);
+        Integer total = userLessonProgressRepository.sumPointsByUserLogin(userLogin);
+        return total != null ? total : 0;
+    }
+
+    // ── Shared helper ────────────────────────────────────────────────────────
+
+    private UserLessonProgress findOrCreate(String userLogin, Long lessonId, Long courseId) {
+        UserLessonProgress progress = userLessonProgressRepository
+            .findByUserLoginAndLessonId(userLogin, lessonId)
+            .orElseGet(() -> {
+                UserLessonProgress p = new UserLessonProgress();
+                p.setUserLogin(userLogin);
+                p.setLessonId(lessonId);
+                p.setCourseId(courseId);
+                p.setStartedAt(Instant.now());
+                return p;
+            });
+
+        if (progress.getCourseId() == null && courseId != null) {
+            progress.setCourseId(courseId);
+        }
+        return progress;
     }
 }

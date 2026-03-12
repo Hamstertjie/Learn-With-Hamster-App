@@ -26,6 +26,8 @@ public class UserLessonProgressDTO implements Serializable {
 
     private Boolean completed;
 
+    private Integer pointsEarned;
+
     public Long getId() {
         return id;
     }
@@ -74,6 +76,14 @@ public class UserLessonProgressDTO implements Serializable {
         this.completed = completed;
     }
 
+    public Integer getPointsEarned() {
+        return pointsEarned;
+    }
+
+    public void setPointsEarned(Integer pointsEarned) {
+        this.pointsEarned = pointsEarned;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -105,6 +115,7 @@ public class UserLessonProgressDTO implements Serializable {
             ", courseId=" + getCourseId() +
             ", startedAt='" + getStartedAt() + "'" +
             ", completed='" + getCompleted() + "'" +
+            ", pointsEarned=" + getPointsEarned() +
             "}";
     }
 }

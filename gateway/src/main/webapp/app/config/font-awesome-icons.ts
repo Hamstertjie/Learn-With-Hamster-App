@@ -67,6 +67,7 @@ import {
   faPrint,
   faCertificate,
   faDownload,
+  faCodeBranch,
   // jhipster-needle-add-icon-import
 } from '@fortawesome/free-solid-svg-icons';
 
@@ -139,5 +140,6 @@ export const fontAwesomeIcons = [
   faPrint,
   faCertificate,
   faDownload,
+  faCodeBranch,
   // jhipster-needle-add-icon-import
 ];

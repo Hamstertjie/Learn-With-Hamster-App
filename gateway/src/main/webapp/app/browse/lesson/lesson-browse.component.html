@@ -100,30 +100,26 @@
         @if (primaryResource(); as pr) {
           @switch (pr.resourceType) {
             @case ('VIDEO') {
-              @if (safeVideoUrl(); as videoUrl) {
-                <div class="mini-player-video">
-                  <iframe
-                    [src]="videoUrl"
-                    title="{{ pr.resourceName }}"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen
-                  ></iframe>
-                </div>
-              } @else {
-                <div class="mini-player-card">
-                  <div class="card-icon"><fa-icon icon="video"></fa-icon></div>
-                  <div class="card-info">
-                    <h5>{{ pr.resourceName }}</h5>
-                    @if (pr.resourceDescription) { <p>{{ pr.resourceDescription }}</p> }
+              <div class="mini-player-video">
+                <!-- YT.Player mounts here -->
+                <div id="yt-player"></div>
+
+                <!-- Watch progress bar (only while video is playing) -->
+                @if (!videoWatched() && watchPercent() > 0) {
+                  <div class="watch-progress-bar">
+                    <div class="watch-progress-fill" [style.width.%]="watchPercent()"></div>
+                    <span class="watch-progress-label">{{ watchPercent() }}% watched</span>
                   </div>
-                  @if (pr.resourceURL) {
-                    <a [href]="pr.resourceURL" target="_blank" rel="noopener" class="btn btn-primary">
-                      <fa-icon icon="external-link-alt"></fa-icon>
-                      <span jhiTranslate="browse.lesson.watchVideo">Watch Video</span>
-                    </a>
-                  }
-                </div>
-              }
+                }
+
+                <!-- Gate indicator while not yet watched -->
+                @if (!videoWatched() && !isCurrentLessonCompleted()) {
+                  <div class="watch-gate-hint">
+                    <fa-icon icon="play"></fa-icon>
+                    <span>Watch the video to unlock lesson completion</span>
+                  </div>
+                }
+              </div>
             }
             @case ('IMAGE') {
               <div class="mini-player-image">
@@ -235,6 +231,61 @@
       @if (l.lessonDescription) {
         <div class="lesson-description">
           <p>{{ l.lessonDescription }}</p>
+        </div>
+      }
+
+      <!-- ── Lesson Completion Section ───────────────────────────────────── -->
+      @if (!isCurrentLessonCompleted() && !justCompleted()) {
+        <div class="lesson-complete-section">
+          @if (hasVideo()) {
+            <!-- Video lesson: show watch progress state -->
+            @if (videoWatched()) {
+              <div class="complete-ready">
+                <fa-icon icon="check-circle" class="complete-ready-icon"></fa-icon>
+                <span>Video watched! Marking lesson complete…</span>
+              </div>
+            } @else {
+              <div class="complete-locked">
+                <div class="watch-gate-bar">
+                  <div class="watch-gate-fill" [style.width.%]="watchPercent()"></div>
+                </div>
+                <span class="complete-locked-label">
+                  @if (watchPercent() === 0) {
+                    Watch the video above to complete this lesson
+                  } @else {
+                    {{ watchPercent() }}% — keep watching to complete
+                  }
+                </span>
+              </div>
+            }
+          } @else {
+            <!-- Non-video lesson: time-gate button -->
+            <button
+              class="btn btn-complete"
+              [disabled]="!canComplete() || completing()"
+              (click)="markLessonComplete()"
+            >
+              @if (completing()) {
+                <span class="spinner-border spinner-border-sm" role="status"></span>
+              } @else if (!canComplete()) {
+                <fa-icon icon="clock"></fa-icon>
+                <span>Reading… (available shortly)</span>
+              } @else {
+                <fa-icon icon="check-circle"></fa-icon>
+                <span>Mark Lesson as Complete</span>
+              }
+            </button>
+          }
+        </div>
+      }
+
+      @if (justCompleted()) {
+        <div class="lesson-completed-banner">
+          <fa-icon icon="check-circle" class="banner-check"></fa-icon>
+          <div class="banner-text">
+            <strong>Lesson complete! +10 XP</strong>
+            <span>Keep going to earn more XP and complete the course.</span>
+          </div>
         </div>
       }
 

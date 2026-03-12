@@ -203,15 +203,18 @@ flowchart LR
 - **Bookmarks** — save any lesson to revisit from your dashboard
 - **Keyboard navigation** — press `←` `→` to jump between lessons without touching the mouse
 - **Reading time estimate** — calculated from word count and video resources
-- **Progress tracking** — your visit is automatically recorded the moment you open a lesson
+- **Video watch gate** — YouTube videos must be watched to ≥90% (or to the end) before the lesson is marked complete; a progress bar shows how far you've watched
+- **Non-video time gate** — for text/tutorial/tool lessons a "Mark as Complete" button unlocks after 5 seconds on the page
+- **+10 XP per lesson** — earned when you complete a lesson; shown in a banner and counted in your dashboard
 
 ### When you're logged in
 
 **Home dashboard** (`/`) — your personal progress at a glance:
-- Animated stat cards that count up from zero when the page loads (enrolled, completed, lessons done, overall %)
+- Animated stat cards that count up from zero when the page loads (enrolled, completed, lessons done, overall %, **XP Earned**)
 - An SVG progress ring showing your overall completion across all courses
 - A "Continue Learning" section with your in-progress courses and live progress bars
 - Your completed courses shown as gold chips — click any to revisit
+- **XP system** — 10 XP per completed lesson stored in the database + 50 XP bonus per completed course (front-end computed); displayed with an electric-yellow glow card
 
 **Course page** — you'll see:
 - A progress bar showing how many lessons you've completed
@@ -303,6 +306,44 @@ sequenceDiagram
     Note over A: Filter lessons by course.lessons IDs,<br/>show progress bar, render curriculum
 ```
 
+### Watching a Lesson (video watch gate)
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant A as Angular
+    participant YT as YouTube IFrame API
+    participant G as Gateway
+    participant S as Service
+
+    U->>A: Open lesson page
+    A->>G: POST /services/service/api/user-lesson-progress/start
+    Note over G,S: Records visit (startedAt), completed stays false
+    A->>A: Load YouTube IFrame API script
+    A->>YT: new YT.Player('yt-player', { videoId })
+    U->>YT: Watches video
+    loop Every 2 seconds while playing
+        A->>YT: getCurrentTime() / getDuration()
+        A->>A: watchPercent signal → progress bar updates
+    end
+    alt Video reaches 90% or ends
+        YT->>A: onStateChange(ENDED) or 90% threshold
+        A->>A: videoWatched = true
+        A->>G: POST /services/service/api/user-lesson-progress/mark
+        G->>S: completed=true, pointsEarned=10
+        S-->>A: 201 { lessonId, pointsEarned: 10 }
+        A->>A: completedLessonIds.add(lessonId)
+        A->>A: Show "+10 XP" banner
+    else Non-video lesson (5-second gate)
+        Note over A: setTimeout 5000ms
+        A->>A: canComplete = true → button unlocks
+        U->>A: Click "Mark Lesson as Complete"
+        A->>G: POST /services/service/api/user-lesson-progress/mark
+        G->>S: completed=true, pointsEarned=10
+        S-->>A: 201 { lessonId }
+    end
+```
+
 ### Completing a Course (certificates + confetti)
 
 ```mermaid
@@ -312,15 +353,16 @@ sequenceDiagram
     participant G as Gateway
     participant S as Service
 
-    U->>A: Open last uncompleted lesson
+    U->>A: Complete last lesson (watch gate satisfied)
     A->>G: POST /api/user-lesson-progress/mark
     G->>S: Forward
-    S-->>G: 201 Created
+    S-->>G: 201 Created (pointsEarned: 10)
     G-->>A: 201
     A->>A: completedLessonIds.add(lessonId)
     Note over A: maybeFireConfetti() checks:<br/>lessonsLoaded && progressLoaded<br/>&& completed >= total
     A->>A: 🎉 Confetti + screen flash + body shake
     A->>A: Show "Download Certificate" button
+    A->>A: Dashboard XP = lessonXP + (completedCourses × 50)
     U->>A: Click Download Certificate
     A->>A: Generate PDF via jsPDF<br/>(dark glass, gold borders, teal accents)
     A-->>U: Certificate - Course Name.pdf
@@ -464,6 +506,8 @@ Learn-With-Hamster-App/
 | PDF generation | jsPDF (browser-side, no server) |
 | Celebrations | canvas-confetti (7-wave burst, screen flash, body shake) + DOM glassmorphism particles |
 | Animations | Web Animations API · requestAnimationFrame count-up · SVG stroke-dasharray transitions |
+| Video player | YouTube IFrame Player API (dynamically injected, `YT.Player`, 90% watch gate) |
+| XP / Points | 10 XP per lesson (DB) · 50 XP course-completion bonus (frontend) · animated count-up display |
 
 ---
 

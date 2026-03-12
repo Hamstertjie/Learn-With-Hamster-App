@@ -12,11 +12,19 @@ export class UserLessonProgressService {
 
   protected resourceUrl = this.applicationConfigService.getEndpointFor('api/user-lesson-progress', 'service');
 
+  startLesson(lessonId: number, courseId: number): Observable<HttpResponse<IUserLessonProgress>> {
+    return this.http.post<IUserLessonProgress>(`${this.resourceUrl}/start`, { lessonId, courseId }, { observe: 'response' });
+  }
+
   markProgress(lessonId: number, courseId: number): Observable<HttpResponse<IUserLessonProgress>> {
     return this.http.post<IUserLessonProgress>(`${this.resourceUrl}/mark`, { lessonId, courseId }, { observe: 'response' });
   }
 
   getCourseProgress(courseId: number): Observable<HttpResponse<IUserLessonProgress[]>> {
     return this.http.get<IUserLessonProgress[]>(`${this.resourceUrl}/course/${courseId}`, { observe: 'response' });
+  }
+
+  getMyPoints(): Observable<HttpResponse<number>> {
+    return this.http.get<number>(`${this.resourceUrl}/my-points`, { observe: 'response' });
   }
 }

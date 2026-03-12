@@ -3,16 +3,15 @@
   <div class="hero-section">
     <div class="hero-rings" aria-hidden="true"></div>
     <div class="hero-content">
-      <h1 class="hero-title" jhiTranslate="home.title">Learn without limits</h1>
-      <p class="hero-subtitle" jhiTranslate="home.subtitle">Start, switch, or advance your career with thousands of courses</p>
-      <div class="hero-actions">
+      <h1 class="hero-title">
+        <span class="hero-line"><span class="hero-word">Learn without</span></span>
+        <span class="hero-line hero-line-accent"><span class="hero-word accent">Limits</span></span>
+      </h1>
+      <p class="hero-subtitle hero-sub-anim">Start, switch, or advance your career — one lesson at a time</p>
+      <div class="hero-actions hero-actions-anim">
         <a class="btn btn-accent btn-lg hero-btn" (click)="login()" jhiTranslate="home.cta.signin">Sign In</a>
         <a class="btn btn-outline-light btn-lg hero-btn" routerLink="/catalog" jhiTranslate="home.cta.browse">Browse Catalog</a>
       </div>
-    </div>
-    <svg class="hero-wave" viewBox="0 0 1440 120" preserveAspectRatio="none">
-      <path d="M0,64L48,69.3C96,75,192,85,288,80C384,75,480,53,576,48C672,43,768,53,864,64C960,75,1056,85,1152,80C1248,75,1344,53,1392,42.7L1440,32L1440,120L0,120Z" fill="#111827"/>
-    </svg>
   </div>
 
   <!-- Feature Highlights -->
@@ -20,7 +19,7 @@
     <div class="container">
       <div class="row">
         <div class="col-md-4">
-          <div class="feature-card">
+          <div class="feature-card reveal">
             <div class="feature-icon-wrapper">
               <fa-icon icon="graduation-cap" class="feature-icon"></fa-icon>
             </div>
@@ -31,7 +30,7 @@
           </div>
         </div>
         <div class="col-md-4">
-          <div class="feature-card">
+          <div class="feature-card reveal" style="transition-delay:0.12s">
             <div class="feature-icon-wrapper icon-coral">
               <fa-icon icon="sitemap" class="feature-icon"></fa-icon>
             </div>
@@ -42,7 +41,7 @@
           </div>
         </div>
         <div class="col-md-4">
-          <div class="feature-card">
+          <div class="feature-card reveal" style="transition-delay:0.24s">
             <div class="feature-icon-wrapper icon-success">
               <fa-icon icon="chart-line" class="feature-icon"></fa-icon>
             </div>
@@ -69,7 +68,7 @@
       <div class="container-xl">
 
         <!-- Welcome header -->
-        <div class="welcome-header">
+        <div class="welcome-header reveal">
           <h2 class="welcome-title">
             Welcome back, <span class="welcome-name">{{ accountRef.firstName || accountRef.login }}</span>
           </h2>
@@ -77,7 +76,7 @@
         </div>
 
         <!-- ─── Animated Stats Row ─────────────────────────────────────────── -->
-        <div class="stats-grid">
+        <div class="stats-grid reveal">
 
           <!-- Overall ring -->
           <div class="stat-ring-card stat-entry" style="--entry-delay: 0ms">
@@ -149,6 +148,22 @@
               <div class="stat-bar-fill stat-bar-violet"
                 [style.width]="(loadingStats() ? '0' : '100') + '%'"
                 [style.transition]="loadingStats() ? 'none' : 'width 1.4s ease-out 0.4s'"></div>
+            </div>
+          </div>
+
+          <!-- XP Points -->
+          <div class="stat-number-card stat-entry stat-xp" style="--entry-delay: 320ms">
+            <div class="stat-icon-wrap stat-icon-xp">
+              <fa-icon icon="star"></fa-icon>
+            </div>
+            <div class="stat-number-body">
+              <span class="stat-big stat-big-xp">{{ displayXP() }}</span>
+              <span class="stat-label">XP Earned</span>
+            </div>
+            <div class="stat-bar-bg">
+              <div class="stat-bar-fill stat-bar-xp"
+                [style.width]="(loadingStats() ? '0' : '100') + '%'"
+                [style.transition]="loadingStats() ? 'none' : 'width 1.4s ease-out 0.6s'"></div>
             </div>
           </div>
 

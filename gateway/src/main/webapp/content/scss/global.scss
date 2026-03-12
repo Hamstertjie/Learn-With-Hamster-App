@@ -3,131 +3,177 @@
 @import 'bootstrap/scss/variables';
 
 /* ==============================================================
-Design tokens — Glassmorphism Dark Palette
-Electric Teal #06b6d4 · Violet #8b5cf6 · Deep Navy #111827
+   LANDO NORRIS AESTHETIC — Design Tokens
+   #111112 black · #D2FF00 electric yellow · #FFFFFF white
+   Zero border-radius · Condensed bold type · High contrast
 ===============================================================*/
 
 :root {
-  /* Background & surfaces */
-  --color-bg:              #111827;
-  --color-surface:         rgba(255, 255, 255, 0.07);
-  --color-surface-raised:  rgba(255, 255, 255, 0.12);
-  --color-surface-overlay: rgba(8, 14, 26, 0.75);
-  --color-border:          rgba(255, 255, 255, 0.12);
+  /* Core LN Palette */
+  --ln-black:       #111112;
+  --ln-yellow:      #D2FF00;
+  --ln-white:       #FFFFFF;
+  --ln-surface:     #1A1A1B;
+  --ln-surface-2:   #222224;
+  --ln-grey:        #888888;
+  --ln-grey-muted:  #555555;
+  --ln-border:      rgba(255, 255, 255, 0.08);
+  --ln-border-yellow: rgba(210, 255, 0, 0.35);
 
-  /* Primary — Electric Teal */
-  --color-primary:         #06b6d4;
-  --color-primary-light:   #67e8f9;
-  --color-primary-dark:    #0891b2;
-  --color-primary-50:      rgba(6, 182, 212, 0.10);
-  --color-primary-100:     rgba(6, 182, 212, 0.20);
+  /* CSS variable aliases used throughout components */
+  --color-bg:              var(--ln-black);
+  --color-surface:         var(--ln-surface);
+  --color-surface-raised:  var(--ln-surface-2);
+  --color-surface-overlay: rgba(17, 17, 18, 0.85);
+  --color-border:          var(--ln-border);
 
-  /* Accent — Violet */
-  --color-accent:          #8b5cf6;
-  --color-accent-light:    #c4b5fd;
-  --color-accent-dark:     #7c3aed;
+  /* Primary — Electric Yellow */
+  --color-primary:         var(--ln-yellow);
+  --color-primary-light:   #e0ff4d;
+  --color-primary-dark:    #aacf00;
+  --color-primary-50:      rgba(210, 255, 0, 0.08);
+  --color-primary-100:     rgba(210, 255, 0, 0.15);
+
+  /* Accent — also Yellow (one-color system) */
+  --color-accent:          var(--ln-yellow);
+  --color-accent-light:    #e0ff4d;
+  --color-accent-dark:     #aacf00;
 
   /* Semantic */
-  --color-success:         #10b981;
-  --color-warning:         #f59e0b;
+  --color-success:         #4ade80;
+  --color-warning:         #fbbf24;
   --color-danger:          #ef4444;
-  --color-info:            #67e8f9;
+  --color-info:            var(--ln-yellow);
 
   /* Text */
-  --color-text:            #f1f5f9;
-  --color-text-secondary:  #94a3b8;
-  --color-text-muted:      #64748b;
+  --color-text:            var(--ln-white);
+  --color-text-secondary:  var(--ln-grey);
+  --color-text-muted:      var(--ln-grey-muted);
 
-  /* Shadows */
-  --shadow-sm:   0 1px 3px rgba(0, 0, 0, 0.3);
-  --shadow-md:   0 4px 20px rgba(0, 0, 0, 0.4);
-  --shadow-lg:   0 12px 40px rgba(0, 0, 0, 0.5);
-  --shadow-glow: 0 0 40px rgba(6, 182, 212, 0.35);
-  --shadow-glow-violet: 0 0 40px rgba(139, 92, 246, 0.32);
+  /* Shadows — crisp, no glow */
+  --shadow-sm:   0 2px 8px rgba(0, 0, 0, 0.5);
+  --shadow-md:   0 4px 24px rgba(0, 0, 0, 0.6);
+  --shadow-lg:   0 8px 40px rgba(0, 0, 0, 0.7);
+  --shadow-glow: 0 0 30px rgba(210, 255, 0, 0.25);
+  --shadow-glow-violet: 0 0 30px rgba(210, 255, 0, 0.20);
 
-  /* Glassmorphism — white-based glass panels pop on dark bg */
-  --glass-bg:     rgba(255, 255, 255, 0.07);
-  --glass-border: rgba(6, 182, 212, 0.25);       /* teal-tinted rim */
-  --glass-blur:   blur(16px) saturate(200%);     /* stronger frosted effect */
-  --glass-inner:  inset 0 1px 0 rgba(255, 255, 255, 0.14); /* sharper top edge highlight */
+  /* Glassmorphism — NOT used in LN style but kept for backwards compat */
+  --glass-bg:     var(--ln-surface);
+  --glass-border: rgba(210, 255, 0, 0.12);
+  --glass-blur:   none;
+  --glass-inner:  none;
 
-  /* Shape */
-  --radius:      12px;
-  --radius-lg:   16px;
-  --radius-xl:   24px;
-  --radius-pill: 9999px;
+  /* Shape — ZERO everywhere */
+  --radius:      0px;
+  --radius-lg:   0px;
+  --radius-xl:   0px;
+  --radius-pill: 2px;
 
   /* Motion */
   --transition: cubic-bezier(0.4, 0, 0.2, 1);
   --duration:   250ms;
+
+  /* Typography */
+  --font-display: 'Barlow Condensed', 'Inter', -apple-system, sans-serif;
+  --font-body:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 /* ==============================================================
-Animated blob background — behind all glass cards
+   Body — flat dark, custom cursor
 ===============================================================*/
 
 body {
   position: relative;
   overflow-x: hidden;
+  background-color: var(--ln-black);
+  color: var(--ln-white);
+  font-family: var(--font-body);
+  line-height: 1.6;
+  cursor: none; /* custom cursor active */
 }
 
+/* Remove animated blobs — LN uses flat dark backgrounds */
 body::before,
 body::after {
-  content: '';
-  position: fixed;
-  z-index: -1;
-  pointer-events: none;
-  will-change: transform;
-}
-
-body::before {
-  width: 700px;
-  height: 700px;
-  background: rgba(6, 182, 212, 0.38);
-  border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
-  top: -220px;
-  left: -200px;
-  filter: blur(100px);                           /* soft radial glow — cheaper than backdrop-filter */
-  animation: blob-drift-a 32s ease-in-out infinite alternate;
-}
-
-body::after {
-  width: 580px;
-  height: 580px;
-  background: rgba(139, 92, 246, 0.30);
-  border-radius: 40% 60% 70% 30% / 40% 70% 30% 60%;
-  bottom: -200px;
-  right: -180px;
-  filter: blur(90px);
-  animation: blob-drift-b 28s ease-in-out infinite alternate;
-}
-
-@keyframes blob-drift-a {
-  0%   { transform: scale(1)    translate(0, 0);     border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
-  33%  { transform: scale(1.1)  translate(40px, -30px); border-radius: 40% 60% 70% 30% / 40% 70% 30% 60%; }
-  66%  { transform: scale(0.92) translate(-25px, 50px); border-radius: 50% 50% 40% 60% / 50% 40% 60% 50%; }
-  100% { transform: scale(1.06) translate(25px, -40px); border-radius: 30% 70% 60% 40% / 70% 40% 60% 30%; }
-}
-
-@keyframes blob-drift-b {
-  0%   { transform: scale(1)    translate(0, 0);     border-radius: 40% 60% 70% 30% / 40% 70% 30% 60%; }
-  33%  { transform: scale(1.08) translate(-30px, 25px); border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
-  66%  { transform: scale(0.95) translate(35px, -40px); border-radius: 50% 50% 60% 40% / 60% 50% 40% 50%; }
-  100% { transform: scale(1.04) translate(-20px, 30px); border-radius: 70% 30% 40% 60% / 30% 60% 40% 70%; }
+  display: none;
 }
 
 /* ==============================================================
-Global animations
+   Custom Cursor — LN Electric Dot
+===============================================================*/
+
+.ln-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 12px;
+  height: 12px;
+  background: var(--ln-yellow);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99999;
+  transform: translate(-50%, -50%);
+  transition: transform 0.1s ease, width 0.2s ease, height 0.2s ease, background 0.2s ease;
+  will-change: transform;
+  mix-blend-mode: difference;
+}
+
+.ln-cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--ln-yellow);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99998;
+  transform: translate(-50%, -50%);
+  transition: transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94), width 0.3s ease, height 0.3s ease, opacity 0.2s ease;
+  opacity: 0.6;
+  will-change: transform;
+}
+
+.ln-cursor.hovering {
+  width: 20px;
+  height: 20px;
+  background: var(--ln-yellow);
+}
+
+.ln-cursor-ring.hovering {
+  width: 56px;
+  height: 56px;
+  opacity: 0.4;
+}
+
+/* Restore default cursor on interactive elements only when cursor is disabled */
+a, button, [role="button"] {
+  cursor: none;
+}
+
+/* ==============================================================
+   Global animations — LN style
 ===============================================================*/
 
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(24px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes sliceIn {
+  from {
+    opacity: 0;
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(0 0% 0 0);
   }
 }
 
@@ -137,46 +183,69 @@ Global animations
 }
 
 /* ==============================================================
-Glassmorphism card utility
+   Scroll reveal — IntersectionObserver driven
 ===============================================================*/
 
-.glass-card {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md), var(--glass-inner);
-  transition: transform 300ms var(--transition), box-shadow 300ms var(--transition), border-color 300ms var(--transition);
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 
-  &:hover {
-    transform: perspective(1000px) translateY(-10px) rotateX(3deg) scale(1.01);
-    box-shadow: var(--shadow-lg), var(--shadow-glow), var(--glass-inner);
-    border-color: rgba(6, 182, 212, 0.35);
+  &.revealed {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
 /* ==============================================================
-Bootstrap tweaks
+   LN Card utility — dark surface, yellow top border
 ===============================================================*/
 
-body {
-  background-color: var(--color-bg);
-  color: var(--color-text);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  line-height: 1.6;
+.ln-card {
+  background: var(--ln-surface);
+  border: 1px solid var(--ln-border);
+  border-top: 2px solid var(--ln-yellow);
+  border-radius: 0;
+  box-shadow: var(--shadow-md);
+  transition: transform 300ms var(--transition), box-shadow 300ms var(--transition), border-color 300ms var(--transition);
+
+  &:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+    border-color: rgba(210, 255, 0, 0.5);
+    border-top-color: var(--ln-yellow);
+  }
 }
 
-h1,
-h2,
-h3,
-h4 {
-  font-weight: 700;
-  color: var(--color-text);
+/* Legacy .glass-card now maps to .ln-card style */
+.glass-card {
+  background: var(--ln-surface);
+  border: 1px solid var(--ln-border);
+  border-top: 2px solid var(--ln-yellow);
+  border-radius: 0;
+  box-shadow: var(--shadow-md);
+  transition: transform 300ms var(--transition), box-shadow 300ms var(--transition);
+
+  &:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+  }
+}
+
+/* ==============================================================
+   Bootstrap overrides — LN aesthetic
+===============================================================*/
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--ln-white);
 }
 
 a {
-  color: var(--color-primary);
+  color: var(--ln-yellow);
   font-weight: 500;
   transition: color var(--duration) var(--transition);
 }
@@ -186,13 +255,13 @@ a:not([href]):not([tabindex]):hover.dropdown-item {
 }
 
 .dropdown-item.active:hover {
-  background-color: var(--color-primary-50);
-  color: var(--color-primary);
+  background-color: rgba(210, 255, 0, 0.12);
+  color: var(--ln-yellow);
 }
 
 a:hover {
   color: var(--color-primary-light);
-  cursor: pointer;
+  cursor: none;
 }
 
 .dropdown-item:hover {
@@ -213,7 +282,7 @@ Generic styles
 }
 
 .error {
-  color: white;
+  color: var(--ln-black);
   background-color: var(--color-danger);
 }
 
@@ -221,13 +290,8 @@ Generic styles
   padding: 10px;
 }
 
-.w-40 {
-  width: 40% !important;
-}
-
-.w-60 {
-  width: 60% !important;
-}
+.w-40 { width: 40% !important; }
+.w-60 { width: 60% !important; }
 
 .break {
   white-space: normal;
@@ -235,41 +299,44 @@ Generic styles
 }
 
 .form-control {
-  background-color: rgba(255, 255, 255, 0.06);
-  color: var(--color-text);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
+  background-color: var(--ln-surface);
+  color: var(--ln-white);
+  border: 1px solid var(--ln-border);
+  border-radius: 0;
   transition: border-color var(--duration) var(--transition), box-shadow var(--duration) var(--transition);
 
   &:focus {
-    background-color: rgba(255, 255, 255, 0.10);
-    border-color: var(--color-primary);
-    color: var(--color-text);
-    box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.20);
+    background-color: var(--ln-surface-2);
+    border-color: var(--ln-yellow);
+    color: var(--ln-white);
+    box-shadow: 0 0 0 2px rgba(210, 255, 0, 0.15);
   }
 
   &::placeholder {
-    color: var(--color-text-muted);
+    color: var(--ln-grey-muted);
   }
 }
 
 .readonly {
-  background-color: var(--color-surface-raised);
+  background-color: var(--ln-surface-2);
   opacity: 1;
 }
 
 /* ==========================================================================
-Button enhancements
+   Button overrides — LN sharp rectangular
 ========================================================================== */
 
 .btn {
-  border-radius: var(--radius);
-  font-weight: 600;
+  border-radius: 0;
+  font-weight: 700;
+  font-family: var(--font-body);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
   transition: all var(--duration) var(--transition);
+  cursor: none;
 
   &:hover {
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
   }
 
   &:active {
@@ -278,94 +345,187 @@ Button enhancements
 }
 
 .btn-primary {
-  background-color: var(--color-primary);
-  border-color: var(--color-primary);
-  color: #080e1a;
+  background-color: var(--ln-yellow);
+  border-color: var(--ln-yellow);
+  color: var(--ln-black);
+  font-weight: 800;
 
   &:hover {
-    background-color: var(--color-primary-light);
-    border-color: var(--color-primary-light);
-    color: #080e1a;
+    background-color: var(--ln-black);
+    border-color: var(--ln-yellow);
+    color: var(--ln-yellow);
+    outline: 1px solid var(--ln-yellow);
+  }
+
+  &:disabled {
+    background-color: var(--ln-yellow);
+    border-color: var(--ln-yellow);
+    color: var(--ln-black);
+    opacity: 0.4;
   }
 }
 
 .btn-outline-primary {
-  color: var(--color-primary);
-  border-color: var(--color-primary);
+  color: var(--ln-yellow);
+  border-color: var(--ln-yellow);
+  background: transparent;
 
   &:hover {
-    background-color: var(--color-primary);
-    color: #080e1a;
+    background-color: var(--ln-yellow);
+    border-color: var(--ln-yellow);
+    color: var(--ln-black);
   }
 }
 
+.btn-secondary {
+  background-color: var(--ln-surface-2);
+  border-color: var(--ln-border);
+  color: var(--ln-white);
+
+  &:hover {
+    background-color: var(--ln-grey);
+    color: var(--ln-black);
+  }
+}
+
+.btn-outline-secondary {
+  color: var(--ln-grey);
+  border-color: var(--ln-border);
+
+  &:hover {
+    background-color: var(--ln-surface-2);
+    color: var(--ln-white);
+    border-color: rgba(255,255,255,0.25);
+  }
+}
+
+.btn-success {
+  background-color: var(--color-success);
+  border-color: var(--color-success);
+  color: var(--ln-black);
+
+  &:hover {
+    background-color: #22c55e;
+    color: var(--ln-black);
+  }
+}
+
+.btn-warning {
+  background-color: var(--color-warning);
+  border-color: var(--color-warning);
+  color: var(--ln-black);
+}
+
 /* ==========================================================================
-Card enhancements
+   Card overrides — LN flat dark
 ========================================================================== */
 
 .card {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-sm), var(--glass-inner);
+  background: var(--ln-surface);
+  border: 1px solid var(--ln-border);
+  border-top: 2px solid var(--ln-yellow);
+  border-radius: 0;
+  box-shadow: var(--shadow-sm);
   transition: all 300ms var(--transition);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
 
   &:hover {
-    transform: perspective(1000px) translateY(-8px) rotateX(2deg);
+    transform: translateY(-6px);
     box-shadow: var(--shadow-lg), var(--shadow-glow);
-    border-color: rgba(6, 182, 212, 0.3);
+    border-color: rgba(210, 255, 0, 0.3);
+    border-top-color: var(--ln-yellow);
   }
 }
 
 /* ==========================================================================
-Main content wrapper
+   Main content wrapper
 ========================================================================== */
 .main-content {
-  min-height: calc(100vh - 4rem - 200px);
+  min-height: calc(100vh - 4rem - 120px);
 }
 
 /* ==========================================================================
-Footer
+   Footer — LN full redesign
 ========================================================================== */
 .site-footer {
-  background: rgba(8, 14, 26, 0.9);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  color: var(--color-text);
-  border-top: 1px solid var(--color-border);
-  padding: 3rem 2rem 0;
+  position: relative;
+  background: var(--ln-surface);
+  border-top: 3px solid var(--ln-yellow);
+  color: var(--ln-white);
+  overflow: hidden;
 }
 
-.footer-content {
-  padding-bottom: 2rem;
+.footer-lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    108deg,
+    transparent 0px,
+    transparent 38px,
+    rgba(210,255,0,0.018) 38px,
+    rgba(210,255,0,0.018) 40px
+  );
 }
 
-.footer-col {
-  margin-bottom: 1.5rem;
+.footer-inner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1.5fr;
+  gap: 1px;
+  background: var(--ln-border);
+  border-bottom: 1px solid var(--ln-border);
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr 1fr;
+  }
+  @media (max-width: 540px) {
+    grid-template-columns: 1fr;
+  }
 }
 
-.footer-brand {
-  font-weight: 700;
-  font-size: 1.1rem;
-  color: var(--color-primary);
-  margin-bottom: 0.75rem;
+.footer-brand-col {
+  background: var(--ln-black);
+  padding: 2.5rem 2rem;
+}
+
+.footer-logo {
+  font-family: var(--font-display);
+  font-size: 3.5rem;
+  font-weight: 900;
+  letter-spacing: -0.06em;
+  line-height: 1;
+  color: var(--ln-yellow);
+  margin-bottom: 1rem;
 }
 
 .footer-tagline {
-  color: var(--color-text-secondary);
-  font-size: 0.9rem;
-  line-height: 1.6;
+  color: var(--ln-grey);
+  font-size: 0.78rem;
+  line-height: 1.9;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0;
+}
+
+.footer-nav-col {
+  background: var(--ln-surface);
+  padding: 2.5rem 1.5rem;
+}
+
+.footer-social-col {
+  background: var(--ln-surface);
+  padding: 2.5rem 1.5rem;
 }
 
 .footer-heading {
-  color: var(--color-text);
-  font-weight: 700;
-  font-size: 0.9rem;
+  color: var(--ln-yellow);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 1rem;
+  letter-spacing: 0.18em;
+  margin-bottom: 1.25rem;
 }
 
 .footer-links {
@@ -374,44 +534,112 @@ Footer
   margin: 0;
 
   li {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.45rem;
   }
 
   a {
-    color: var(--color-text-secondary);
-    font-weight: 400;
-    font-size: 0.9rem;
+    color: var(--ln-grey);
+    font-size: 0.82rem;
     text-decoration: none;
-    transition: color var(--duration) var(--transition);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+    transition: color var(--duration) var(--transition), padding-left var(--duration) var(--transition);
+    display: inline-block;
 
     &:hover {
-      color: var(--color-primary);
+      color: var(--ln-yellow);
+      padding-left: 4px;
     }
   }
 }
 
+.footer-github-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(210,255,0,0.06);
+  border: 1px solid rgba(210,255,0,0.2);
+  color: var(--ln-white);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  padding: 0.55rem 0.85rem;
+  transition: all 200ms var(--transition);
+  margin-bottom: 1.25rem;
+
+  &:hover {
+    background: var(--ln-yellow);
+    border-color: var(--ln-yellow);
+    color: var(--ln-black);
+    text-decoration: none;
+    transform: translateY(-2px);
+  }
+
+  .footer-github-icon {
+    font-size: 0.85rem;
+  }
+
+  .footer-github-ext {
+    font-size: 0.65rem;
+    opacity: 0.6;
+  }
+}
+
+.footer-built {
+  color: var(--ln-grey-muted);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  line-height: 1.7;
+  margin: 0;
+}
+
 .footer-bottom {
-  border-top: 1px solid var(--color-border);
-  padding: 1.25rem 0;
-  text-align: center;
-  color: var(--color-text-muted);
-  font-size: 0.85rem;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  background: var(--ln-black);
+  border-top: 1px solid rgba(210,255,0,0.12);
+}
+
+.footer-copy {
+  color: var(--ln-grey-muted);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.footer-race-number {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: rgba(210,255,0,0.06);
+  letter-spacing: -0.04em;
+  line-height: 1;
+  user-select: none;
 }
 
 /* ==========================================================================
-Cursor helpers
+   Cursor helpers
 ========================================================================== */
 .hand,
 [jhisortby] {
-  cursor: pointer;
+  cursor: none;
 }
 
 /* ==========================================================================
-Custom alerts for notification
+   Custom alerts
 ========================================================================== */
 .alerts {
   .alert {
     text-overflow: ellipsis;
+    border-radius: 0;
     pre {
       background: none;
       border: none;
@@ -427,18 +655,10 @@ Custom alerts for notification
   .jhi-toast {
     position: fixed;
     width: 100%;
-    &.left {
-      left: 5px;
-    }
-    &.right {
-      right: 5px;
-    }
-    &.top {
-      top: 55px;
-    }
-    &.bottom {
-      bottom: 55px;
-    }
+    &.left  { left: 5px; }
+    &.right { right: 5px; }
+    &.top   { top: 55px; }
+    &.bottom { bottom: 55px; }
   }
 }
 
@@ -449,7 +669,7 @@ Custom alerts for notification
 }
 
 /* ==========================================================================
-entity list page css
+   Entity list page css
 ========================================================================== */
 
 .table-entities thead th .d-flex > * {
@@ -457,7 +677,7 @@ entity list page css
 }
 
 /* ==========================================================================
-entity detail page css
+   Entity detail page css
 ========================================================================== */
 .row-md.jh-entity-details {
   display: grid;
@@ -478,7 +698,7 @@ entity detail page css
       padding: 0.5em 0;
     }
     dd {
-      border-bottom: 1px solid var(--color-border);
+      border-bottom: 1px solid var(--ln-border);
       padding: 0.5em 0;
       margin-left: 0;
     }
@@ -486,13 +706,13 @@ entity detail page css
 }
 
 /* ==========================================================================
-ui bootstrap tweaks
+   ui bootstrap tweaks
 ========================================================================== */
 .nav,
 .pagination,
 .carousel,
 .panel-title a {
-  cursor: pointer;
+  cursor: none;
 }
 
 .thread-dump-modal-lock {
@@ -504,16 +724,14 @@ ui bootstrap tweaks
 
 .dropdown-menu {
   padding-left: 0;
-  background: rgba(15, 23, 42, 0.92);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-md);
+  background: var(--ln-surface);
+  border: 1px solid rgba(210, 255, 0, 0.15);
+  border-radius: 0;
+  box-shadow: var(--shadow-lg);
 }
 
 /* ==========================================================================
-angular-cli removes postcss-rtl processed inline css, processed rules must be added here instead
+   angular-cli removes postcss-rtl processed inline css, processed rules must be added here instead
 ========================================================================== */
 /* page-ribbon.component.scss */
 .ribbon {
@@ -535,7 +753,7 @@ angular-cli removes postcss-rtl processed inline css, processed rules must be ad
 }
 
 /* ==========================================================================
-Responsive table improvements
+   Responsive table improvements
 ========================================================================== */
 @media screen and (max-width: 767px) {
   .table-responsive {
@@ -553,7 +771,7 @@ Responsive table improvements
 }
 
 /* ==========================================================================
-Login & Register card layout
+   Login & Register card layout — LN style
 ========================================================================== */
 .login-page,
 .register-page {
@@ -566,11 +784,10 @@ Login & Register card layout
 
 .login-card,
 .register-card {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border-radius: var(--radius-lg);
+  background: var(--ln-surface);
+  border: 1px solid var(--ln-border);
+  border-top: 3px solid var(--ln-yellow);
+  border-radius: 0;
   box-shadow: var(--shadow-md);
   padding: 2.5rem;
   width: 100%;
@@ -578,20 +795,23 @@ Login & Register card layout
   animation: fadeInUp 0.4s var(--transition) both;
 
   h1 {
-    font-size: 1.75rem;
-    font-weight: 700;
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 900;
     margin-bottom: 1.5rem;
-    color: var(--color-text);
+    color: var(--ln-white);
     text-align: center;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
   }
 
   hr {
-    border-color: var(--color-border);
+    border-color: var(--ln-border);
     margin: 1.5rem 0;
   }
 
   a {
-    color: var(--color-primary);
+    color: var(--ln-yellow);
 
     &:hover {
       color: var(--color-primary-light);
@@ -604,26 +824,67 @@ Login & Register card layout
 }
 
 /* ==========================================================================
-Glassmorphism enhancements — browse section headers
+   Browse section headers — LN style
 ========================================================================== */
 
 .browse-section h3 {
-  border-left: 3px solid var(--color-primary);
+  border-left: 3px solid var(--ln-yellow);
   padding-left: 0.75rem;
-  text-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
 }
 
-/* Hero glass wrapper — catalog, discipline, course browse */
+/* Browse hero — LN flat dark */
 .browse-hero-glass {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(6, 182, 212, 0.18);
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
-  border-radius: var(--radius-xl);
+  background: var(--ln-surface);
+  border: 1px solid var(--ln-border);
+  border-top: 2px solid var(--ln-yellow);
+  border-radius: 0;
   padding: 2.5rem 3rem;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10), 0 8px 32px rgba(0, 0, 0, 0.3);
-  max-width: 800px;
+  box-shadow: var(--shadow-md);
+  max-width: 900px;
   margin: 0 auto;
+}
+
+/* ==========================================================================
+   Spinner — LN yellow
+========================================================================== */
+.spinner-border {
+  color: var(--ln-yellow) !important;
+}
+
+/* ==========================================================================
+   LN Speed Lines — decorative background element
+========================================================================== */
+.ln-speed-lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0.04;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -20%;
+    left: -10%;
+    width: 120%;
+    height: 140%;
+    background: repeating-linear-gradient(
+      105deg,
+      transparent 0px,
+      transparent 40px,
+      rgba(210, 255, 0, 1) 40px,
+      rgba(210, 255, 0, 1) 42px
+    );
+  }
+}
+
+/* ==========================================================================
+   Stagger-entry animation
+========================================================================== */
+.stat-entry,
+.dash-section--entry {
+  animation: fadeInUp 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation-delay: var(--entry-delay, 0ms);
 }
 
 /* jhipster-needle-scss-add-main JHipster will add new css style */

@@ -41,6 +41,9 @@ public class UserLessonProgress implements Serializable {
     @Column(name = "completed")
     private Boolean completed;
 
+    @Column(name = "points_earned")
+    private Integer pointsEarned;
+
     public Long getId() {
         return this.id;
     }
@@ -119,6 +122,19 @@ public class UserLessonProgress implements Serializable {
         this.completed = completed;
     }
 
+    public Integer getPointsEarned() {
+        return this.pointsEarned;
+    }
+
+    public UserLessonProgress pointsEarned(Integer pointsEarned) {
+        this.setPointsEarned(pointsEarned);
+        return this;
+    }
+
+    public void setPointsEarned(Integer pointsEarned) {
+        this.pointsEarned = pointsEarned;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -145,6 +161,7 @@ public class UserLessonProgress implements Serializable {
             ", courseId=" + getCourseId() +
             ", startedAt='" + getStartedAt() + "'" +
             ", completed='" + getCompleted() + "'" +
+            ", pointsEarned=" + getPointsEarned() +
             "}";
     }
 }

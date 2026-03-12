@@ -1,40 +1,69 @@
 /*
- * Bootstrap overrides https://getbootstrap.com/docs/5.1/customize/sass/
- * All values defined in bootstrap source
- * https://github.com/twbs/bootstrap/blob/v5.1.3/scss/_variables.scss can be overwritten here
- * Make sure not to add !default to values here
+ * Bootstrap overrides — Lando Norris Aesthetic
+ * #111112 black · #D2FF00 electric yellow · #FFFFFF white
  */
 
-// Options:
-$enable-rounded: true;
-$enable-shadows: true;
+// Options
+$enable-rounded: false;
+$enable-shadows: false;
 $enable-gradients: false;
 $enable-transitions: true;
 $enable-hover-media-query: false;
 $enable-grid-classes: true;
 $enable-print-styles: true;
 
-// Theme colors — Electric Teal + Violet on Deep Navy
-$primary:   #06b6d4;   // cyan-500
-$success:   #10b981;
-$info:      #67e8f9;   // cyan-300
-$warning:   #f59e0b;
+// Theme colors — LN Electric Yellow on Black
+$primary:   #D2FF00;
+$secondary: #888888;
+$success:   #4ade80;
+$info:      #D2FF00;
+$warning:   #fbbf24;
 $danger:    #ef4444;
 
-// Components
-$border-radius:    0.75rem;
-$border-radius-lg: 1rem;
-$border-radius-sm: 0.5rem;
+// Components — zero border-radius (LN sharp edges)
+$border-radius:    0;
+$border-radius-lg: 0;
+$border-radius-sm: 0;
+$border-radius-xl: 0;
+$border-radius-xxl: 0;
+$border-radius-pill: 0;
 
 // Body — always dark
-$body-bg:    #111827;
-$body-color: #f1f5f9;
+$body-bg:    #111112;
+$body-color: #ffffff;
 
 // Typography
 $font-family-sans-serif: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 $font-size-base:    1rem;
-$headings-font-weight: 700;
+$headings-font-weight: 900;
+$headings-font-family: 'Barlow Condensed', 'Inter', sans-serif;
 
-// Dropdowns
-$dropdown-link-hover-color: #06b6d4;
-$dropdown-link-hover-bg:    rgba(6, 182, 212, 0.12);
+// Dropdowns — dark
+$dropdown-bg:                #1A1A1B;
+$dropdown-border-color:      rgba(210, 255, 0, 0.15);
+$dropdown-link-color:        #888888;
+$dropdown-link-hover-color:  #D2FF00;
+$dropdown-link-hover-bg:     rgba(210, 255, 0, 0.08);
+$dropdown-link-active-color: #111112;
+$dropdown-link-active-bg:    #D2FF00;
+
+// Navbar
+$navbar-dark-color:          rgba(255, 255, 255, 0.65);
+$navbar-dark-hover-color:    #ffffff;
+$navbar-dark-active-color:   #D2FF00;
+$navbar-dark-toggler-border-color: rgba(255,255,255,0.15);
+
+// Input
+$input-bg:               #1A1A1B;
+$input-color:            #ffffff;
+$input-border-color:     rgba(255, 255, 255, 0.15);
+$input-focus-border-color: #D2FF00;
+$input-focus-box-shadow: 0 0 0 0.2rem rgba(210, 255, 0, 0.15);
+$input-placeholder-color: #555555;
+
+// Cards
+$card-bg:                #1A1A1B;
+$card-border-color:      rgba(255, 255, 255, 0.08);
+
+// Badge
+$badge-border-radius: 0;

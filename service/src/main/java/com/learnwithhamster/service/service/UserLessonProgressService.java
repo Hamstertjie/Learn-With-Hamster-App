@@ -23,4 +23,20 @@ public interface UserLessonProgressService {
      * @return list of progress entries.
      */
     List<UserLessonProgressDTO> getCourseProgress(Long courseId);
+
+    /**
+     * Record that the user has started a lesson (visit only, does not mark complete).
+     *
+     * @param lessonId the lesson ID.
+     * @param courseId the course ID (optional context).
+     * @return the progress record.
+     */
+    UserLessonProgressDTO startLesson(Long lessonId, Long courseId);
+
+    /**
+     * Get the total XP points earned by the current user across all completed lessons.
+     *
+     * @return total points earned.
+     */
+    int getMyTotalPoints();
 }

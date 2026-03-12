@@ -1,28 +1,57 @@
 <footer class="site-footer">
-  <div class="container-fluid">
-    <div class="row footer-content">
-      <div class="col-md-4 footer-col">
-        <h5 class="footer-brand">Learn With Hamster</h5>
-        <p class="footer-tagline">Your personalized learning management platform. Master new skills at your own pace.</p>
-      </div>
-      <div class="col-md-4 footer-col">
-        <h6 class="footer-heading">Quick Links</h6>
-        <ul class="footer-links">
-          <li><a routerLink="/">Home</a></li>
-          <li><a routerLink="/catalog">Explore Courses</a></li>
-          <li><a routerLink="/account/register">Register</a></li>
-        </ul>
-      </div>
-      <div class="col-md-4 footer-col">
-        <h6 class="footer-heading">Resources</h6>
-        <ul class="footer-links">
-          <li><a routerLink="/account/settings">Settings</a></li>
-          <li><a routerLink="/account/password">Password</a></li>
-        </ul>
-      </div>
+  <!-- Decorative speed lines -->
+  <div class="footer-lines" aria-hidden="true"></div>
+
+  <!-- Main footer body -->
+  <div class="footer-inner">
+
+    <!-- Brand -->
+    <div class="footer-brand-col">
+      <div class="footer-logo">LWH</div>
+      <p class="footer-tagline">Master skills.<br>Break limits.<br>One lesson at a time.</p>
     </div>
-    <div class="footer-bottom">
-      <span jhiTranslate="footer">2025 Learn With Hamster. All rights reserved.</span>
+
+    <!-- Navigate links -->
+    <div class="footer-nav-col">
+      <h6 class="footer-heading">Navigate</h6>
+      <ul class="footer-links">
+        <li><a routerLink="/">Home</a></li>
+        <li><a routerLink="/catalog">Explore</a></li>
+        <li><a routerLink="/my-learning">My Learning</a></li>
+        <li><a routerLink="/account/register">Register</a></li>
+      </ul>
     </div>
+
+    <!-- Account links -->
+    <div class="footer-nav-col">
+      <h6 class="footer-heading">Account</h6>
+      <ul class="footer-links">
+        <li><a routerLink="/account/settings">Settings</a></li>
+        <li><a routerLink="/account/password">Password</a></li>
+      </ul>
+    </div>
+
+    <!-- Source / social -->
+    <div class="footer-social-col">
+      <h6 class="footer-heading">Open Source</h6>
+      <a
+        href="https://github.com/Hamstertjie/Learn-With-Hamster-App"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="footer-github-link"
+      >
+        <fa-icon icon="code-branch" class="footer-github-icon"></fa-icon>
+        <span>View on GitHub</span>
+        <fa-icon icon="external-link-alt" class="footer-github-ext"></fa-icon>
+      </a>
+      <p class="footer-built">Built with Angular 19<br>&amp; JHipster 8.11.0</p>
+    </div>
+
+  </div>
+
+  <!-- Bottom bar -->
+  <div class="footer-bottom">
+    <span class="footer-copy" jhiTranslate="footer">© 2026 Learn With Hamster. All rights reserved.</span>
+    <span class="footer-race-number" aria-hidden="true">04</span>
   </div>
 </footer>

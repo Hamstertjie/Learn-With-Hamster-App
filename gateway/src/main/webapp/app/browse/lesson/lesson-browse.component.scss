@@ -1,27 +1,37 @@
+/* ==========================================================================
+   Lesson Browse — Lando Norris Aesthetic
+========================================================================== */
+
 /* Loading & Login Prompt */
 .browse-loading {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 300px;
+  background: var(--ln-black);
 }
 
 .browse-login-prompt {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 400px;
+  min-height: 80svh;
   padding: 2rem;
+  background: var(--ln-black);
 }
 
 .prompt-content {
   text-align: center;
   max-width: 500px;
+  background: var(--ln-surface);
+  border: 1px solid var(--ln-border);
+  border-top: 3px solid var(--ln-yellow);
+  padding: 3rem 2rem;
 }
 
 .prompt-icon {
   font-size: 3rem;
-  color: var(--color-primary);
+  color: var(--ln-yellow);
   margin-bottom: 1.5rem;
 }
 
@@ -30,11 +40,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.75rem 1.25rem;
-  background: rgba(8, 14, 26, 0.8);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--color-border);
+  padding: 0.75rem 1.5rem;
+  background: rgba(17, 17, 18, 0.97);
+  border-bottom: 1px solid var(--ln-border);
+  border-bottom-color: rgba(210, 255, 0, 0.1);
   box-shadow: var(--shadow-sm);
 }
 
@@ -47,17 +56,19 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  color: var(--color-text-secondary);
+  color: rgba(255, 255, 255, 0.5);
   text-decoration: none;
-  font-size: 0.9rem;
-  font-weight: 500;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   transition: color var(--duration) var(--transition);
 
   &:hover {
-    color: var(--color-primary);
+    color: var(--ln-yellow);
   }
 
   fa-icon {
@@ -69,19 +80,19 @@
   display: none;
   align-items: center;
   justify-content: center;
-  background: none;
-  border: 1px solid var(--color-border);
-  color: var(--color-text-secondary);
-  border-radius: var(--radius-sm, 0.5rem);
-  padding: 0.4rem 0.65rem;
-  cursor: pointer;
+  background: transparent;
+  border: 1px solid rgba(210, 255, 0, 0.2);
+  color: var(--ln-grey);
+  border-radius: 0;
+  padding: 0.4rem 0.75rem;
+  cursor: none;
   font-size: 1rem;
   transition: all var(--duration) var(--transition);
 
   &:hover {
-    background: var(--color-surface-raised);
-    color: var(--color-primary);
-    border-color: var(--color-primary);
+    background: rgba(210, 255, 0, 0.06);
+    color: var(--ln-yellow);
+    border-color: var(--ln-yellow);
   }
 }
 
@@ -90,9 +101,10 @@
   display: grid;
   grid-template-columns: 1fr;
   min-height: calc(100vh - 120px);
+  background: var(--ln-black);
 
   &.sidebar-visible {
-    grid-template-columns: 300px 1fr;
+    grid-template-columns: 280px 1fr;
   }
 }
 
@@ -102,8 +114,9 @@
 }
 
 .lesson-sidebar {
-  background: var(--color-surface);
-  border-right: 1px solid var(--color-border);
+  background: var(--ln-surface);
+  border-right: 1px solid var(--ln-border);
+  border-right-color: rgba(210, 255, 0, 0.1);
   overflow-y: auto;
   height: calc(100vh - 120px);
   position: sticky;
@@ -115,41 +128,43 @@
   align-items: center;
   gap: 0.5rem;
   padding: 1rem 1.25rem;
-  font-weight: 700;
-  font-size: 0.85rem;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 0.75rem;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--color-text-muted);
-  border-bottom: 1px solid var(--color-border);
+  letter-spacing: 0.15em;
+  color: var(--ln-grey-muted);
+  border-bottom: 1px solid var(--ln-border);
+  background: rgba(210, 255, 0, 0.02);
 }
 
 /* -- Progress Bar -- */
 .progress-section {
   padding: 0.75rem 1.25rem;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--ln-border);
 }
 
 .progress-track {
-  height: 4px;
-  background: var(--color-border);
-  border-radius: var(--radius-pill);
+  height: 2px;
+  background: rgba(255, 255, 255, 0.06);
   width: 100%;
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
-  background: var(--color-primary);
-  border-radius: var(--radius-pill);
+  background: var(--ln-yellow);
   transition: width 0.6s ease;
 }
 
 .progress-text {
   text-align: center;
-  font-size: 0.75rem;
-  color: var(--color-text-muted);
-  margin-top: 0.35rem;
-  font-weight: 500;
+  font-size: 0.7rem;
+  color: var(--ln-grey-muted);
+  margin-top: 0.4rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
 .sidebar-trophy {
@@ -157,12 +172,15 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.25rem;
-  border-bottom: 1px solid var(--color-border);
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(217, 119, 6, 0.18) 100%);
-  color: #fbbf24;
-  font-weight: 700;
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid var(--ln-border);
+  background: rgba(210, 255, 0, 0.06);
+  color: var(--ln-yellow);
+  font-family: var(--font-display);
+  font-weight: 900;
   font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 
   fa-icon {
     font-size: 1.1rem;
@@ -177,16 +195,18 @@
 
 .sidebar-course-title {
   display: block;
-  padding: 0.75rem 1.25rem;
-  font-weight: 600;
-  font-size: 0.95rem;
-  color: var(--color-text);
+  padding: 0.85rem 1.25rem;
+  font-weight: 700;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ln-white);
   text-decoration: none;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--ln-border);
   transition: color var(--duration) var(--transition);
 
   &:hover {
-    color: var(--color-primary);
+    color: var(--ln-yellow);
   }
 }
 
@@ -198,25 +218,24 @@
 .sidebar-lesson-item {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.6rem;
   padding: 0.85rem 1.25rem;
   border: none;
-  border-bottom: 1px solid var(--color-border);
-  border-left: 4px solid transparent;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  border-left: 3px solid transparent;
   background: transparent;
   text-align: left;
-  cursor: pointer;
+  cursor: none;
   transition: background var(--duration) var(--transition), border-color var(--duration) var(--transition);
   width: 100%;
 
   &:hover {
-    background: var(--color-surface-raised);
+    background: rgba(210, 255, 0, 0.03);
   }
 
   &.active {
-    background: var(--color-primary-50);
-    border-left-color: var(--color-primary);
-    font-weight: 600;
+    background: rgba(210, 255, 0, 0.06);
+    border-left-color: var(--ln-yellow);
   }
 
   .lesson-check {
@@ -225,77 +244,84 @@
     align-items: center;
 
     .completed {
-      color: var(--color-primary);
+      color: var(--ln-yellow);
       font-size: 0.85rem;
     }
 
     .incomplete {
-      color: var(--color-text-muted);
+      color: var(--ln-grey-muted);
       font-size: 0.7rem;
     }
   }
 
   .lesson-number {
     flex-shrink: 0;
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--color-border);
-    border-radius: 50%;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--color-text-muted);
+    background: var(--ln-border);
+    border-radius: 0;
+    font-family: var(--font-display);
+    font-size: 0.78rem;
+    font-weight: 900;
+    color: var(--ln-grey-muted);
   }
 
   &.active .lesson-number {
-    background: var(--color-primary);
-    color: #fff;
+    background: var(--ln-yellow);
+    color: var(--ln-black);
   }
 
   .lesson-title {
     flex: 1;
-    font-size: 0.88rem;
-    color: var(--color-text);
+    font-size: 0.82rem;
+    color: var(--ln-white);
     line-height: 1.3;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
+    font-weight: 600;
   }
 
   .lesson-lang-badge {
     flex-shrink: 0;
-    font-size: 0.65rem;
-    padding: 0.1rem 0.4rem;
-    background: var(--color-border);
-    border-radius: 0.25rem;
-    color: var(--color-text-muted);
+    font-size: 0.6rem;
+    padding: 0.1rem 0.35rem;
+    background: rgba(210, 255, 0, 0.08);
+    border-radius: 0;
+    color: var(--ln-yellow);
     text-transform: uppercase;
-    font-weight: 600;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    border: 1px solid rgba(210, 255, 0, 0.15);
   }
 }
 
 /* -- Main Content -- */
 .lesson-main {
-  padding: 1.5rem 2rem 3rem;
-  max-width: 900px;
+  padding: 2rem 2.5rem 4rem;
+  max-width: 960px;
+  background: var(--ln-black);
 }
 
 /* -- Mini Player -- */
 .mini-player {
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .mini-player-video {
   position: relative;
   aspect-ratio: 16 / 9;
   overflow: hidden;
-  border-radius: var(--radius);
+  border-radius: 0;
   box-shadow: var(--shadow-md);
   background: #000;
+  border: 1px solid var(--ln-border);
+  border-top: 2px solid var(--ln-yellow);
 
   iframe {
     position: absolute;
@@ -309,11 +335,11 @@
 
 .mini-player-image {
   text-align: center;
+  border: 1px solid var(--ln-border);
 
   img {
     max-width: 100%;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-md);
+    display: block;
   }
 }
 
@@ -322,36 +348,40 @@
   align-items: center;
   gap: 1rem;
   padding: 1.5rem;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
+  background: var(--ln-surface);
+  border: 1px solid var(--ln-border);
+  border-top: 2px solid var(--ln-yellow);
 
   .card-icon {
-    width: 56px;
-    height: 56px;
-    background: var(--color-primary-100);
-    border-radius: 50%;
+    width: 52px;
+    height: 52px;
+    background: rgba(210, 255, 0, 0.08);
+    border: 1px solid rgba(210, 255, 0, 0.2);
+    border-radius: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--color-primary);
+    color: var(--ln-yellow);
     flex-shrink: 0;
-    font-size: 1.4rem;
+    font-size: 1.3rem;
   }
 
   .card-info {
     flex: 1;
 
     h5 {
-      font-weight: 600;
+      font-family: var(--font-display);
+      font-weight: 900;
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: -0.01em;
       margin-bottom: 0.25rem;
-      color: var(--color-text);
+      color: var(--ln-white);
     }
 
     p {
-      color: var(--color-text-secondary);
-      font-size: 0.9rem;
+      color: var(--ln-grey);
+      font-size: 0.88rem;
       margin-bottom: 0;
     }
   }
@@ -361,6 +391,7 @@
     align-items: center;
     gap: 0.4rem;
     white-space: nowrap;
+    font-size: 0.78rem;
   }
 }
 
@@ -370,20 +401,122 @@
   align-items: center;
   justify-content: center;
   padding: 3rem 2rem;
-  border: 2px dashed var(--color-border);
-  border-radius: var(--radius);
+  border: 1px dashed rgba(210, 255, 0, 0.15);
+  background: var(--ln-surface);
   text-align: center;
 
   .placeholder-icon {
     font-size: 2.5rem;
-    color: var(--color-text-muted);
+    color: var(--ln-grey-muted);
     margin-bottom: 1rem;
   }
 
   p {
-    color: var(--color-text-secondary);
-    font-size: 0.95rem;
+    color: var(--ln-grey);
+    font-size: 0.88rem;
     margin-bottom: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+}
+
+/* -- Tutorial mini-player -- */
+.mini-player-tutorial {
+  background: var(--ln-surface);
+  border: 1px solid var(--ln-border);
+  border-top: 2px solid var(--ln-yellow);
+  padding: 2rem;
+
+  .tutorial-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .tutorial-icon {
+    width: 52px;
+    height: 52px;
+    background: var(--ln-yellow);
+    border-radius: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ln-black);
+    flex-shrink: 0;
+    font-size: 1.3rem;
+  }
+
+  .tutorial-meta { flex: 1; }
+
+  .tutorial-badge {
+    display: inline-block;
+    background: var(--ln-yellow);
+    color: var(--ln-black);
+    padding: 0.15rem 0.65rem;
+    border-radius: 0;
+    font-size: 0.68rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 0.5rem;
+  }
+
+  h4 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    color: var(--ln-white);
+    margin-bottom: 0;
+    line-height: 1;
+  }
+
+  .tutorial-desc {
+    color: var(--ln-grey);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 1.25rem;
+  }
+
+  .tutorial-steps-hint {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1rem;
+    background: rgba(210, 255, 0, 0.05);
+    border-left: 2px solid var(--ln-yellow);
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+
+    fa-icon { color: var(--ln-yellow); }
+  }
+
+  .btn-launch {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 800;
+    font-size: 0.8rem;
+  }
+}
+
+/* -- Differentiated resource items -- */
+.resource-item-tutorial {
+  border-left: 3px solid var(--ln-yellow) !important;
+}
+
+.resource-item-tool {
+  border-left: 3px solid #fbbf24 !important;
+
+  .resource-icon {
+    background: rgba(251, 191, 36, 0.08) !important;
+    color: #fbbf24 !important;
+    border-color: rgba(251, 191, 36, 0.2) !important;
   }
 }
 
@@ -396,39 +529,43 @@
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
 
   h2 {
     flex: 1;
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: var(--color-text);
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -0.03em;
+    line-height: 0.95;
+    color: var(--ln-white);
     margin-bottom: 0;
   }
 }
 
 .bookmark-btn {
   flex-shrink: 0;
-  background: none;
-  border: 1px solid var(--color-border);
-  color: var(--color-text-muted);
-  border-radius: var(--radius-sm, 0.5rem);
-  padding: 0.45rem 0.65rem;
-  cursor: pointer;
+  background: transparent;
+  border: 1px solid var(--ln-border);
+  color: var(--ln-grey-muted);
+  border-radius: 0;
+  padding: 0.5rem 0.75rem;
+  cursor: none;
   font-size: 1rem;
   transition: all var(--duration) var(--transition);
   margin-top: 0.25rem;
 
   &:hover {
-    background: var(--color-primary-50);
-    color: var(--color-primary);
-    border-color: var(--color-primary);
+    background: rgba(210, 255, 0, 0.06);
+    color: var(--ln-yellow);
+    border-color: rgba(210, 255, 0, 0.35);
   }
 
   &.bookmarked {
-    background: var(--color-primary-100);
-    color: var(--color-primary);
-    border-color: var(--color-primary);
+    background: rgba(210, 255, 0, 0.08);
+    color: var(--ln-yellow);
+    border-color: rgba(210, 255, 0, 0.35);
   }
 }
 
@@ -436,225 +573,140 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 
 .badge-language {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  background: var(--color-primary-100);
-  color: var(--color-primary);
-  padding: 0.25rem 0.65rem;
-  border-radius: var(--radius-pill);
-  font-size: 0.8rem;
-  font-weight: 500;
+  background: rgba(210, 255, 0, 0.06);
+  color: var(--ln-yellow);
+  padding: 0.2rem 0.6rem;
+  border-radius: 0;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border: 1px solid rgba(210, 255, 0, 0.18);
 }
 
 .badge-position {
   display: inline-flex;
   align-items: center;
-  background: var(--color-surface-raised);
-  color: var(--color-text-muted);
-  padding: 0.25rem 0.65rem;
-  border-radius: var(--radius-pill);
-  font-size: 0.8rem;
-  font-weight: 500;
+  background: var(--ln-surface-2);
+  color: var(--ln-grey);
+  padding: 0.2rem 0.6rem;
+  border-radius: 0;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border: 1px solid var(--ln-border);
 }
 
 .badge-reading-time {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  background: rgba(245, 158, 11, 0.12);
+  background: rgba(251, 191, 36, 0.06);
   color: #fbbf24;
-  padding: 0.25rem 0.65rem;
-  border-radius: var(--radius-pill);
-  font-size: 0.8rem;
-  font-weight: 500;
+  padding: 0.2rem 0.6rem;
+  border-radius: 0;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border: 1px solid rgba(251, 191, 36, 0.18);
 }
 
 .badge-keyboard-hint {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  background: var(--color-surface-raised);
-  color: var(--color-text-muted);
-  padding: 0.2rem 0.6rem;
-  border-radius: var(--radius-pill);
-  font-size: 0.75rem;
+  background: var(--ln-surface-2);
+  color: var(--ln-grey-muted);
+  padding: 0.18rem 0.5rem;
+  border-radius: 0;
+  font-size: 0.65rem;
+  border: 1px solid var(--ln-border);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 
-  fa-icon {
-    font-size: 0.65rem;
-  }
+  fa-icon { font-size: 0.6rem; }
 }
 
 /* -- Lesson Description -- */
 .lesson-description {
-  background: var(--color-surface-raised);
-  border-radius: var(--radius);
-  padding: 1.25rem;
-  margin-bottom: 1.5rem;
+  background: var(--ln-surface);
+  border-left: 3px solid var(--ln-yellow);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 2rem;
 
   p {
-    color: var(--color-text);
+    color: var(--ln-white);
     font-size: 1rem;
-    line-height: 1.7;
+    line-height: 1.75;
     margin-bottom: 0;
   }
 }
 
 /* -- My Notes -- */
 .lesson-notes {
-  margin-bottom: 1.5rem;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  padding: 1.25rem;
+  margin-bottom: 2rem;
+  background: var(--ln-surface);
+  border: 1px solid var(--ln-border);
+  border-top: 2px solid rgba(210, 255, 0, 0.3);
+  padding: 1.5rem;
 
   .notes-title {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    font-family: var(--font-display);
     font-size: 1rem;
-    font-weight: 600;
-    color: var(--color-text);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ln-white);
     margin-bottom: 0.75rem;
 
     fa-icon {
-      color: var(--color-primary);
+      color: var(--ln-yellow);
       font-size: 0.9rem;
     }
   }
 }
 
 .notes-textarea {
-  background: var(--color-surface-raised);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm, 0.5rem);
-  color: var(--color-text);
+  background: var(--ln-black);
+  border: 1px solid var(--ln-border);
+  border-radius: 0;
+  color: var(--ln-white);
   font-size: 0.9rem;
-  line-height: 1.6;
+  line-height: 1.65;
   resize: vertical;
   transition: border-color var(--duration) var(--transition);
 
   &:focus {
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 0.2rem rgba(45, 106, 79, 0.15);
-    background: var(--color-surface);
+    border-color: var(--ln-yellow);
+    box-shadow: 0 0 0 2px rgba(210, 255, 0, 0.1);
+    background: var(--ln-surface);
+    outline: none;
   }
 
   &::placeholder {
-    color: var(--color-text-muted);
+    color: var(--ln-grey-muted);
   }
 }
 
 .notes-hint {
   display: block;
   margin-top: 0.4rem;
-  color: var(--color-text-muted);
-  font-size: 0.78rem;
-}
-
-/* -- Tutorial mini-player -- */
-.mini-player-tutorial {
-  background: linear-gradient(135deg, var(--color-primary-50) 0%, rgba(6, 182, 212, 0.15) 100%);
-  border: 1px solid rgba(6, 182, 212, 0.2);
-  border-radius: var(--radius);
-  padding: 2rem;
-
-  .tutorial-header {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    margin-bottom: 1rem;
-  }
-
-  .tutorial-icon {
-    width: 56px;
-    height: 56px;
-    background: var(--color-primary);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    flex-shrink: 0;
-    font-size: 1.4rem;
-  }
-
-  .tutorial-meta {
-    flex: 1;
-  }
-
-  .tutorial-badge {
-    display: inline-block;
-    background: var(--color-primary);
-    color: #fff;
-    padding: 0.15rem 0.55rem;
-    border-radius: var(--radius-pill);
-    font-size: 0.72rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 0.35rem;
-  }
-
-  h4 {
-    font-size: 1.35rem;
-    font-weight: 700;
-    color: var(--color-text);
-    margin-bottom: 0;
-  }
-
-  .tutorial-desc {
-    color: var(--color-text-secondary);
-    font-size: 0.95rem;
-    line-height: 1.6;
-    margin-bottom: 1rem;
-  }
-
-  .tutorial-steps-hint {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.65rem 1rem;
-    background: rgba(6, 182, 212, 0.08);
-    border-radius: var(--radius-sm, 0.5rem);
-    font-size: 0.88rem;
-    color: var(--color-primary-light);
-    margin-bottom: 1.25rem;
-
-    fa-icon {
-      color: var(--color-primary);
-    }
-  }
-
-  .btn-launch {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-weight: 600;
-  }
-}
-
-/* -- Differentiated resource items -- */
-.resource-item-tutorial {
-  border-left: 3px solid var(--color-primary) !important;
-
-  .resource-icon {
-    background: var(--color-primary-100) !important;
-    color: var(--color-primary) !important;
-  }
-}
-
-.resource-item-tool {
-  border-left: 3px solid #d97706 !important;
-
-  .resource-icon {
-    background: rgba(245, 158, 11, 0.12) !important;
-    color: #b45309 !important;
-  }
+  color: var(--ln-grey-muted);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 /* -- Lesson Navigation -- */
@@ -662,71 +714,85 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
   padding-top: 0.5rem;
+  border-top: 1px solid var(--ln-border);
+  padding-top: 1.5rem;
 }
 
 .lesson-nav-btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
 /* -- Additional Resources -- */
 .additional-resources {
   h4 {
-    font-weight: 700;
-    font-size: 1.2rem;
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 1.4rem;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
     margin-bottom: 1rem;
-    color: var(--color-text);
+    color: var(--ln-white);
+    border-left: 3px solid var(--ln-yellow);
+    padding-left: 0.75rem;
   }
 }
 
 .resource-list {
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 1px;
+  background: var(--ln-border);
+  border: 1px solid var(--ln-border);
 }
 
 .resource-item {
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 1rem;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  transition: box-shadow 300ms var(--transition);
+  padding: 1rem 1.25rem;
+  background: var(--ln-surface);
+  transition: background 200ms var(--transition);
 
   &:hover {
-    box-shadow: var(--shadow-sm);
+    background: var(--ln-surface-2);
   }
 
   .resource-icon {
-    width: 40px;
-    height: 40px;
-    background: var(--color-primary-100);
-    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    background: rgba(210, 255, 0, 0.08);
+    border: 1px solid rgba(210, 255, 0, 0.15);
+    border-radius: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--color-primary);
+    color: var(--ln-yellow);
     flex-shrink: 0;
-    font-size: 1rem;
+    font-size: 0.9rem;
   }
 
   .resource-info {
     flex: 1;
 
     h6 {
-      font-weight: 600;
-      margin-bottom: 0.15rem;
-      font-size: 0.95rem;
-      color: var(--color-text);
+      font-weight: 700;
+      font-size: 0.88rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.2rem;
+      color: var(--ln-white);
     }
 
     p {
-      color: var(--color-text-secondary);
+      color: var(--ln-grey);
       font-size: 0.82rem;
       margin-bottom: 0.3rem;
     }
@@ -737,19 +803,21 @@
     align-items: center;
     gap: 0.4rem;
     white-space: nowrap;
+    font-size: 0.72rem;
+    padding: 0.4rem 0.9rem;
   }
 }
 
 .resource-type-badge {
   display: inline-block;
-  background: var(--color-border);
-  color: var(--color-text-muted);
-  padding: 0.1rem 0.45rem;
-  border-radius: 0.25rem;
-  font-size: 0.65rem;
-  font-weight: 600;
+  background: var(--ln-border);
+  color: var(--ln-grey-muted);
+  padding: 0.1rem 0.4rem;
+  border-radius: 0;
+  font-size: 0.62rem;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.1em;
 }
 
 /* -- Responsive -- */
@@ -769,7 +837,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.7);
     z-index: 999;
 
     &.open {
@@ -780,8 +848,8 @@
   .lesson-sidebar {
     position: fixed;
     top: 0;
-    left: -320px;
-    width: 300px;
+    left: -300px;
+    width: 280px;
     height: 100vh;
     z-index: 1000;
     transition: left 300ms var(--transition);
@@ -794,26 +862,209 @@
   }
 
   .lesson-main {
-    padding: 1.25rem 1rem 2rem;
+    padding: 1.25rem 1rem 3rem;
   }
 
   .mini-player-card {
     flex-direction: column;
     text-align: center;
 
-    .btn {
-      width: 100%;
-      justify-content: center;
-    }
+    .btn { width: 100%; justify-content: center; }
   }
 
   .lesson-nav {
     flex-direction: column;
     gap: 0.75rem;
 
-    .lesson-nav-btn {
-      width: 100%;
-      justify-content: center;
+    .lesson-nav-btn { width: 100%; justify-content: center; }
+  }
+}
+
+/* ==========================================================================
+   YouTube Player Container
+========================================================================== */
+.mini-player-video {
+  position: relative;
+  background: #000;
+  border-top: 3px solid var(--ln-yellow);
+
+  /* YT.Player creates its own iframe — make it fill the container */
+  #yt-player,
+  #yt-player iframe {
+    position: absolute;
+    inset: 0;
+    width: 100% !important;
+    height: 100% !important;
+  }
+}
+
+/* ==========================================================================
+   Watch progress bar (inside video container)
+========================================================================== */
+.watch-progress-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: rgba(255,255,255,0.12);
+  z-index: 10;
+}
+
+.watch-progress-fill {
+  height: 100%;
+  background: var(--ln-yellow);
+  transition: width 0.4s ease;
+}
+
+.watch-progress-label {
+  display: none; /* hidden — bar is enough */
+}
+
+.watch-gate-hint {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background: rgba(17,17,18,0.85);
+  border: 1px solid rgba(210,255,0,0.3);
+  color: rgba(255,255,255,0.7);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.3rem 0.65rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  z-index: 10;
+  pointer-events: none;
+
+  fa-icon { color: var(--ln-yellow); font-size: 0.65rem; }
+}
+
+/* ==========================================================================
+   Lesson Completion Section
+========================================================================== */
+.lesson-complete-section {
+  margin: 1.5rem 0;
+  padding: 1.25rem 1.5rem;
+  background: var(--ln-surface);
+  border: 1px solid var(--ln-border);
+  border-left: 3px solid var(--ln-yellow);
+}
+
+.complete-locked {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.watch-gate-bar {
+  height: 4px;
+  background: rgba(255,255,255,0.06);
+  overflow: hidden;
+}
+
+.watch-gate-fill {
+  height: 100%;
+  background: var(--ln-yellow);
+  transition: width 0.5s ease;
+}
+
+.complete-locked-label {
+  font-size: 0.78rem;
+  color: var(--ln-grey);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+}
+
+.complete-ready {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--ln-yellow);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+
+  .complete-ready-icon { font-size: 1.1rem; }
+}
+
+.btn-complete {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: var(--ln-yellow);
+  border: 2px solid var(--ln-yellow);
+  color: var(--ln-black);
+  font-weight: 800;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0.75rem 1.75rem;
+  border-radius: 0;
+  cursor: none;
+  transition: all 200ms var(--transition);
+  width: 100%;
+  justify-content: center;
+
+  &:disabled {
+    background: var(--ln-surface-2);
+    border-color: var(--ln-border);
+    color: var(--ln-grey-muted);
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  &:not(:disabled):hover {
+    background: transparent;
+    color: var(--ln-yellow);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(210,255,0,0.25);
+  }
+}
+
+/* ==========================================================================
+   Completed Banner (just finished)
+========================================================================== */
+.lesson-completed-banner {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1.5rem 0;
+  padding: 1.25rem 1.5rem;
+  background: rgba(210,255,0,0.06);
+  border: 1px solid rgba(210,255,0,0.3);
+  border-left: 4px solid var(--ln-yellow);
+  animation: fadeInUp 0.4s var(--transition) both;
+
+  .banner-check {
+    font-size: 1.5rem;
+    color: var(--ln-yellow);
+    flex-shrink: 0;
+  }
+
+  .banner-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+
+    strong {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: -0.01em;
+      color: var(--ln-yellow);
+    }
+
+    span {
+      font-size: 0.78rem;
+      color: var(--ln-grey);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
     }
   }
 }

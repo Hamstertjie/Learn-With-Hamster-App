@@ -5,4 +5,5 @@ export interface IUserLessonProgress {
   courseId?: number | null;
   startedAt?: string | null;
   completed?: boolean | null;
+  pointsEarned?: number | null;
 }

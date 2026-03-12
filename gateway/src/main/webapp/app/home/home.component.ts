@@ -37,6 +37,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
   displayCompleted  = signal(0);
   displayLessons    = signal(0);
   displayPercent    = signal(0);
+  displayXP         = signal(0);
 
   // Derived
   inProgressCourses = computed(() => this.dashCourses().filter(dc => dc.progressPercent > 0 && dc.progressPercent < 100));
@@ -95,7 +96,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
         const enrollments = res.body ?? [];
         if (enrollments.length === 0) {
           this.loadingStats.set(false);
-          this.runCountUps(0, 0, 0, 0);
+          this.runCountUps(0, 0, 0, 0, 0);
           return;
         }
 
@@ -112,7 +113,15 @@ export default class HomeComponent implements OnInit, OnDestroy {
             const doneLessons   = results.reduce((s, dc) => s + dc.lessonsCompleted, 0);
             const completedCnt  = results.filter(dc => dc.progressPercent === 100).length;
             const overallPct    = totalLessons > 0 ? Math.round((doneLessons / totalLessons) * 100) : 0;
-            this.runCountUps(total, completedCnt, doneLessons, overallPct);
+            // Load XP separately
+            this.progressService.getMyPoints().subscribe({
+              next: xpRes => {
+                const backendXP  = xpRes.body ?? 0;
+                const bonusXP    = completedCnt * 50;
+                this.runCountUps(total, completedCnt, doneLessons, overallPct, backendXP + bonusXP);
+              },
+              error: () => this.runCountUps(total, completedCnt, doneLessons, overallPct, 0),
+            });
           }
         };
 
@@ -149,12 +158,13 @@ export default class HomeComponent implements OnInit, OnDestroy {
   }
 
   // ── Animated count-up ─────────────────────────────────────────────────────
-  private runCountUps(enrolled: number, completed: number, lessons: number, percent: number): void {
+  private runCountUps(enrolled: number, completed: number, lessons: number, percent: number, xp: number): void {
     this.ngZone.runOutsideAngular(() => {
       this.countUp(enrolled,   1400, v => this.ngZone.run(() => this.displayEnrolled.set(v)));
       this.countUp(completed,  1400, v => this.ngZone.run(() => this.displayCompleted.set(v)));
       this.countUp(lessons,    1600, v => this.ngZone.run(() => this.displayLessons.set(v)));
       this.countUp(percent,    1800, v => this.ngZone.run(() => this.displayPercent.set(v)));
+      this.countUp(xp,         2000, v => this.ngZone.run(() => this.displayXP.set(v)));
     });
   }
 

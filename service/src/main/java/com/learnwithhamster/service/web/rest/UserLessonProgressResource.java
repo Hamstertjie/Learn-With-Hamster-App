@@ -37,6 +37,19 @@ public class UserLessonProgressResource {
     }
 
     /**
+     * {@code POST  /user-lesson-progress/start} : Record that the user has started a lesson (no completion).
+     *
+     * @param request the start request containing lessonId and courseId.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the progress record.
+     */
+    @PostMapping("/start")
+    public ResponseEntity<UserLessonProgressDTO> startLesson(@RequestBody MarkProgressRequest request) {
+        LOG.debug("REST request to start lesson: {}", request);
+        UserLessonProgressDTO result = userLessonProgressService.startLesson(request.lessonId(), request.courseId());
+        return ResponseEntity.ok(result);
+    }
+
+    /**
      * {@code GET  /user-lesson-progress/course/:courseId} : Get progress for a course.
      *
      * @param courseId the course ID.
@@ -50,7 +63,18 @@ public class UserLessonProgressResource {
     }
 
     /**
-     * Request body for marking lesson progress.
+     * {@code GET  /user-lesson-progress/my-points} : Get total XP points for the current user.
+     *
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the total points.
+     */
+    @GetMapping("/my-points")
+    public ResponseEntity<Integer> getMyTotalPoints() {
+        LOG.debug("REST request to get total points for current user");
+        return ResponseEntity.ok(userLessonProgressService.getMyTotalPoints());
+    }
+
+    /**
+     * Request body for marking/starting lesson progress.
      */
     public record MarkProgressRequest(Long lessonId, Long courseId) {}
 }
