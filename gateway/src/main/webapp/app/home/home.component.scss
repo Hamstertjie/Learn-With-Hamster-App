@@ -432,7 +432,7 @@ $bd: 28px;
   background: var(--ln-surface);
   border-radius: 0;
   border: 1px solid var(--ln-border);
-  border-top: 3px solid var(--ln-yellow);
+  border-top: 3px solid var(--home-accent, var(--ln-yellow));
   position: relative;
   overflow: hidden;
   height: 100%;
@@ -440,17 +440,17 @@ $bd: 28px;
 
   &:hover {
     transform: translateY(-8px);
-    box-shadow: var(--shadow-lg), 0 0 30px rgba(210, 255, 0, 0.15);
-    border-color: rgba(210, 255, 0, 0.35);
-    border-top-color: var(--ln-yellow);
+    box-shadow: var(--shadow-lg), 0 0 30px rgba(var(--home-accent-rgb, 210,255,0), 0.15);
+    border-color: rgba(var(--home-accent-rgb, 210,255,0), 0.35);
+    border-top-color: var(--home-accent, var(--ln-yellow));
   }
 }
 
 .feature-icon-wrapper {
   width: 64px;
   height: 64px;
-  background: rgba(210, 255, 0, 0.08);
-  border: 1px solid rgba(210, 255, 0, 0.2);
+  background: rgba(var(--home-accent-rgb, 210,255,0), 0.08);
+  border: 1px solid rgba(var(--home-accent-rgb, 210,255,0), 0.2);
   border-radius: 0;
   display: flex;
   align-items: center;
@@ -459,16 +459,16 @@ $bd: 28px;
 
   &.icon-coral,
   &.icon-success {
-    background: rgba(210, 255, 0, 0.08);
-    border-color: rgba(210, 255, 0, 0.2);
+    background: rgba(var(--home-accent-rgb, 210,255,0), 0.08);
+    border-color: rgba(var(--home-accent-rgb, 210,255,0), 0.2);
 
-    .feature-icon { color: var(--ln-yellow); }
+    .feature-icon { color: var(--home-accent, var(--ln-yellow)); }
   }
 }
 
 .feature-icon {
   font-size: 1.5rem;
-  color: var(--ln-yellow);
+  color: var(--home-accent, var(--ln-yellow));
 }
 
 .feature-title {
@@ -916,21 +916,21 @@ $bd: 28px;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(210, 255, 0, 0.06);
-  border: 1px solid rgba(210, 255, 0, 0.25);
+  background: rgba(var(--home-accent-rgb, 210,255,0), 0.06);
+  border: 1px solid rgba(var(--home-accent-rgb, 210,255,0), 0.25);
   border-radius: 0;
   padding: 0.45rem 1rem;
   font-size: 0.75rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--ln-yellow);
+  color: var(--home-accent, var(--ln-yellow));
   text-decoration: none;
   transition: all 200ms var(--transition);
 
   &:hover {
-    background: var(--ln-yellow);
-    border-color: var(--ln-yellow);
+    background: var(--home-accent, var(--ln-yellow));
+    border-color: var(--home-accent, var(--ln-yellow));
     color: var(--ln-black);
     text-decoration: none;
     transform: translateY(-2px);
