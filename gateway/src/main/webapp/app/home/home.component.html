@@ -2,15 +2,44 @@
   <!-- ═══ Hero Section (logged out) ═══════════════════════════════════════ -->
   <div class="hero-section">
     <div class="hero-rings" aria-hidden="true"></div>
-    <div class="hero-content">
-      <h1 class="hero-title">
-        <span class="hero-line"><span class="hero-word">Learn without</span></span>
-        <span class="hero-line hero-line-accent"><span class="hero-word accent">Limits</span></span>
-      </h1>
-      <p class="hero-subtitle hero-sub-anim">Start, switch, or advance your career — one lesson at a time</p>
-      <div class="hero-actions hero-actions-anim">
-        <a class="btn btn-accent btn-lg hero-btn" (click)="login()" jhiTranslate="home.cta.signin">Sign In</a>
-        <a class="btn btn-outline-light btn-lg hero-btn" routerLink="/catalog" jhiTranslate="home.cta.browse">Browse Catalog</a>
+    <div class="hero-layout">
+      <!-- Left: text -->
+      <div class="hero-content">
+        <h1 class="hero-title">
+          <span class="hero-line"><span class="hero-word">Learn without</span></span>
+          <span class="hero-line hero-line-accent"><span class="hero-word accent">Limits</span></span>
+        </h1>
+        <p class="hero-subtitle hero-sub-anim">Start, switch, or advance your career — one lesson at a time</p>
+        <div class="hero-actions hero-actions-anim">
+          <a class="btn btn-accent btn-lg hero-btn" (click)="login()" jhiTranslate="home.cta.signin">Sign In</a>
+          <a class="btn btn-outline-light btn-lg hero-btn" routerLink="/catalog" jhiTranslate="home.cta.browse">Browse Catalog</a>
+        </div>
+      </div>
+
+      <!-- Right: 3D Book -->
+      <div class="book-scene"
+           (mousemove)="onBookMove($event)"
+           (mouseleave)="onBookLeave()">
+        <div class="book-wrap">
+          <div class="book" [style.transform]="bookTransform()">
+            <div class="book-cover-front">
+              <div class="book-cover-lines" aria-hidden="true"></div>
+              <div class="book-cover-text">
+                <span class="book-cover-title">LEARN</span>
+                <span class="book-cover-sub">WITH HAMSTER</span>
+              </div>
+            </div>
+            <div class="book-pages-edge">
+              @for (line of bookPageLines; track line) {
+                <div class="book-page-line"></div>
+              }
+            </div>
+            <div class="book-flip-page"></div>
+            <div class="book-spine-face"></div>
+            <div class="book-top-face"></div>
+          </div>
+        </div>
+        <div class="book-glow" aria-hidden="true"></div>
       </div>
     </div>
   </div>
@@ -80,7 +109,7 @@
         <div class="stats-grid reveal">
 
           <!-- Overall ring -->
-          <div class="stat-ring-card stat-entry" style="--entry-delay: 0ms">
+          <a routerLink="/my-learning" class="stat-ring-card stat-entry stat-link" style="--entry-delay: 0ms">
             <div class="ring-wrap">
               <svg class="progress-ring" viewBox="0 0 120 120">
                 <defs>
@@ -101,10 +130,10 @@
               </div>
             </div>
             <p class="stat-ring-title">Progress</p>
-          </div>
+          </a>
 
           <!-- Enrolled -->
-          <div class="stat-number-card stat-entry" style="--entry-delay: 80ms">
+          <a routerLink="/my-learning" class="stat-number-card stat-entry stat-link" style="--entry-delay: 80ms">
             <div class="stat-icon-wrap stat-icon-teal">
               <fa-icon icon="book-open"></fa-icon>
             </div>
@@ -117,10 +146,10 @@
                 [style.width]="(loadingStats() ? '0' : '100') + '%'"
                 [style.transition]="loadingStats() ? 'none' : 'width 1.4s ease-out'"></div>
             </div>
-          </div>
+          </a>
 
           <!-- Completed -->
-          <div class="stat-number-card stat-entry" style="--entry-delay: 160ms">
+          <a routerLink="/my-learning" class="stat-number-card stat-entry stat-link" style="--entry-delay: 160ms">
             <div class="stat-icon-wrap stat-icon-gold">
               <fa-icon icon="trophy"></fa-icon>
             </div>
@@ -134,10 +163,10 @@
                 [style.width]="(loadingStats() || totalEnrolled === 0 ? 0 : (completedCourses().length / totalEnrolled * 100)) + '%'"
                 [style.transition]="loadingStats() ? 'none' : 'width 1.4s ease-out 0.2s'"></div>
             </div>
-          </div>
+          </a>
 
           <!-- Lessons done -->
-          <div class="stat-number-card stat-entry" style="--entry-delay: 240ms">
+          <a routerLink="/my-learning" class="stat-number-card stat-entry stat-link" style="--entry-delay: 240ms">
             <div class="stat-icon-wrap stat-icon-violet">
               <fa-icon icon="check-circle"></fa-icon>
             </div>
@@ -150,10 +179,10 @@
                 [style.width]="(loadingStats() ? '0' : '100') + '%'"
                 [style.transition]="loadingStats() ? 'none' : 'width 1.4s ease-out 0.4s'"></div>
             </div>
-          </div>
+          </a>
 
           <!-- XP Points -->
-          <div class="stat-number-card stat-entry stat-xp" style="--entry-delay: 320ms">
+          <a routerLink="/my-learning" class="stat-number-card stat-entry stat-link stat-xp" style="--entry-delay: 320ms">
             <div class="stat-icon-wrap stat-icon-xp">
               <fa-icon icon="star"></fa-icon>
             </div>
@@ -166,7 +195,7 @@
                 [style.width]="(loadingStats() ? '0' : '100') + '%'"
                 [style.transition]="loadingStats() ? 'none' : 'width 1.4s ease-out 0.6s'"></div>
             </div>
-          </div>
+          </a>
 
         </div>
 
