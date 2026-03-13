@@ -1,288 +1,202 @@
 import { Injectable } from '@angular/core';
 
-// Lando Norris colour schemes — electric yellow, black, white
-const SCHEMES = [
-  { bg: 'rgba(210,255,0,0.90)',   border: 'rgba(210,255,0,1)',      glow: 'rgba(210,255,0,0.70)'   },
-  { bg: 'rgba(255,255,255,0.92)', border: 'rgba(255,255,255,1)',    glow: 'rgba(255,255,255,0.45)' },
-  { bg: 'rgba(17,17,18,0.95)',    border: 'rgba(210,255,0,0.80)',   glow: 'rgba(210,255,0,0.45)'   },
-  { bg: 'rgba(170,220,0,0.90)',   border: 'rgba(200,255,0,0.90)',   glow: 'rgba(170,220,0,0.60)'   },
-  { bg: 'rgba(210,255,0,0.70)',   border: 'rgba(255,255,255,0.80)', glow: 'rgba(210,255,0,0.50)'   },
-  { bg: 'rgba(235,255,80,0.85)',  border: 'rgba(210,255,0,0.90)',   glow: 'rgba(235,255,80,0.55)'  },
-  { bg: 'rgba(255,255,255,0.80)', border: 'rgba(210,255,0,0.70)',   glow: 'rgba(210,255,0,0.35)'   },
-  { bg: 'rgba(17,17,18,0.90)',    border: 'rgba(255,255,255,0.60)', glow: 'rgba(255,255,255,0.30)' },
-];
+// LN colour palette — electric yellow dominant, white highlights
+const FW_COLORS = ['#D2FF00', '#ffffff', '#aaf000', '#e8ff80', '#ccff00', '#f5ff66', '#ffffff', '#D2FF00'];
 
-const BURST_COLORS = ['#D2FF00', '#ffffff', '#aaf000', '#111112', '#e8ff80', '#ffffff', '#D2FF00', '#ccff00', '#f5ff66'];
-
-// Total experience: 13 s spawn window + up to 8.5 s fall = ~21.5 s visible, cleanup fade at 22 s
-const SPAWN_WINDOW_MS = 13_000;
-const CLEANUP_MS      = 22_000;
-const SPAWN_INTERVAL  = 180;
+const BURST_INTERVAL_MS = 650;   // ms between auto rockets
+const ACTIVE_MS         = 11_000; // how long rockets keep auto-firing
+const CLEANUP_MS        = 14_000; // total lifetime before teardown
 
 @Injectable({ providedIn: 'root' })
 export class ConfettiService {
-  private container: HTMLDivElement | null = null;
-  private styleEl: HTMLStyleElement | null = null;
-  private intervalId: ReturnType<typeof setInterval> | null = null;
-  private cleanupTimer: ReturnType<typeof setTimeout> | null = null;
+  private confetti: ((opts: object) => void) | null = null;
+  private styleEl:      HTMLStyleElement | null = null;
+  private intervalId:   ReturnType<typeof setInterval> | null = null;
+  private cleanupTimer: ReturnType<typeof setTimeout>  | null = null;
+
+  // Live interaction state — updated by event listeners
+  private mouseX         = 0.5; // 0 = left edge, 1 = right edge
+  private mouseY         = 0.5; // 0 = top, 1 = bottom
+  private scrollFraction = 0;   // 0 = top of page, 1 = bottom
+
+  private mouseMoveHandler: ((e: MouseEvent) => void) | null = null;
+  private scrollHandler:    (() => void)               | null = null;
 
   async fire(): Promise<void> {
     this.cleanup();
 
-    // ── Screen flash — radial gold/teal bloom fading in 600 ms ──────────────
-    this.flashScreen();
-
-    // ── Body shake — 0.45 s physical impact ─────────────────────────────────
-    this.shakeBody();
-
-    // ── canvas-confetti burst waves ──────────────────────────────────────────
     const { default: confetti } = await import('canvas-confetti');
-    const burst = (opts: Parameters<typeof confetti>[0]) =>
-      confetti({ shapes: ['star', 'circle', 'square'], colors: BURST_COLORS, ...opts });
+    this.confetti = confetti as unknown as (opts: object) => void;
 
-    // Wave 1 — massive opening starburst
-    burst({ particleCount: 320, spread: 160, origin: { y: 0.42 }, ticks: 500, scalar: 1.5, startVelocity: 75, gravity: 0.8 });
-
-    // Wave 2 — follow-up center (250 ms)
-    setTimeout(() => burst({ particleCount: 220, spread: 130, origin: { y: 0.48 }, ticks: 450, scalar: 1.3, startVelocity: 60 }), 250);
-
-    // Wave 3 — left + right cannons (500 ms)
-    setTimeout(() => {
-      burst({ particleCount: 150, angle: 60,  spread: 75, origin: { x: 0, y: 0.58 }, ticks: 400, scalar: 1.35, startVelocity: 70 });
-      burst({ particleCount: 150, angle: 120, spread: 75, origin: { x: 1, y: 0.58 }, ticks: 400, scalar: 1.35, startVelocity: 70 });
-    }, 500);
-
-    // Wave 4 — angled side volleys (900 ms)
-    setTimeout(() => {
-      burst({ particleCount: 110, angle: 65,  spread: 60, origin: { x: 0, y: 0.63 }, ticks: 370, startVelocity: 58 });
-      burst({ particleCount: 110, angle: 115, spread: 60, origin: { x: 1, y: 0.63 }, ticks: 370, startVelocity: 58 });
-    }, 900);
-
-    // Wave 5 — 4-corner simultaneous volley (1 400 ms)
-    setTimeout(() => {
-      burst({ particleCount: 90, angle: 45,  spread: 50, origin: { x: 0, y: 0 }, ticks: 340, scalar: 1.1, startVelocity: 65, gravity: 1.1 });
-      burst({ particleCount: 90, angle: 135, spread: 50, origin: { x: 1, y: 0 }, ticks: 340, scalar: 1.1, startVelocity: 65, gravity: 1.1 });
-      burst({ particleCount: 90, angle: 315, spread: 50, origin: { x: 0, y: 1 }, ticks: 340, scalar: 1.1, startVelocity: 65, gravity: 0.5 });
-      burst({ particleCount: 90, angle: 225, spread: 50, origin: { x: 1, y: 1 }, ticks: 340, scalar: 1.1, startVelocity: 65, gravity: 0.5 });
-    }, 1_400);
-
-    // Wave 6 — secondary center burst to keep the sky full (2 200 ms)
-    setTimeout(() => burst({ particleCount: 180, spread: 120, origin: { y: 0.45 }, ticks: 400, scalar: 1.2, startVelocity: 55, gravity: 0.9 }), 2_200);
-
-    // Wave 7 — final golden rain from the top (4 000 ms)
-    setTimeout(() => {
-      burst({ particleCount: 200, spread: 200, origin: { y: 0 }, ticks: 380, scalar: 1.0, startVelocity: 30, gravity: 1.3, colors: ['#D2FF00', '#aaf000', '#ffffff', '#111112'] });
-    }, 4_000);
-
-    // ── Inject CSS for bounce-settle keyframe + body shake ───────────────────
+    // ── Inject shared keyframes ─────────────────────────────────────────────
     this.styleEl = document.createElement('style');
     this.styleEl.textContent = `
-      @keyframes lwh-bounce {
-        0%   { transform: translate3d(var(--fx), calc(var(--fy) - 18px), 0) var(--fr); }
-        55%  { transform: translate3d(var(--fx), calc(var(--fy) + 6px),  0) var(--fr); }
-        100% { transform: translate3d(var(--fx), var(--fy),              0) var(--fr); }
+      /* Expanding ring at each explosion point */
+      @keyframes fw-ring {
+        0%   { box-shadow: 0 0 0   0px rgba(210,255,0,0.85); opacity: 1; }
+        60%  { box-shadow: 0 0 0  70px rgba(210,255,0,0.15); opacity: 0.6; }
+        100% { box-shadow: 0 0 0 120px rgba(210,255,0,0);    opacity: 0; }
       }
-      @keyframes lwh-shake {
-        0%   { transform: translate3d(0, 0, 0) rotate(0deg); }
-        10%  { transform: translate3d(-6px, -3px, 0) rotate(-0.4deg); }
-        20%  { transform: translate3d(7px,  4px,  0) rotate(0.5deg); }
-        30%  { transform: translate3d(-5px, 2px,  0) rotate(-0.3deg); }
-        40%  { transform: translate3d(6px, -4px,  0) rotate(0.4deg); }
-        50%  { transform: translate3d(-4px, 3px,  0) rotate(-0.2deg); }
-        60%  { transform: translate3d(4px, -2px,  0) rotate(0.3deg); }
-        70%  { transform: translate3d(-3px, 2px,  0) rotate(-0.15deg); }
-        80%  { transform: translate3d(2px, -1px,  0) rotate(0.1deg); }
-        100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+      /* Physical impact shake on the body */
+      @keyframes fw-shake {
+        0%,100% { transform: translate3d(0,0,0) rotate(0deg); }
+        12%  { transform: translate3d(-6px,-3px,0) rotate(-0.4deg); }
+        25%  { transform: translate3d(7px, 4px,0) rotate(0.5deg); }
+        37%  { transform: translate3d(-5px, 2px,0) rotate(-0.3deg); }
+        50%  { transform: translate3d(6px,-4px,0) rotate(0.4deg); }
+        62%  { transform: translate3d(-4px, 3px,0) rotate(-0.2deg); }
+        75%  { transform: translate3d(3px,-2px,0) rotate(0.15deg); }
+        87%  { transform: translate3d(-2px, 1px,0) rotate(-0.1deg); }
       }
     `;
     document.head.appendChild(this.styleEl);
 
-    // ── Full-screen overlay ─────────────────────────────────────────────────
-    this.container = document.createElement('div');
-    Object.assign(this.container.style, {
-      position: 'fixed',
-      inset: '0',
-      pointerEvents: 'none',
-      zIndex: '9999',
-      overflow: 'hidden',
-    });
-    document.body.appendChild(this.container);
+    // ── Immediate impact effects ────────────────────────────────────────────
+    this.flashScreen();
+    this.shakeBody();
 
-    // ── Spawn pieces continuously ───────────────────────────────────────────
+    // ── Start tracking mouse + scroll ───────────────────────────────────────
+    this.mouseMoveHandler = (e: MouseEvent): void => {
+      this.mouseX = e.clientX / window.innerWidth;
+      this.mouseY = e.clientY / window.innerHeight;
+    };
+    this.scrollHandler = (): void => {
+      const max = document.body.scrollHeight - window.innerHeight;
+      this.scrollFraction = max > 0 ? Math.min(window.scrollY / max, 1) : 0;
+    };
+    window.addEventListener('mousemove', this.mouseMoveHandler);
+    window.addEventListener('scroll',    this.scrollHandler, { passive: true });
+
+    // ── Opening salvo — 3 rockets staggered over 550 ms ────────────────────
+    this.launchRocket(0.2);
+    setTimeout(() => this.launchRocket(0.5), 300);
+    setTimeout(() => this.launchRocket(0.8), 550);
+
+    // ── Continuous rockets ──────────────────────────────────────────────────
     let elapsed = 0;
     this.intervalId = setInterval(() => {
-      elapsed += SPAWN_INTERVAL;
-      // Heavy at the start, tapering off
-      const n = elapsed < 1500 ? 16 : elapsed < 4000 ? 11 : elapsed < 8000 ? 8 : elapsed < 11000 ? 5 : 2;
-      for (let i = 0; i < n; i++) this.spawnPiece();
-      if (elapsed >= SPAWN_WINDOW_MS) {
+      elapsed += BURST_INTERVAL_MS;
+
+      // Horizontal: random base biased toward mouse X (±0.4 influence)
+      const base    = 0.15 + Math.random() * 0.7;
+      const bias    = (this.mouseX - 0.5) * 0.4;
+      const launchX = Math.max(0.05, Math.min(0.95, base + bias));
+      this.launchRocket(launchX);
+
+      // Scrolling down: add a bonus rocket with slight delay
+      if (this.scrollFraction > 0.35 && Math.random() < 0.6) {
+        const bx = 0.1 + Math.random() * 0.8;
+        setTimeout(() => this.launchRocket(bx), 180);
+      }
+
+      if (elapsed >= ACTIVE_MS) {
         clearInterval(this.intervalId!);
         this.intervalId = null;
       }
-    }, SPAWN_INTERVAL);
+    }, BURST_INTERVAL_MS);
 
-    // ── Fade then cleanup ───────────────────────────────────────────────────
-    this.cleanupTimer = setTimeout(() => {
-      if (this.container) {
-        this.container.style.transition = 'opacity 2s ease';
-        this.container.style.opacity = '0';
-      }
-      setTimeout(() => this.cleanup(), 2000);
-    }, CLEANUP_MS);
+    // ── Schedule teardown ───────────────────────────────────────────────────
+    this.cleanupTimer = setTimeout(() => this.cleanup(), CLEANUP_MS);
   }
 
-  /** Full-screen radial flash that fades out in 600 ms */
-  private flashScreen(): void {
-    const flash = document.createElement('div');
-    Object.assign(flash.style, {
-      position: 'fixed',
-      inset: '0',
-      pointerEvents: 'none',
-      zIndex: '10000',
-      background: 'radial-gradient(ellipse at 50% 45%, rgba(210,255,0,0.35) 0%, rgba(210,255,0,0.12) 40%, transparent 70%)',
-      opacity: '1',
-      transition: 'opacity 600ms ease-out',
+  /**
+   * Fire one firework burst at the given horizontal viewport fraction.
+   *
+   * Mouse Y drives explosion height:
+   *   mouseY = 0 (cursor at top)    → burst near top of screen (low canvas y)
+   *   mouseY = 1 (cursor at bottom) → burst in lower half
+   *
+   * Scroll fraction boosts particle count, velocity, and ticks.
+   */
+  private launchRocket(originX: number): void {
+    const scrollBoost   = this.scrollFraction;
+    const explosionY    = 0.1 + this.mouseY * 0.5;         // canvas y: 0=top, 1=bottom
+    const particleCount = 80 + Math.round(scrollBoost * 70) + Math.round(Math.random() * 55);
+    const velocity      = 22 + scrollBoost * 14 + Math.random() * 14;
+    const ticks         = 280 + Math.round(scrollBoost * 100);
+
+    // Visual ring flash at explosion point
+    this.ringFlashAt(originX, explosionY);
+
+    (this.confetti as any)?.({
+      particleCount,
+      spread:        360,
+      startVelocity: velocity,
+      decay:         0.91,
+      gravity:       0.7,
+      scalar:        0.85 + Math.random() * 0.5,
+      origin:        { x: originX, y: explosionY },
+      colors:        FW_COLORS,
+      shapes:        ['circle', 'star'],
+      ticks,
     });
-    document.body.appendChild(flash);
-    // Trigger reflow then fade
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        flash.style.opacity = '0';
-        setTimeout(() => flash.remove(), 650);
-      });
-    });
   }
 
-  /** Apply a CSS body shake for 450 ms then remove */
-  private shakeBody(): void {
-    // Inject the shake keyframe inline (styleEl may not be ready yet)
-    const shakeStyle = document.createElement('style');
-    shakeStyle.textContent = `
-      @keyframes lwh-shake-body {
-        0%   { transform: translate3d(0, 0, 0) rotate(0deg); }
-        10%  { transform: translate3d(-6px, -3px, 0) rotate(-0.4deg); }
-        20%  { transform: translate3d(7px,  4px,  0) rotate(0.5deg); }
-        30%  { transform: translate3d(-5px, 2px,  0) rotate(-0.3deg); }
-        40%  { transform: translate3d(6px, -4px,  0) rotate(0.4deg); }
-        50%  { transform: translate3d(-4px, 3px,  0) rotate(-0.2deg); }
-        60%  { transform: translate3d(4px, -2px,  0) rotate(0.3deg); }
-        70%  { transform: translate3d(-3px, 2px,  0) rotate(-0.15deg); }
-        80%  { transform: translate3d(2px, -1px,  0) rotate(0.1deg); }
-        100% { transform: translate3d(0, 0, 0) rotate(0deg); }
-      }
-    `;
-    document.head.appendChild(shakeStyle);
-    document.body.style.animation = 'lwh-shake-body 450ms ease-out';
-    setTimeout(() => {
-      document.body.style.animation = '';
-      shakeStyle.remove();
-    }, 480);
-  }
-
-  private spawnPiece(): void {
-    if (!this.container) return;
-
-    const scheme   = SCHEMES[Math.floor(Math.random() * SCHEMES.length)];
-    const baseSize = 9 + Math.random() * 22;          // 9–31 px
-    const roll     = Math.random();
-    const isCircle = roll < 0.18;
-    const isStrip  = !isCircle && roll < 0.38;
-    const w = isStrip ? baseSize * 0.28 : baseSize;
-    const h = isStrip ? baseSize * 2.4  : isCircle ? baseSize : baseSize * (0.65 + Math.random() * 0.9);
-
-    // Start position — spread across full width plus slight overshoot on both sides
-    const startVw = -8 + Math.random() * 116;
-    // Also occasionally launch from sides (like cannon balls)
-    const fromSide = Math.random() < 0.12;
-    const startX   = fromSide ? (Math.random() < 0.5 ? '-40px' : `calc(100vw + 40px)`) : `${startVw}vw`;
-
-    // Horizontal drift ±220 px
-    const dxPx = (Math.random() - 0.5) * 440;
-    // Land in bottom 20% of screen, stagger depth so they pile naturally
-    const dyPx = window.innerHeight * (0.76 + Math.random() * 0.18) - h;
-
-    // 3D tumble amounts (degrees)
-    const rxDeg = 180 + Math.random() * 540;
-    const ryDeg = 180 + Math.random() * 540;
-    const rzDeg = 90  + Math.random() * 360;
-
-    // Fall duration 3–8.5 s, staggered delay up to 1.5 s
-    const duration = 3 + Math.random() * 5.5;
-    const delay    = Math.random() * 1.5;
-
+  /**
+   * Tiny DOM dot that expands as a glowing ring — marks each explosion point.
+   * viewX / viewY are fractions of the viewport (0–1, matching canvas-confetti axes).
+   */
+  private ringFlashAt(viewX: number, viewY: number): void {
     const el = document.createElement('div');
-
-    // Geometry & base style
-    el.style.cssText = `
-      position: absolute;
-      left: ${startX};
-      top: 0;
-      width: ${w}px;
-      height: ${h}px;
-      border-radius: ${isCircle ? '50%' : '3px'};
-      background: ${scheme.bg};
-      border: 1px solid ${scheme.border};
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.45),
-                  inset 0 -1px 0 rgba(0,0,0,0.08),
-                  0 5px 16px ${scheme.glow};
-      will-change: transform, opacity;
-      transform-style: preserve-3d;
-    `;
-
-    // backdrop-filter only for larger pieces (performance budget)
-    if (baseSize > 18) {
-      el.style.setProperty('backdrop-filter', 'blur(5px) saturate(200%)');
-      el.style.setProperty('-webkit-backdrop-filter', 'blur(5px) saturate(200%)');
-    }
-
-    // ── Fall animation via Web Animations API ──────────────────────────────
-    const startTransform = `translate3d(0, -60px, 0) rotateX(0deg) rotateY(0deg) rotateZ(0deg)`;
-    const endTransform   = `translate3d(${dxPx}px, ${dyPx}px, 0) rotateX(${rxDeg}deg) rotateY(${ryDeg}deg) rotateZ(${rzDeg}deg)`;
-
-    this.container.appendChild(el);
-
-    const fallAnim = el.animate(
-      [
-        { transform: startTransform, opacity: '1'   },
-        { transform: endTransform,   opacity: '0.88' },
-      ],
-      {
-        duration: duration * 1000,
-        delay:    delay    * 1000,
-        fill:     'forwards',
-        // Ease-in for gravity feel, slight ease-out at landing
-        easing:   'cubic-bezier(0.42, 0, 0.68, 1.0)',
-      },
-    );
-
-    // ── After landing: CSS bounce-settle then freeze ───────────────────────
-    fallAnim.addEventListener('finish', () => {
-      if (!el.parentElement) return;
-
-      // Use the keyframe directly
-      const settle = el.animate(
-        [
-          { transform: `translate3d(${dxPx}px, ${dyPx - 18}px, 0) rotateX(${rxDeg}deg) rotateY(${ryDeg}deg) rotateZ(${rzDeg}deg)` },
-          { transform: `translate3d(${dxPx}px, ${dyPx + 6}px,  0) rotateX(${rxDeg}deg) rotateY(${ryDeg}deg) rotateZ(${rzDeg + 4}deg)` },
-          { transform: `translate3d(${dxPx}px, ${dyPx}px,      0) rotateX(${rxDeg}deg) rotateY(${ryDeg}deg) rotateZ(${rzDeg + 1}deg)` },
-        ],
-        { duration: 380, fill: 'forwards', easing: 'ease-out' },
-      );
-
-      // After settle, freeze in place permanently
-      settle.addEventListener('finish', () => {
-        if (!el.parentElement) return;
-        el.style.transform = `translate3d(${dxPx}px, ${dyPx}px, 0) rotateX(${rxDeg}deg) rotateY(${ryDeg}deg) rotateZ(${rzDeg + 1}deg)`;
-        el.style.opacity = '0.88';
-        el.getAnimations().forEach(a => a.cancel());
-      });
+    Object.assign(el.style, {
+      position:      'fixed',
+      left:          `${viewX * 100}vw`,
+      top:           `${viewY * 100}vh`,
+      width:         '6px',
+      height:        '6px',
+      borderRadius:  '50%',
+      background:    'rgba(210,255,0,0.9)',
+      pointerEvents: 'none',
+      zIndex:        '10001',
+      transform:     'translate(-50%,-50%)',
+      animation:     'fw-ring 420ms ease-out forwards',
     });
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 470);
+  }
+
+  /** Full-viewport yellow bloom that fades in 700 ms */
+  private flashScreen(): void {
+    const el = document.createElement('div');
+    Object.assign(el.style, {
+      position:      'fixed',
+      inset:         '0',
+      pointerEvents: 'none',
+      zIndex:        '10000',
+      background:    'radial-gradient(ellipse at 50% 40%, rgba(210,255,0,0.28) 0%, rgba(210,255,0,0.08) 45%, transparent 68%)',
+      opacity:       '1',
+      transition:    'opacity 700ms ease-out',
+    });
+    document.body.appendChild(el);
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      el.style.opacity = '0';
+      setTimeout(() => el.remove(), 750);
+    }));
+  }
+
+  /** 450 ms CSS body shake for physical impact feel */
+  private shakeBody(): void {
+    document.body.style.animation = 'fw-shake 450ms ease-out';
+    setTimeout(() => { document.body.style.animation = ''; }, 480);
   }
 
   private cleanup(): void {
-    if (this.intervalId)    { clearInterval(this.intervalId);    this.intervalId    = null; }
-    if (this.cleanupTimer)  { clearTimeout(this.cleanupTimer);   this.cleanupTimer  = null; }
-    this.container?.remove(); this.container = null;
-    this.styleEl?.remove();   this.styleEl   = null;
+    if (this.intervalId)   { clearInterval(this.intervalId);  this.intervalId   = null; }
+    if (this.cleanupTimer) { clearTimeout(this.cleanupTimer); this.cleanupTimer = null; }
+    if (this.mouseMoveHandler) {
+      window.removeEventListener('mousemove', this.mouseMoveHandler);
+      this.mouseMoveHandler = null;
+    }
+    if (this.scrollHandler) {
+      window.removeEventListener('scroll', this.scrollHandler);
+      this.scrollHandler = null;
+    }
+    this.styleEl?.remove();
+    this.styleEl  = null;
+    this.confetti = null;
+    // Reset interaction state for next fire()
+    this.mouseX = 0.5;
+    this.mouseY = 0.5;
+    this.scrollFraction = 0;
   }
 }
