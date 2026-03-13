@@ -100,7 +100,7 @@ export default class LessonBrowseComponent implements OnInit, OnDestroy {
 
   @HostListener('document:keydown', ['$event'])
   onKeydown(event: KeyboardEvent): void {
-    const tag = (event.target as HTMLElement).tagName;
+    const tag = (event.target as HTMLElement | null)?.tagName;
     if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
     const idx = this.getCurrentLessonIndex();
     if (idx < 0 || this.courseLessons().length === 0) return;
