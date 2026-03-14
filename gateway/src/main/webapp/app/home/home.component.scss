@@ -95,22 +95,22 @@
 /* ==========================================================================
    3D Book Scene
 ========================================================================== */
-$bw: 150px;
-$bh: 210px;
+$bw: 175px;
+$bh: 235px;
 $bd: 28px;
 
 .book-scene {
   flex-shrink: 0;
   position: relative;
-  width: 220px;
-  height: 280px;
+  width: 260px;
+  height: 310px;
   cursor: grab;
 
   &:active { cursor: grabbing; }
 
   @media (max-width: 900px) {
-    width: 170px;
-    height: 220px;
+    width: 200px;
+    height: 250px;
   }
 }
 
@@ -142,6 +142,7 @@ $bd: 28px;
 .book-cover-front {
   width: $bw;
   height: $bh;
+  transform-origin: left center;
   transform: translateZ(14px);
   background: var(--home-accent, var(--ln-yellow));
   overflow: hidden;
@@ -149,6 +150,11 @@ $bd: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: transform 0.85s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+  &.cover--open {
+    transform: translateZ(14px) rotateY(-158deg);
+  }
 }
 
 .book-cover-lines {
@@ -172,7 +178,7 @@ $bd: 28px;
 
 .book-cover-title {
   font-family: var(--font-display);
-  font-size: 2.4rem;
+  font-size: 2.6rem;
   font-weight: 900;
   letter-spacing: -0.04em;
   line-height: 1;
@@ -182,7 +188,7 @@ $bd: 28px;
 
 .book-cover-sub {
   font-family: var(--font-display);
-  font-size: 0.52rem;
+  font-size: 0.54rem;
   font-weight: 800;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -208,23 +214,43 @@ $bd: 28px;
   border-bottom: 1px solid rgba(0,0,0,0.06);
 }
 
-/* ── Animated flip page ──────────────────────────────────────────────────── */
+/* ── Flip page: JS-driven via [style.transform] ───────────────────────────── */
 .book-flip-page {
-  width: calc(#{$bw} - 4px);
-  height: calc(#{$bh} - 4px);
-  top: 2px;
-  left: 2px;
+  width: $bw;
+  height: $bh;
   transform-origin: left center;
-  transform: translateZ(13px) rotateY(0deg);
-  background: linear-gradient(to right, rgba(255,255,255,0.9) 0%, rgba(240,234,222,0.6) 100%);
+  background: linear-gradient(
+    to right,
+    rgba(240,234,222,0.97) 0%,
+    rgba(255,255,255,1)    45%,
+    rgba(245,241,232,0.93) 100%
+  );
   pointer-events: none;
   backface-visibility: hidden;
-  animation: pageFlip 7s ease-in-out 4s infinite;
-}
+  transition: transform 0.16s ease-out;
 
-@keyframes pageFlip {
-  0%, 60%, 100% { transform: translateZ(13px) rotateY(0deg); }
-  28%            { transform: translateZ(13px) rotateY(-155deg); }
+  /* Faint horizontal ruled lines */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent 0px, transparent 17px,
+      rgba(0,0,0,0.035) 17px, rgba(0,0,0,0.035) 18px
+    );
+  }
+
+  /* Shadow on leading edge to show page depth */
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 18px;
+    height: 100%;
+    background: linear-gradient(to right, transparent, rgba(0,0,0,0.06));
+    pointer-events: none;
+  }
 }
 
 /* ── Spine (left face) ───────────────────────────────────────────────────── */
@@ -256,10 +282,10 @@ $bd: 28px;
 /* ── Ambient glow ────────────────────────────────────────────────────────── */
 .book-glow {
   position: absolute;
-  bottom: 10px;
+  bottom: 8px;
   left: 50%;
   transform: translateX(-50%);
-  width: 130px;
+  width: 140px;
   height: 24px;
   background: var(--home-accent, var(--ln-yellow));
   opacity: 0.3;
@@ -267,6 +293,43 @@ $bd: 28px;
   border-radius: 50%;
   pointer-events: none;
   animation: bookFloat 4s ease-in-out infinite;
+  transition: opacity 0.5s, width 0.5s;
+
+  &.glow--open { opacity: 0.55; width: 180px; }
+}
+
+/* ── Page turn dots ──────────────────────────────────────────────────────── */
+.book-page-dots {
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 7px;
+  opacity: 0;
+  transition: opacity 0.4s;
+
+  &.dots--visible { opacity: 1; }
+}
+
+.book-page-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+  border: 1px solid rgba(255,255,255,0.25);
+  transition: background 0.3s ease-out, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  &.dot--done {
+    background: var(--home-accent, var(--ln-yellow));
+    border-color: transparent;
+  }
+
+  &.dot--active {
+    transform: scale(1.55);
+    background: rgba(255,255,255,0.6);
+    border-color: transparent;
+  }
 }
 
 /* Stagger in subtitle and buttons after headline lines */

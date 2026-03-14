@@ -18,11 +18,12 @@
 
       <!-- Right: 3D Book -->
       <div class="book-scene"
+           (mouseenter)="onBookEnter()"
            (mousemove)="onBookMove($event)"
            (mouseleave)="onBookLeave()">
         <div class="book-wrap">
-          <div class="book" [style.transform]="bookTransform()">
-            <div class="book-cover-front">
+          <div class="book" [class.book--open]="bookOpen()" [style.transform]="bookTransform()">
+            <div class="book-cover-front" [class.cover--open]="bookOpen()">
               <div class="book-cover-lines" aria-hidden="true"></div>
               <div class="book-cover-text">
                 <span class="book-cover-title">LEARN</span>
@@ -34,12 +35,20 @@
                 <div class="book-page-line"></div>
               }
             </div>
-            <div class="book-flip-page"></div>
+            <div class="book-flip-page" [style.transform]="flipPageTransform()"></div>
             <div class="book-spine-face"></div>
             <div class="book-top-face"></div>
           </div>
         </div>
-        <div class="book-glow" aria-hidden="true"></div>
+        <div class="book-glow" [class.glow--open]="bookOpen()" aria-hidden="true"></div>
+        <!-- Page turn indicator dots -->
+        <div class="book-page-dots" [class.dots--visible]="bookOpen()">
+          @for (i of bookPageLines.slice(0, maxPages); track i) {
+            <div class="book-page-dot"
+                 [class.dot--done]="currentPage() > i"
+                 [class.dot--active]="currentPage() === i && bookOpen()"></div>
+          }
+        </div>
       </div>
     </div>
   </div>

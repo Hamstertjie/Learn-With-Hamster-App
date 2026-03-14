@@ -1,5 +1,17 @@
 jest.mock('app/core/auth/account.service');
 
+// JSDOM does not implement window.matchMedia — provide a minimal stub
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: jest.fn((query: string) => ({
+    matches: query.includes('dark') ? false : true,
+    media: query,
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  })),
+});
+
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { Subject, of } from 'rxjs';

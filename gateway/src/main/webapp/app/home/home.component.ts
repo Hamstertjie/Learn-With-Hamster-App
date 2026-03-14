@@ -29,15 +29,15 @@ export default class HomeComponent implements OnInit, OnDestroy {
   account = signal<Account | null>(null);
 
   // Raw data
-  dashCourses = signal<DashCourse[]>([]);
+  dashCourses  = signal<DashCourse[]>([]);
   loadingStats = signal(true);
 
   // Animated display values (count-up)
-  displayEnrolled   = signal(0);
-  displayCompleted  = signal(0);
-  displayLessons    = signal(0);
-  displayPercent    = signal(0);
-  displayXP         = signal(0);
+  displayEnrolled  = signal(0);
+  displayCompleted = signal(0);
+  displayLessons   = signal(0);
+  displayPercent   = signal(0);
+  displayXP        = signal(0);
 
   // Derived
   inProgressCourses = computed(() => this.dashCourses().filter(dc => dc.progressPercent > 0 && dc.progressPercent < 100));
@@ -51,17 +51,36 @@ export default class HomeComponent implements OnInit, OnDestroy {
     return total > 0 ? Math.round((done / total) * 100) : 0;
   });
 
-  // ── 3D Book ────────────────────────────────────────────────────────────────
+  // ── 3D Book ──────────────────────────────────────────────────────────────────
   readonly bookPageLines = Array.from({ length: 20 }, (_, i) => i);
-  private readonly bookTiltRaw = signal({ x: 0, y: 0 });
+  readonly maxPages      = 5;
 
-  /** Combined perspective + base tilt + mouse-driven tilt for book-scene */
+  private readonly bookTiltRaw = signal({ x: 0, y: 0 });
+  private readonly mouseXScene = signal(0.5); // 0 = left edge, 1 = right edge
+
+  bookOpen    = signal(false);
+  currentPage = signal(0);
+
+  private bookCloseTimer: ReturnType<typeof setTimeout> | null = null;
+  private pageTurnPending = false;
+
+  /** Combined perspective + base tilt + mouse-driven tilt */
   bookTransform = computed(() => {
     const { x, y } = this.bookTiltRaw();
     return `perspective(900px) rotateX(${5 + x}deg) rotateY(${-22 + y}deg)`;
   });
 
-  private readonly destroy$ = new Subject<void>();
+  /** Flip-page angle follows mouse X: right(1)→0°, left(0)→-172° */
+  flipPageTransform = computed(() => {
+    const angle = this.bookOpen() ? (1 - this.mouseXScene()) * -172 : 0;
+    return `translateZ(13px) rotateY(${angle.toFixed(1)}deg)`;
+  });
+
+  // ── Theme (device preference) ────────────────────────────────────────────────
+  private themeMediaQuery: MediaQueryList | null = null;
+  private themeChangeHandler: ((e: MediaQueryListEvent) => void) | null = null;
+
+  private readonly destroy$          = new Subject<void>();
   private readonly accountService    = inject(AccountService);
   private readonly enrollmentService = inject(UserCourseEnrollmentService);
   private readonly progressService   = inject(UserLessonProgressService);
@@ -71,15 +90,13 @@ export default class HomeComponent implements OnInit, OnDestroy {
   private readonly elementRef        = inject(ElementRef);
 
   ngOnInit(): void {
-    this.applyTimeTheme();
+    this.applyDeviceTheme();
     this.accountService
       .getAuthenticationState()
       .pipe(takeUntil(this.destroy$))
       .subscribe(account => {
         this.account.set(account);
-        if (account !== null) {
-          this.loadDashboard();
-        }
+        if (account !== null) this.loadDashboard();
       });
   }
 
@@ -90,39 +107,81 @@ export default class HomeComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    if (this.bookCloseTimer) clearTimeout(this.bookCloseTimer);
+    if (this.themeMediaQuery && this.themeChangeHandler) {
+      this.themeMediaQuery.removeEventListener('change', this.themeChangeHandler);
+    }
   }
 
-  // ── Time-based accent colour ───────────────────────────────────────────────
-  private applyTimeTheme(): void {
-    const hour   = new Date().getHours();
-    const isDay  = hour >= 6 && hour < 20;
-    const accent    = isDay ? '#FF6B35' : '#BF40FF';
-    const accentRgb = isDay ? '255,107,53' : '191,64,255';
-    const el = this.elementRef.nativeElement as HTMLElement;
+  // ── Device-preference accent colour ──────────────────────────────────────────
+  private applyDeviceTheme(): void {
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    this.themeMediaQuery = mq;
+    this.setAccent(mq.matches);
+    this.themeChangeHandler = (e: MediaQueryListEvent): void => this.setAccent(e.matches);
+    mq.addEventListener('change', this.themeChangeHandler);
+  }
+
+  private setAccent(isDark: boolean): void {
+    const accent    = isDark ? '#BF40FF' : '#FF6B35';
+    const accentRgb = isDark ? '191,64,255' : '255,107,53';
+    const el        = this.elementRef.nativeElement as HTMLElement;
     el.style.setProperty('--home-accent',     accent);
     el.style.setProperty('--home-accent-rgb', accentRgb);
   }
 
-  // ── Book mouse parallax ────────────────────────────────────────────────────
+  // ── Book interactions ─────────────────────────────────────────────────────────
+  onBookEnter(): void {
+    if (this.bookCloseTimer) {
+      clearTimeout(this.bookCloseTimer);
+      this.bookCloseTimer = null;
+    }
+    this.bookOpen.set(true);
+  }
+
   onBookMove(event: MouseEvent): void {
     const el   = event.currentTarget as HTMLElement;
     const rect = el.getBoundingClientRect();
-    const nx   = (event.clientX - rect.left) / rect.width  - 0.5; // -0.5 → 0.5
+    const nx   = (event.clientX - rect.left) / rect.width  - 0.5; // -0.5..0.5
     const ny   = (event.clientY - rect.top)  / rect.height - 0.5;
-    this.bookTiltRaw.set({ x: ny * -14, y: nx * 22 });
+    this.bookTiltRaw.set({ x: ny * -8, y: nx * 14 });
+
+    if (!this.bookOpen()) return;
+
+    const prevMx = this.mouseXScene();
+    const mx01   = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+    this.mouseXScene.set(mx01);
+
+    // Arm a page turn when mouse enters the right third of the scene
+    if (mx01 > 0.65) this.pageTurnPending = true;
+
+    // Commit turn: swept right-half → left-half while armed
+    if (this.pageTurnPending && prevMx >= 0.45 && mx01 < 0.45 && this.currentPage() < this.maxPages) {
+      this.currentPage.update(p => p + 1);
+      this.pageTurnPending = false;
+    }
   }
 
   onBookLeave(): void {
     this.bookTiltRaw.set({ x: 0, y: 0 });
+    this.mouseXScene.set(0.88); // slight page lift — resting feel
+    this.pageTurnPending = false;
+    if (this.bookCloseTimer) clearTimeout(this.bookCloseTimer);
+    this.bookCloseTimer = setTimeout(() => {
+      this.bookOpen.set(false);
+      this.currentPage.set(0);
+      this.mouseXScene.set(0.5);
+      this.bookCloseTimer = null;
+    }, 4000);
   }
 
-  // ── Ring geometry helper ───────────────────────────────────────────────────
+  // ── Ring geometry helper ───────────────────────────────────────────────────────
   ringDash(percent: number): string {
     const circumference = 2 * Math.PI * 54;
     return `${(percent / 100) * circumference} ${circumference}`;
   }
 
-  // ── Data loading ───────────────────────────────────────────────────────────
+  // ── Data loading ───────────────────────────────────────────────────────────────
   private loadDashboard(): void {
     this.loadingStats.set(true);
     this.enrollmentService.getEnrollments().subscribe({
@@ -170,8 +229,8 @@ export default class HomeComponent implements OnInit, OnDestroy {
                     results.push({
                       course,
                       lessonsCompleted: done,
-                      lessonsTotal: totalLessons,
-                      progressPercent: totalLessons > 0 ? Math.round((done / totalLessons) * 100) : 0,
+                      lessonsTotal:     totalLessons,
+                      progressPercent:  totalLessons > 0 ? Math.round((done / totalLessons) * 100) : 0,
                     });
                     onSettled();
                   },
@@ -189,7 +248,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
     });
   }
 
-  // ── Animated count-up ──────────────────────────────────────────────────────
+  // ── Animated count-up ─────────────────────────────────────────────────────────
   private runCountUps(enrolled: number, completed: number, lessons: number, percent: number, xp: number): void {
     this.ngZone.runOutsideAngular(() => {
       this.countUp(enrolled,  1400, v => this.ngZone.run(() => this.displayEnrolled.set(v)));
