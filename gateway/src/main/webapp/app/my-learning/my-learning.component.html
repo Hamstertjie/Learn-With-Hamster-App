@@ -55,8 +55,8 @@
           </div>
         } @else if (inProgressCourses().length > 0) {
           <div class="course-grid">
-            @for (ec of inProgressCourses(); track ec.course.id) {
-              <a [routerLink]="['/catalog/course', ec.course.id]" class="course-card">
+            @for (ec of inProgressCourses(); track ec.course.id; let idx = $index) {
+              <a [routerLink]="['/catalog/course', ec.course.id]" class="course-card" [style]="'--entry-delay: ' + (idx * 80) + 'ms'">
                 <div class="card-accent"></div>
                 <div class="card-body">
                   <h5>{{ ec.course.courseTitle }}</h5>
@@ -89,8 +89,8 @@
             Completed Courses
           </h3>
           <div class="course-grid">
-            @for (ec of completedCourses(); track ec.course.id) {
-              <a [routerLink]="['/catalog/course', ec.course.id]" class="course-card course-card-complete">
+            @for (ec of completedCourses(); track ec.course.id; let idx = $index) {
+              <a [routerLink]="['/catalog/course', ec.course.id]" class="course-card course-card-complete" [style]="'--entry-delay: ' + (idx * 80) + 'ms'">
                 <div class="card-accent card-accent-complete"></div>
                 <div class="card-body">
                   <div class="complete-trophy-row">
@@ -123,8 +123,8 @@
             Bookmarked Lessons
           </h3>
           <div class="bookmark-list">
-            @for (bl of bookmarkedLessons(); track bl.id) {
-              <a [routerLink]="['/catalog/lesson', bl.id]" class="bookmark-item">
+            @for (bl of bookmarkedLessons(); track bl.id; let idx = $index) {
+              <a [routerLink]="['/catalog/lesson', bl.id]" class="bookmark-item" [style]="'--entry-delay: ' + (idx * 60) + 'ms'">
                 <div class="bookmark-icon-wrap">
                   <fa-icon icon="bookmark"></fa-icon>
                 </div>

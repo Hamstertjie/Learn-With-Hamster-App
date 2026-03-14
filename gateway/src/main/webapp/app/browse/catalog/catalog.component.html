@@ -29,8 +29,8 @@
         </div>
       } @else {
         <div class="row">
-          @for (discipline of disciplines(); track discipline.id) {
-            <div class="col-lg-4 col-md-6 mb-4 reveal">
+          @for (discipline of disciplines(); track discipline.id; let idx = $index) {
+            <div class="col-lg-4 col-md-6 mb-4 reveal" [style]="'--entry-delay: ' + (idx * 80) + 'ms'">
               <a [routerLink]="['/catalog/discipline', discipline.id]" class="discipline-card">
                 <div class="card-accent"></div>
                 <div class="card-body">

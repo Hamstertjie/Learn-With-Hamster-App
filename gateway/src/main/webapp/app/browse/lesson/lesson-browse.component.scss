@@ -45,6 +45,7 @@
   border-bottom: 1px solid var(--ln-border);
   border-bottom-color: rgba(210, 255, 0, 0.1);
   box-shadow: var(--shadow-sm);
+  animation: fadeInUp 0.4s var(--transition) both;
 }
 
 .topbar-left {
@@ -213,6 +214,16 @@
 .sidebar-lesson-list {
   display: flex;
   flex-direction: column;
+
+  .sidebar-lesson-item {
+    animation: fadeInUp 0.3s ease both;
+  }
+
+  @for $i from 1 through 25 {
+    .sidebar-lesson-item:nth-child(#{$i}) {
+      animation-delay: #{($i - 1) * 25}ms;
+    }
+  }
 }
 
 .sidebar-lesson-item {
@@ -311,6 +322,7 @@
 /* -- Mini Player -- */
 .mini-player {
   margin-bottom: 2rem;
+  animation: fadeInUp 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
 }
 
 .mini-player-video {
@@ -530,6 +542,7 @@
   align-items: flex-start;
   gap: 0.75rem;
   margin-bottom: 0.75rem;
+  animation: fadeInUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
 
   h2 {
     flex: 1;
@@ -541,6 +554,7 @@
     line-height: 0.95;
     color: var(--ln-white);
     margin-bottom: 0;
+    animation: sliceIn 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.25s both;
   }
 }
 
@@ -574,6 +588,16 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 0.4rem;
+
+  > * {
+    animation: chipEnter 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+
+  @for $i from 1 through 5 {
+    > *:nth-child(#{$i}) {
+      animation-delay: #{(($i - 1) * 60) + 300}ms;
+    }
+  }
 }
 
 .badge-language {
@@ -658,6 +682,7 @@
   border: 1px solid var(--ln-border);
   border-top: 2px solid rgba(210, 255, 0, 0.3);
   padding: 1.5rem;
+  animation: fadeInUp 0.5s var(--transition) 0.35s both;
 
   .notes-title {
     display: flex;

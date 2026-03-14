@@ -39,8 +39,8 @@
           <p class="text-muted" jhiTranslate="browse.discipline.noCourses">No courses available in this discipline yet.</p>
         } @else {
           <div class="row">
-            @for (course of courses(); track course.id) {
-              <div class="col-lg-4 col-md-6 mb-4 reveal">
+            @for (course of courses(); track course.id; let idx = $index) {
+              <div class="col-lg-4 col-md-6 mb-4 reveal" [style]="'--entry-delay: ' + (idx * 80) + 'ms'">
                 <a [routerLink]="['/catalog/course', course.id]" class="course-card">
                   <div class="card-accent"></div>
                   <div class="card-body">
