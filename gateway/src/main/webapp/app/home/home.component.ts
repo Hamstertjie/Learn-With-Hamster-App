@@ -1,4 +1,4 @@
-import { Component, ElementRef, NgZone, OnDestroy, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, AfterViewInit, ElementRef, NgZone, OnDestroy, OnInit, ViewChild, inject, signal, computed } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -25,7 +25,7 @@ export interface DashCourse {
   styleUrl: './home.component.scss',
   imports: [SharedModule, RouterModule, HasAnyAuthorityDirective],
 })
-export default class HomeComponent implements OnInit, OnDestroy {
+export default class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   account = signal<Account | null>(null);
 
   // Raw data
@@ -55,26 +55,31 @@ export default class HomeComponent implements OnInit, OnDestroy {
   readonly bookPageLines = Array.from({ length: 20 }, (_, i) => i);
   readonly maxPages      = 5;
 
-  private readonly bookTiltRaw = signal({ x: 0, y: 0 });
-  private readonly mouseXScene = signal(0.5); // 0 = left edge, 1 = right edge
-
   bookOpen    = signal(false);
   currentPage = signal(0);
 
   private bookCloseTimer: ReturnType<typeof setTimeout> | null = null;
   private pageTurnPending = false;
 
-  /** Combined perspective + base tilt + mouse-driven tilt */
-  bookTransform = computed(() => {
-    const { x, y } = this.bookTiltRaw();
-    return `perspective(900px) rotateX(${5 + x}deg) rotateY(${-22 + y}deg)`;
-  });
+  // ViewChild refs for RAF-driven direct DOM animation
+  @ViewChild('bookEl')   private bookEl?:   ElementRef<HTMLElement>;
+  @ViewChild('coverEl')  private coverEl?:  ElementRef<HTMLElement>;
+  @ViewChild('flipPageEl') private flipPageEl?: ElementRef<HTMLElement>;
 
-  /** Flip-page angle follows mouse X: right(1)→0°, left(0)→-172° */
-  flipPageTransform = computed(() => {
-    const angle = this.bookOpen() ? (1 - this.mouseXScene()) * -172 : 0;
-    return `translateZ(13px) rotateY(${angle.toFixed(1)}deg)`;
-  });
+  // Spring physics state — Motion.dev style (stiffness / damping / mass)
+  private _tiltX    = { value: 0, velocity: 0 };
+  private _tiltY    = { value: 0, velocity: 0 };
+  private _pageAngle = { value: 0, velocity: 0 };
+  private _coverAngle = { value: 0, velocity: 0 };
+
+  // Raw targets set on mouse events (RAF interpolates toward these)
+  private _targetTiltX  = 0;
+  private _targetTiltY  = 0;
+  private _targetMouseX = 0.5;
+  private _prevMouseX   = 0.5;
+
+  private _rafId: number | null = null;
+  private _lastRafTime = 0;
 
   // ── Theme (device preference) ────────────────────────────────────────────────
   private themeMediaQuery: MediaQueryList | null = null;
@@ -88,6 +93,10 @@ export default class HomeComponent implements OnInit, OnDestroy {
   private readonly router            = inject(Router);
   private readonly ngZone            = inject(NgZone);
   private readonly elementRef        = inject(ElementRef);
+
+  ngAfterViewInit(): void {
+    this._startRAF();
+  }
 
   ngOnInit(): void {
     this.applyDeviceTheme();
@@ -107,6 +116,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    this._stopRAF();
     if (this.bookCloseTimer) clearTimeout(this.bookCloseTimer);
     if (this.themeMediaQuery && this.themeChangeHandler) {
       this.themeMediaQuery.removeEventListener('change', this.themeChangeHandler);
@@ -137,25 +147,26 @@ export default class HomeComponent implements OnInit, OnDestroy {
       this.bookCloseTimer = null;
     }
     this.bookOpen.set(true);
+    this._startRAF(); // ensure RAF is running (guards against late ViewChild init)
   }
 
   onBookMove(event: MouseEvent): void {
     const el   = event.currentTarget as HTMLElement;
     const rect = el.getBoundingClientRect();
-    const nx   = (event.clientX - rect.left) / rect.width  - 0.5; // -0.5..0.5
+    const nx   = (event.clientX - rect.left) / rect.width  - 0.5;
     const ny   = (event.clientY - rect.top)  / rect.height - 0.5;
-    this.bookTiltRaw.set({ x: ny * -8, y: nx * 14 });
+    this._targetTiltX = ny * -8;
+    this._targetTiltY = nx * 14;
 
     if (!this.bookOpen()) return;
 
-    const prevMx = this.mouseXScene();
+    const prevMx = this._prevMouseX;
     const mx01   = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
-    this.mouseXScene.set(mx01);
+    this._targetMouseX = mx01;
+    this._prevMouseX   = mx01;
 
-    // Arm a page turn when mouse enters the right third of the scene
     if (mx01 > 0.65) this.pageTurnPending = true;
 
-    // Commit turn: swept right-half → left-half while armed
     if (this.pageTurnPending && prevMx >= 0.45 && mx01 < 0.45 && this.currentPage() < this.maxPages) {
       this.currentPage.update(p => p + 1);
       this.pageTurnPending = false;
@@ -163,16 +174,82 @@ export default class HomeComponent implements OnInit, OnDestroy {
   }
 
   onBookLeave(): void {
-    this.bookTiltRaw.set({ x: 0, y: 0 });
-    this.mouseXScene.set(0.88); // slight page lift — resting feel
+    this._targetTiltX  = 0;
+    this._targetTiltY  = 0;
+    this._targetMouseX = 0.88; // slight lift — resting page feel
     this.pageTurnPending = false;
     if (this.bookCloseTimer) clearTimeout(this.bookCloseTimer);
     this.bookCloseTimer = setTimeout(() => {
       this.bookOpen.set(false);
       this.currentPage.set(0);
-      this.mouseXScene.set(0.5);
+      this._targetMouseX = 0.5;
       this.bookCloseTimer = null;
     }, 4000);
+  }
+
+  // ── Spring physics RAF engine (Motion.dev-style) ──────────────────────────────
+  private _startRAF(): void {
+    if (this._rafId !== null) return;
+    this._lastRafTime = performance.now();
+    this.ngZone.runOutsideAngular(() => {
+      const tick = (now: number): void => {
+        const dt = Math.min((now - this._lastRafTime) / 1000, 0.05); // cap at 50 ms
+        this._lastRafTime = now;
+
+        // Tilt: overdamped spring → smooth, weighted follow
+        this._tiltX = this._spring(this._tiltX, this._targetTiltX, 60, 1.1, dt);
+        this._tiltY = this._spring(this._tiltY, this._targetTiltY, 60, 1.1, dt);
+
+        // Page flip: underdamped spring → paper-like overshoot & settle
+        const targetAngle = this.bookOpen() ? (1 - this._targetMouseX) * -172 : 0;
+        this._pageAngle = this._spring(this._pageAngle, targetAngle, 90, 0.72, dt);
+
+        // Cover open/close: snappy spring with tiny overshoot
+        const targetCover = this.bookOpen() ? -158 : 0;
+        this._coverAngle = this._spring(this._coverAngle, targetCover, 130, 0.82, dt);
+
+        // Write directly to DOM — bypasses Angular change detection for 60 fps
+        const bookEl  = this.bookEl?.nativeElement;
+        const flipEl  = this.flipPageEl?.nativeElement;
+        const coverEl = this.coverEl?.nativeElement;
+
+        if (bookEl) {
+          bookEl.style.transform =
+            `perspective(900px) rotateX(${(5 + this._tiltX.value).toFixed(2)}deg) rotateY(${(-22 + this._tiltY.value).toFixed(2)}deg)`;
+        }
+        if (flipEl) {
+          flipEl.style.transform = `translateZ(13px) rotateY(${this._pageAngle.value.toFixed(2)}deg)`;
+        }
+        if (coverEl) {
+          coverEl.style.transform = `translateZ(14px) rotateY(${this._coverAngle.value.toFixed(2)}deg)`;
+        }
+
+        this._rafId = requestAnimationFrame(tick);
+      };
+      this._rafId = requestAnimationFrame(tick);
+    });
+  }
+
+  private _stopRAF(): void {
+    if (this._rafId !== null) {
+      cancelAnimationFrame(this._rafId);
+      this._rafId = null;
+    }
+  }
+
+  /** Critically-damped spring step (Euler integration, stable for dt ≤ 50 ms) */
+  private _spring(
+    state: { value: number; velocity: number },
+    target: number,
+    stiffness: number,
+    damping: number,
+    dt: number,
+  ): { value: number; velocity: number } {
+    const c = damping * 2 * Math.sqrt(stiffness); // damping coefficient
+    const a = (target - state.value) * stiffness - state.velocity * c;
+    const v = state.velocity + a * dt;
+    const x = state.value + v * dt;
+    return { value: x, velocity: v };
   }
 
   // ── Ring geometry helper ───────────────────────────────────────────────────────

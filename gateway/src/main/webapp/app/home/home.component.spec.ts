@@ -124,24 +124,38 @@ describe('Home Component', () => {
     });
   });
 
-  // ── Book parallax ──────────────────────────────────────────────────────────
+  // ── Book interactions ──────────────────────────────────────────────────────
 
-  describe('bookTransform', () => {
-    it('should return base perspective with no mouse movement', () => {
-      expect(comp.bookTransform()).toBe('perspective(900px) rotateX(5deg) rotateY(-22deg)');
+  describe('book open/close state', () => {
+    it('should open the book on mouseenter', () => {
+      expect(comp.bookOpen()).toBe(false);
+      comp.onBookEnter();
+      expect(comp.bookOpen()).toBe(true);
     });
 
-    it('should tilt on mouse move and reset on leave', () => {
+    it('should increment currentPage on right→left swipe past centre', () => {
+      comp.onBookEnter();
       const el = document.createElement('div');
       Object.defineProperty(el, 'getBoundingClientRect', {
         value: () => ({ left: 0, top: 0, width: 200, height: 200 }),
       });
+      // Sweep: start right of 0.65, cross below 0.45
+      comp.onBookMove({ currentTarget: el, clientX: 140, clientY: 100 } as any); // 0.7 → sets pending
+      comp.onBookMove({ currentTarget: el, clientX: 80,  clientY: 100 } as any); // 0.4 → commits turn
+      expect(comp.currentPage()).toBe(1);
+    });
 
-      comp.onBookMove({ currentTarget: el, clientX: 200, clientY: 0 } as any);
-      expect(comp.bookTransform()).toContain('rotateY(');
-
-      comp.onBookLeave();
-      expect(comp.bookTransform()).toBe('perspective(900px) rotateX(5deg) rotateY(-22deg)');
+    it('should not exceed maxPages', () => {
+      comp.onBookEnter();
+      const el = document.createElement('div');
+      Object.defineProperty(el, 'getBoundingClientRect', {
+        value: () => ({ left: 0, top: 0, width: 200, height: 200 }),
+      });
+      for (let i = 0; i < 10; i++) {
+        comp.onBookMove({ currentTarget: el, clientX: 140, clientY: 100 } as any);
+        comp.onBookMove({ currentTarget: el, clientX: 80,  clientY: 100 } as any);
+      }
+      expect(comp.currentPage()).toBeLessThanOrEqual(comp.maxPages);
     });
   });
 

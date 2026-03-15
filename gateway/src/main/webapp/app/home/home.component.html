@@ -22,8 +22,8 @@
            (mousemove)="onBookMove($event)"
            (mouseleave)="onBookLeave()">
         <div class="book-wrap">
-          <div class="book" [class.book--open]="bookOpen()" [style.transform]="bookTransform()">
-            <div class="book-cover-front" [class.cover--open]="bookOpen()">
+          <div class="book" #bookEl [class.book--open]="bookOpen()">
+            <div class="book-cover-front" #coverEl>
               <div class="book-cover-lines" aria-hidden="true"></div>
               <div class="book-cover-text">
                 <span class="book-cover-title">LEARN</span>
@@ -35,9 +35,11 @@
                 <div class="book-page-line"></div>
               }
             </div>
-            <div class="book-flip-page" [style.transform]="flipPageTransform()"></div>
+            <div class="book-flip-page" #flipPageEl></div>
             <div class="book-spine-face"></div>
             <div class="book-top-face"></div>
+            <div class="book-bottom-face"></div>
+            <div class="book-back-cover"></div>
           </div>
         </div>
         <div class="book-glow" [class.glow--open]="bookOpen()" aria-hidden="true"></div>
