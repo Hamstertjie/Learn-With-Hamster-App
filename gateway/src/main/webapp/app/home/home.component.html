@@ -16,8 +16,9 @@
         </div>
       </div>
 
-      <!-- Right: 3D Book -->
+      <!-- Right: 3D Book (Minecraft Enchanting Table aesthetic) -->
       <div class="book-scene"
+           [class.enchanting]="bookOpen()"
            (mouseenter)="onBookEnter()"
            (mousemove)="onBookMove($event)"
            (mouseleave)="onBookLeave()">
@@ -26,8 +27,10 @@
             <div class="book-cover-front" #coverEl>
               <div class="book-cover-lines" aria-hidden="true"></div>
               <div class="book-cover-text">
+                <span class="book-cover-rune" aria-hidden="true">ᚠ ᚢ ᚦ</span>
                 <span class="book-cover-title">LEARN</span>
                 <span class="book-cover-sub">WITH HAMSTER</span>
+                <span class="book-cover-rune" aria-hidden="true">ᛁ ᛃ ᛇ</span>
               </div>
             </div>
             <div class="book-pages-edge">
@@ -42,6 +45,30 @@
             <div class="book-back-cover"></div>
           </div>
         </div>
+
+        <!-- Enchanting aura — expands when book opens -->
+        <div class="enchant-aura" aria-hidden="true"></div>
+
+        <!-- Elder Futhark glyphs pulled into the book on open (ring of 16) -->
+        <div class="enchant-glyphs" aria-hidden="true">
+          <span class="enchant-glyph" style="--gx:150px;--gy:0px;--delay:0ms;--gd:1.8s">ᚠ</span>
+          <span class="enchant-glyph" style="--gx:139px;--gy:57px;--delay:220ms;--gd:1.5s">ᚢ</span>
+          <span class="enchant-glyph" style="--gx:106px;--gy:106px;--delay:440ms;--gd:1.9s">ᚦ</span>
+          <span class="enchant-glyph" style="--gx:57px;--gy:139px;--delay:660ms;--gd:1.6s">ᚩ</span>
+          <span class="enchant-glyph" style="--gx:0px;--gy:150px;--delay:880ms;--gd:2.0s">ᚱ</span>
+          <span class="enchant-glyph" style="--gx:-57px;--gy:139px;--delay:1100ms;--gd:1.7s">ᚲ</span>
+          <span class="enchant-glyph" style="--gx:-106px;--gy:106px;--delay:1320ms;--gd:1.5s">ᚷ</span>
+          <span class="enchant-glyph" style="--gx:-139px;--gy:57px;--delay:1540ms;--gd:1.8s">ᚹ</span>
+          <span class="enchant-glyph" style="--gx:-150px;--gy:0px;--delay:1760ms;--gd:1.6s">ᚺ</span>
+          <span class="enchant-glyph" style="--gx:-139px;--gy:-57px;--delay:1980ms;--gd:2.0s">ᚾ</span>
+          <span class="enchant-glyph" style="--gx:-106px;--gy:-106px;--delay:2200ms;--gd:1.7s">ᛁ</span>
+          <span class="enchant-glyph" style="--gx:-57px;--gy:-139px;--delay:2420ms;--gd:1.5s">ᛃ</span>
+          <span class="enchant-glyph" style="--gx:0px;--gy:-150px;--delay:2640ms;--gd:1.9s">ᛇ</span>
+          <span class="enchant-glyph" style="--gx:57px;--gy:-139px;--delay:2860ms;--gd:1.6s">ᛈ</span>
+          <span class="enchant-glyph" style="--gx:106px;--gy:-106px;--delay:3080ms;--gd:1.8s">ᛉ</span>
+          <span class="enchant-glyph" style="--gx:139px;--gy:-57px;--delay:3300ms;--gd:1.5s">ᛊ</span>
+        </div>
+
         <div class="book-glow" [class.glow--open]="bookOpen()" aria-hidden="true"></div>
         <!-- Page turn indicator dots -->
         <div class="book-page-dots" [class.dots--visible]="bookOpen()">

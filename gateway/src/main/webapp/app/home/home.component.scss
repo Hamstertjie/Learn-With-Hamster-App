@@ -99,12 +99,20 @@ $bw: 175px;
 $bh: 235px;
 $bd: 28px;
 
+/* Enchanting purple — used throughout the book system */
+$enchant-purple:     #8b5cf6;
+$enchant-purple-mid: #a78bfa;
+$enchant-gold:       #c8930a;
+$enchant-leather:    #2a1508;
+
 .book-scene {
   flex-shrink: 0;
   position: relative;
   width: 260px;
   height: 310px;
   cursor: grab;
+  /* On-load entrance: conjure from below with brightness burst */
+  animation: bookSceneEntrance 1.4s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
 
   &:active { cursor: grabbing; }
 
@@ -112,6 +120,13 @@ $bd: 28px;
     width: 200px;
     height: 250px;
   }
+}
+
+@keyframes bookSceneEntrance {
+  0%   { opacity: 0; transform: translateY(55px) scale(0.72); }
+  55%  { opacity: 1; transform: translateY(-10px) scale(1.06); }
+  75%  { transform: translateY(4px) scale(0.98); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .book-wrap {
@@ -139,27 +154,38 @@ $bd: 28px;
   > * { position: absolute; top: 0; left: 0; }
 }
 
-/* ── Front cover — RAF spring owns transform ─────────────────────────────── */
+/* ── Front cover — Enchanting Table leather aesthetic ─────────────────────── */
 .book-cover-front {
   width: $bw;
   height: $bh;
   transform-origin: left center;
   transform: translateZ(14px); /* initial state; RAF overrides per frame */
-  background: var(--home-accent, var(--ln-yellow));
+  background: linear-gradient(155deg, #1a0a03 0%, #3d1d08 40%, #2a1207 75%, #1a0a03 100%);
+  border: 1px solid rgba($enchant-gold, 0.28);
   overflow: hidden;
   backface-visibility: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
 
-  /* Depth shading + coated-cover sheen */
+  /* Gold inner border trim */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 7px;
+    border: 1px solid rgba($enchant-gold, 0.22);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Depth shading + leather sheen */
   &::after {
     content: '';
     position: absolute;
     inset: 0;
     background:
-      linear-gradient(to right,  rgba(0,0,0,0.22) 0%, transparent 30%),
-      linear-gradient(135deg, rgba(255,255,255,0.18) 0%, transparent 40%, rgba(0,0,0,0.10) 100%);
+      linear-gradient(to right, rgba(0,0,0,0.35) 0%, transparent 25%),
+      linear-gradient(135deg, rgba(200,147,10,0.06) 0%, transparent 45%, rgba(0,0,0,0.25) 100%);
     pointer-events: none;
     backface-visibility: hidden;
   }
@@ -168,20 +194,21 @@ $bd: 28px;
 .book-cover-lines {
   position: absolute;
   inset: 0;
+  /* Leather grain pattern */
   background: repeating-linear-gradient(
-    -45deg,
-    transparent 0, transparent 8px,
-    rgba(0,0,0,0.07) 8px, rgba(0,0,0,0.07) 10px
+    -38deg,
+    transparent 0, transparent 14px,
+    rgba(0,0,0,0.08) 14px, rgba(0,0,0,0.08) 16px
   );
 }
 
 .book-cover-text {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.35rem;
 }
 
 .book-cover-title {
@@ -191,7 +218,8 @@ $bd: 28px;
   letter-spacing: -0.04em;
   line-height: 1;
   text-transform: uppercase;
-  color: var(--ln-black);
+  color: $enchant-gold;
+  text-shadow: 0 0 14px rgba($enchant-gold, 0.55), 0 1px 0 rgba(0,0,0,0.5);
 }
 
 .book-cover-sub {
@@ -200,22 +228,30 @@ $bd: 28px;
   font-weight: 800;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: rgba(0,0,0,0.55);
+  color: rgba($enchant-gold, 0.55);
 }
 
-/* ── Right edge: page stack ──────────────────────────────────────────────── */
+.book-cover-rune {
+  font-family: monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+  color: rgba($enchant-gold, 0.45);
+  text-shadow: 0 0 6px rgba($enchant-purple, 0.5);
+  user-select: none;
+}
+
+/* ── Right edge: parchment page stack ────────────────────────────────────── */
 .book-pages-edge {
   width: $bd;
   height: $bh;
   left: $bw;
   transform-origin: left center;
   transform: rotateY(90deg);
-  background: linear-gradient(to right, #ddd6c8 0%, #f5f0e8 30%, #ede7db 100%);
+  background: linear-gradient(to right, #c8b99a 0%, #e8ddc8 25%, #f5edd8 60%, #e0d4be 100%);
   display: flex;
   flex-direction: column;
   overflow: hidden;
   backface-visibility: hidden;
-  box-shadow: inset -2px 0 4px rgba(0,0,0,0.08);
 }
 
 .book-page-line {
@@ -229,16 +265,18 @@ $bd: 28px;
   height: $bh;
   transform-origin: left center;
   transform: translateZ(13px); /* initial; RAF overrides */
+  /* Fully opaque — both sides of page must be cream, never black */
   background: linear-gradient(
     to right,
-    rgba(225,218,205,1)    0%,
-    rgba(255,255,255,1)    40%,
-    rgba(248,244,236,0.95) 100%
+    #e0d9cc 0%,
+    #ffffff 38%,
+    #f8f4ec 100%
   );
   pointer-events: none;
-  backface-visibility: hidden;
+  /* NO backface-visibility: hidden — removing it keeps the page cream on both sides
+     as it rotates past -90°. Without this, the backface is invisible → dark interior shows. */
 
-  /* Ruled lines */
+  /* Ruled lines — visible on both sides (mirrored on back, which looks fine for a blank page) */
   &::before {
     content: '';
     position: absolute;
@@ -246,34 +284,34 @@ $bd: 28px;
     background: repeating-linear-gradient(
       to bottom,
       transparent 0px, transparent 17px,
-      rgba(0,0,0,0.04) 17px, rgba(0,0,0,0.04) 18px
+      rgba(0,0,0,0.035) 17px, rgba(0,0,0,0.035) 18px
     );
   }
 
-  /* Spine crease shadow — darkens the binding edge */
+  /* Spine crease shadow */
   &::after {
     content: '';
     position: absolute;
     top: 0; left: 0;
-    width: 22px;
+    width: 26px;
     height: 100%;
-    background: linear-gradient(to right, rgba(0,0,0,0.22), transparent);
+    background: linear-gradient(to right, rgba(0,0,0,0.28), transparent);
     pointer-events: none;
   }
 }
 
-/* ── Spine (left face) ───────────────────────────────────────────────────── */
+/* ── Spine (left face) — dark leather with gold title ────────────────────── */
 .book-spine-face {
   width: $bd;
   height: $bh;
   left: 0;
   transform-origin: left center;
   transform: rotateY(-90deg);
-  background: linear-gradient(to right, #0d0b06 0%, #1c1610 60%, #120f08 100%);
+  background: linear-gradient(to right, #0d0704 0%, #1c1008 60%, #100905 100%);
   backface-visibility: hidden;
   overflow: hidden;
 
-  /* Vertical title text on the spine */
+  /* Vertical gold title on the spine */
   &::before {
     content: 'LEARN WITH HAMSTER';
     position: absolute;
@@ -286,19 +324,19 @@ $bd: 28px;
     font-weight: 900;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: rgba(var(--home-accent-rgb, 210,255,0), 0.55);
+    color: rgba($enchant-gold, 0.5);
     white-space: nowrap;
   }
 }
 
-/* ── Top face ────────────────────────────────────────────────────────────── */
+/* ── Top face — aged parchment ───────────────────────────────────────────── */
 .book-top-face {
   width: $bw;
   height: $bd;
   top: 0;
   transform-origin: center top;
   transform: rotateX(-90deg) translateZ(0);
-  background: linear-gradient(to bottom, #f5f0e8 0%, #e8e2d5 100%);
+  background: linear-gradient(to bottom, #e8d8b8 0%, #d4c4a0 100%);
   backface-visibility: hidden;
 }
 
@@ -309,36 +347,94 @@ $bd: 28px;
   top: $bh;
   transform-origin: top center;
   transform: rotateX(-90deg);
-  background: linear-gradient(to top, #f5f0e8 0%, #e8e2d5 100%);
+  background: linear-gradient(to top, #e8d8b8 0%, #d4c4a0 100%);
   backface-visibility: hidden;
 }
 
-/* ── Back cover ──────────────────────────────────────────────────────────── */
+/* ── Back cover — dark leather ───────────────────────────────────────────── */
 .book-back-cover {
   width: $bw;
   height: $bh;
   transform: translateZ(-14px) rotateY(180deg);
-  background: linear-gradient(135deg, #1a150d 0%, #0f0c07 100%);
+  background: linear-gradient(150deg, #160803 0%, #2a1207 60%, #160803 100%);
+  border: 1px solid rgba($enchant-gold, 0.15);
   backface-visibility: hidden;
 }
 
-/* ── Ambient glow ────────────────────────────────────────────────────────── */
+/* ── Ambient glow — enchanting purple ─────────────────────────────────────── */
 .book-glow {
   position: absolute;
   bottom: 8px;
   left: 50%;
   transform: translateX(-50%);
-  width: 140px;
-  height: 24px;
-  background: var(--home-accent, var(--ln-yellow));
-  opacity: 0.3;
-  filter: blur(18px);
+  width: 130px;
+  height: 22px;
+  background: $enchant-purple;
+  opacity: 0.28;
+  filter: blur(20px);
   border-radius: 50%;
   pointer-events: none;
   animation: bookFloat 4s ease-in-out infinite;
-  transition: opacity 0.5s, width 0.5s;
+  transition: opacity 0.6s ease, width 0.6s ease;
 
-  &.glow--open { opacity: 0.55; width: 180px; }
+  &.glow--open { opacity: 0.7; width: 220px; }
+}
+
+/* ── Enchanting aura — radial purple bloom when book opens ────────────────── */
+.enchant-aura {
+  position: absolute;
+  inset: -40px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  box-shadow: none;
+  transition: box-shadow 0.8s ease;
+
+  .enchanting & {
+    box-shadow:
+      0 0 55px 10px rgba($enchant-purple, 0.18),
+      0 0 110px 30px rgba($enchant-purple, 0.09);
+  }
+}
+
+/* ── Enchanting glyphs container ──────────────────────────────────────────── */
+.enchant-glyphs {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 5;
+  overflow: visible;
+}
+
+/* ── Individual glyph — starts at --gx/--gy, spirals to center ──────────── */
+.enchant-glyph {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -0.6em;
+  margin-left: -0.3em;
+  color: $enchant-purple-mid;
+  text-shadow: 0 0 7px $enchant-purple, 0 0 18px rgba($enchant-purple, 0.55);
+  font-family: monospace;
+  font-size: 1.05rem;
+  font-weight: bold;
+  opacity: 0;
+  user-select: none;
+  pointer-events: none;
+  /* Position at ring offset — animation overrides transform */
+  transform: translate(var(--gx, 0), var(--gy, 0));
+
+  .enchanting & {
+    animation: glyphPull var(--gd, 1.8s) ease-in var(--delay, 0ms) infinite;
+  }
+}
+
+@keyframes glyphPull {
+  0%   { opacity: 0;   transform: translate(var(--gx), var(--gy)) scale(1.15) rotate(-10deg); }
+  18%  { opacity: 1; }
+  72%  { opacity: 0.7; }
+  100% { opacity: 0;   transform: translate(0, 0) scale(0.1)  rotate(30deg); }
 }
 
 /* ── Page turn dots ──────────────────────────────────────────────────────── */
@@ -359,19 +455,21 @@ $bd: 28px;
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.18);
-  border: 1px solid rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba($enchant-purple, 0.4);
   transition: background 0.3s ease-out, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 
   &.dot--done {
-    background: var(--home-accent, var(--ln-yellow));
+    background: $enchant-purple-mid;
     border-color: transparent;
+    box-shadow: 0 0 6px $enchant-purple;
   }
 
   &.dot--active {
     transform: scale(1.55);
-    background: rgba(255,255,255,0.6);
+    background: $enchant-purple-mid;
     border-color: transparent;
+    box-shadow: 0 0 10px $enchant-purple;
   }
 }
 
