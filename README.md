@@ -26,7 +26,10 @@ It's built on **JHipster 8.11.0** — a framework that generates production-read
 ## Screenshots
 
 ### Landing Page (logged out)
-![Hero — Learn Without Limits](docs/screenshots/01-hero-logged-out.png)
+![Hero — Greek papyrus scroll with Three.js WebGL animation](docs/screenshots/01-hero-logged-out.png)
+
+### Hero — Dragon Scroll Open
+![Hero — scroll unfurled, glyph particles, enchanting-table book aesthetic](docs/screenshots/01b-hero-scroll-open.png)
 
 ### Personalized Dashboard (logged in)
 ![Home Dashboard — animated stats, progress ring, continue-learning cards](docs/screenshots/02-home-dashboard.png)
@@ -50,6 +53,12 @@ It's built on **JHipster 8.11.0** — a framework that generates production-read
 | Shopping Cart | Admin Dashboard |
 |---|---|
 | ![Cart](docs/screenshots/08-cart.png) | ![Admin view — Manage Content, 100% progress](docs/screenshots/09-home-admin.png) |
+
+### Admin Content Management
+![Admin — Disciplines list with CRUD controls](docs/screenshots/11-admin-disciplines.png)
+
+### Login Page
+![Login — dark-themed sign-in form](docs/screenshots/12-login-page.png)
 
 ### Mobile Responsive
 | Mobile Catalog | Mobile Dashboard |
@@ -440,6 +449,8 @@ Integration tests spin up real MySQL containers via Testcontainers — Docker mu
 
 | Spec file | What it tests |
 |---|---|
+| `home.component.spec.ts` | Auth state, book parallax effect, computed stats (XP, completion %), progress ring geometry |
+| `scroll-three.component.spec.ts` | Three.js WebGL mock, RAF spring physics, ResizeObserver debounce, touch device detection, portrait mode, auto-open timer, page turn, accent colour |
 | `bookmark.service.spec.ts` | localStorage bookmark persistence, toggle, multi-bookmark, corrupt data recovery |
 | `lesson-browse.component.spec.ts` | Auth state, notes (save/load/overwrite), reading time, bookmarks, keyboard navigation (arrows, edge cases, input guard), resource action labels |
 | `my-learning.component.spec.ts` | Enrollment loading, in-progress/completed computed split, bookmark loading, null-body resilience |
@@ -505,7 +516,7 @@ Learn-With-Hamster-App/
 | Testing | Jest · Cypress · JUnit 5 · Testcontainers |
 | PDF generation | jsPDF (browser-side, no server) |
 | Celebrations | canvas-confetti (7-wave burst, screen flash, body shake) + DOM glassmorphism particles |
-| Animations | Web Animations API · requestAnimationFrame count-up · SVG stroke-dasharray transitions |
+| Animations | Three.js WebGL (hero scroll) · Web Animations API · requestAnimationFrame RAF spring physics · SVG stroke-dasharray transitions |
 | Video player | YouTube IFrame Player API (dynamically injected, `YT.Player`, 90% watch gate) |
 | XP / Points | 10 XP per lesson (DB) · 50 XP course-completion bonus (frontend) · animated count-up display |
 
