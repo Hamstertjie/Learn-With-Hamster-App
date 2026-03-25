@@ -1,5 +1,7 @@
-import { Component, OnInit, OnDestroy, Renderer2, RendererFactory2, inject, NgZone } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { Component, OnInit, OnDestroy, Renderer2, RendererFactory2, inject, NgZone, signal } from '@angular/core';
+import { Router, RouterOutlet, NavigationStart } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import dayjs from 'dayjs/esm';
 
@@ -29,6 +31,11 @@ export default class MainComponent implements OnInit, OnDestroy {
   private revealObserver: IntersectionObserver | null = null;
   private navRaf: number | null = null;
 
+  // ── Book transition overlay ───────────────────────────────────────────────
+  showBookTransition = signal(false);
+  private bookTransitionSub: Subscription | null = null;
+  private bookTransitionTimer: ReturnType<typeof setTimeout> | null = null;
+
   private readonly router = inject(Router);
   private readonly appPageTitleStrategy = inject(AppPageTitleStrategy);
   private readonly accountService = inject(AccountService);
@@ -45,6 +52,20 @@ export default class MainComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.accountService.identity().subscribe();
+
+    // Show enchanting book-opening overlay whenever user navigates to a lesson
+    this.bookTransitionSub = this.router.events
+      .pipe(filter(e => e instanceof NavigationStart))
+      .subscribe(e => {
+        if ((e as NavigationStart).url.includes('/catalog/lesson/')) {
+          this.showBookTransition.set(true);
+          if (this.bookTransitionTimer) clearTimeout(this.bookTransitionTimer);
+          this.bookTransitionTimer = setTimeout(() => {
+            this.showBookTransition.set(false);
+            this.bookTransitionTimer = null;
+          }, 1150);
+        }
+      });
 
     this.translateService.onLangChange.subscribe((langChangeEvent: LangChangeEvent) => {
       this.appPageTitleStrategy.updateTitle(this.router.routerState.snapshot);
@@ -70,6 +91,8 @@ export default class MainComponent implements OnInit, OnDestroy {
     if (this.rafId !== null) cancelAnimationFrame(this.rafId);
     if (this.navRaf !== null) cancelAnimationFrame(this.navRaf);
     this.revealObserver?.disconnect();
+    this.bookTransitionSub?.unsubscribe();
+    if (this.bookTransitionTimer) clearTimeout(this.bookTransitionTimer);
   }
 
   private initCursor(): void {

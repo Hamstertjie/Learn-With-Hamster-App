@@ -13,3 +13,27 @@
 </div>
 
 <jhi-footer />
+
+<!-- ── Enchanting book-opening overlay (lesson navigation) ────────────────── -->
+@if (showBookTransition()) {
+  <div class="book-transition-overlay" aria-hidden="true">
+    <!-- Central book that opens -->
+    <div class="bt-book-wrap">
+      <div class="bt-book">
+        <div class="bt-pages"></div>
+        <div class="bt-cover"></div>
+      </div>
+    </div>
+    <!-- Purple glow bloom -->
+    <div class="bt-glow"></div>
+    <!-- Elder Futhark glyphs spiral in -->
+    <span class="bt-glyph" style="--dx:-115px;--dy:-55px;--gd:0.88s;--rot:-12deg">ᚠ</span>
+    <span class="bt-glyph" style="--dx:100px;--dy:-85px;--gd:1.05s;--rot:8deg">ᚢ</span>
+    <span class="bt-glyph" style="--dx:-90px;--dy:70px;--gd:0.82s;--rot:15deg">ᚦ</span>
+    <span class="bt-glyph" style="--dx:118px;--dy:50px;--gd:0.95s;--rot:-6deg">ᛁ</span>
+    <span class="bt-glyph" style="--dx:5px;--dy:-125px;--gd:0.92s;--rot:10deg">ᛇ</span>
+    <span class="bt-glyph" style="--dx:5px;--dy:118px;--gd:1.0s;--rot:-8deg">ᚱ</span>
+    <span class="bt-glyph" style="--dx:-130px;--dy:10px;--gd:0.87s;--rot:18deg">ᚷ</span>
+    <span class="bt-glyph" style="--dx:125px;--dy:-10px;--gd:1.02s;--rot:-15deg">ᚺ</span>
+  </div>
+}

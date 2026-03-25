@@ -1,5 +1,13 @@
 jest.mock('app/core/auth/account.service');
 
+// JSDOM does not implement IntersectionObserver — provide a no-op stub so
+// MainComponent.initScrollReveal() does not throw during unit tests.
+(globalThis as any).IntersectionObserver = class {
+  observe(): void { /* no-op */ }
+  unobserve(): void { /* no-op */ }
+  disconnect(): void { /* no-op */ }
+};
+
 import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing';
 import { Router, TitleStrategy } from '@angular/router';
 import { Title } from '@angular/platform-browser';

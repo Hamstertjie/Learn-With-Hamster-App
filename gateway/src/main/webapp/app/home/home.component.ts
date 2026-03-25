@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, ElementRef, NgZone, OnDestroy, OnInit, ViewChild, inject, signal, computed } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, NgZone, OnDestroy, OnInit, ViewChild, inject, signal, computed } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -11,6 +11,7 @@ import { UserCourseEnrollmentService } from 'app/entities/service/user-course-en
 import { UserLessonProgressService } from 'app/entities/service/user-lesson-progress/service/user-lesson-progress.service';
 import { CourseService } from 'app/entities/service/course/service/course.service';
 import { ICourse } from 'app/entities/service/course/course.model';
+import { ScrollThreeComponent } from './scroll-three.component';
 
 export interface DashCourse {
   course: ICourse;
@@ -23,7 +24,7 @@ export interface DashCourse {
   selector: 'jhi-home',
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
-  imports: [SharedModule, RouterModule, HasAnyAuthorityDirective],
+  imports: [SharedModule, RouterModule, HasAnyAuthorityDirective, ScrollThreeComponent],
 })
 export default class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   account = signal<Account | null>(null);
@@ -44,45 +45,123 @@ export default class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   completedCourses  = computed(() => this.dashCourses().filter(dc => dc.progressPercent === 100));
 
   overallPercent = computed(() => {
-    const all = this.dashCourses();
+    const all   = this.dashCourses();
     if (all.length === 0) return 0;
     const total = all.reduce((s, dc) => s + dc.lessonsTotal, 0);
     const done  = all.reduce((s, dc) => s + dc.lessonsCompleted, 0);
     return total > 0 ? Math.round((done / total) * 100) : 0;
   });
 
-  // ── 3D Book ──────────────────────────────────────────────────────────────────
+  // ── 3D Book ───────────────────────────────────────────────────────────────
   readonly bookPageLines = Array.from({ length: 20 }, (_, i) => i);
   readonly maxPages      = 5;
+
+  /** Content shown in the HTML overlay panel per page turn */
+  readonly bookPages = [
+    {
+      icon: '📖',
+      title: 'Open Your Journey',
+      description: 'Turn the pages to discover everything Learn With Hamster has to offer.',
+      cta: 'Sign In',
+      route: null as string | null,
+      action: 'login' as 'login' | 'route' | null,
+    },
+    {
+      icon: '🎓',
+      title: 'Explore Disciplines',
+      description: 'Browse Sport, Music, Technology and more — curated courses for every level.',
+      cta: 'Browse Catalog',
+      route: '/catalog' as string | null,
+      action: 'route' as 'login' | 'route' | null,
+    },
+    {
+      icon: '🗺️',
+      title: 'Guided Programs',
+      description: 'Follow structured learning paths designed to take you from novice to expert.',
+      cta: 'Explore Programs',
+      route: '/catalog' as string | null,
+      action: 'route' as 'login' | 'route' | null,
+    },
+    {
+      icon: '⚡',
+      title: 'Earn XP & Track Progress',
+      description: 'Every lesson you complete earns XP. Watch your stats grow in real time.',
+      cta: 'My Learning',
+      route: '/my-learning' as string | null,
+      action: 'route' as 'login' | 'route' | null,
+    },
+    {
+      icon: '🚀',
+      title: 'Start Learning Today',
+      description: 'Create your account and begin your first lesson in under two minutes.',
+      cta: 'Get Started',
+      route: null as string | null,
+      action: 'login' as 'login' | 'route' | null,
+    },
+  ];
+
+  /** Book pages for authenticated users — focus on learning continuation. */
+  readonly loggedInBookPages = [
+    {
+      icon: '▶️',
+      title: 'Continue Learning',
+      description: 'Pick up where you left off — your progress is saved.',
+      cta: 'Resume Course',
+      route: null as string | null,
+      action: 'login' as 'login' | 'route' | null,
+    },
+    {
+      icon: '🎓',
+      title: 'Explore Catalog',
+      description: 'Browse new disciplines, courses, and lessons to keep growing.',
+      cta: 'Browse Catalog',
+      route: '/catalog' as string | null,
+      action: 'route' as 'login' | 'route' | null,
+    },
+    {
+      icon: '📊',
+      title: 'Track Progress',
+      description: 'See your XP, completed lessons, and overall learning progress.',
+      cta: 'My Learning',
+      route: '/my-learning' as string | null,
+      action: 'route' as 'login' | 'route' | null,
+    },
+    {
+      icon: '⚡',
+      title: 'Earn More XP',
+      description: 'Every lesson you finish earns XP. Keep your streak going!',
+      cta: 'View Progress',
+      route: '/my-learning' as string | null,
+      action: 'route' as 'login' | 'route' | null,
+    },
+    {
+      icon: '🏆',
+      title: 'Achievements',
+      description: 'Complete courses to unlock achievements and celebrate milestones.',
+      cta: 'My Learning',
+      route: '/my-learning' as string | null,
+      action: 'route' as 'login' | 'route' | null,
+    },
+  ];
+
+  /** Active page set — auth-aware */
+  readonly activeBookPages = computed(() => this.account() !== null ? this.loggedInBookPages : this.bookPages);
 
   bookOpen    = signal(false);
   currentPage = signal(0);
 
-  private bookCloseTimer: ReturnType<typeof setTimeout> | null = null;
-  private pageTurnPending = false;
+  @ViewChild('scrollThreeComp') private bookThreeComp?: ScrollThreeComponent;
+  @ViewChild('bookScene')    private bookSceneRef?: ElementRef<HTMLDivElement>;
 
-  // ViewChild refs for RAF-driven direct DOM animation
-  @ViewChild('bookEl')   private bookEl?:   ElementRef<HTMLElement>;
-  @ViewChild('coverEl')  private coverEl?:  ElementRef<HTMLElement>;
-  @ViewChild('flipPageEl') private flipPageEl?: ElementRef<HTMLElement>;
+  // ── Touch interaction state ────────────────────────────────────────────────
+  // Tracks whether the current touch gesture was the one that opened the book.
+  // Prevents the single-tap race: touchstart opens → touchend immediately navigates.
+  private touchOpenedThisGesture = false;
+  // Non-passive touchmove listener registered in ngAfterViewInit to prevent scroll.
+  private touchMoveBlocker: ((e: TouchEvent) => void) | null = null;
 
-  // Spring physics state — Motion.dev style (stiffness / damping / mass)
-  private _tiltX    = { value: 0, velocity: 0 };
-  private _tiltY    = { value: 0, velocity: 0 };
-  private _pageAngle = { value: 0, velocity: 0 };
-  private _coverAngle = { value: 0, velocity: 0 };
-
-  // Raw targets set on mouse events (RAF interpolates toward these)
-  private _targetTiltX  = 0;
-  private _targetTiltY  = 0;
-  private _targetMouseX = 0.5;
-  private _prevMouseX   = 0.5;
-
-  private _rafId: number | null = null;
-  private _lastRafTime = 0;
-
-  // ── Theme (device preference) ────────────────────────────────────────────────
-  private themeMediaQuery: MediaQueryList | null = null;
+  // ── Theme (device preference) ─────────────────────────────────────────────
+  private themeMediaQuery:    MediaQueryList | null = null;
   private themeChangeHandler: ((e: MediaQueryListEvent) => void) | null = null;
 
   private readonly destroy$          = new Subject<void>();
@@ -93,10 +172,6 @@ export default class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly router            = inject(Router);
   private readonly ngZone            = inject(NgZone);
   private readonly elementRef        = inject(ElementRef);
-
-  ngAfterViewInit(): void {
-    this._startRAF();
-  }
 
   ngOnInit(): void {
     this.applyDeviceTheme();
@@ -109,6 +184,28 @@ export default class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
+  ngAfterViewInit(): void {
+    // Re-apply device theme now that @ViewChild('bookThreeComp') is resolved.
+    // applyDeviceTheme() runs in ngOnInit before the view is ready, so
+    // setAccentColor() gets dropped. Calling setTheme() here ensures the
+    // accent light colour matches the OS colour scheme on first render.
+    const mq = this.themeMediaQuery;
+    if (mq) this.setTheme(mq.matches);
+
+    // Register a non-passive touchmove listener so we can call preventDefault()
+    // and block page scroll while the user is interacting with the book.
+    // Angular template bindings are passive by default in modern browsers,
+    // so (touchmove) alone cannot prevent scrolling.
+    if (this.bookSceneRef) {
+      this.touchMoveBlocker = (e: TouchEvent): void => {
+        if (this.bookOpen()) e.preventDefault();
+      };
+      this.ngZone.runOutsideAngular(() => {
+        this.bookSceneRef!.nativeElement.addEventListener('touchmove', this.touchMoveBlocker!, { passive: false });
+      });
+    }
+  }
+
   login(): void {
     this.router.navigate(['/login']);
   }
@@ -116,38 +213,139 @@ export default class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-    this._stopRAF();
-    if (this.bookCloseTimer) clearTimeout(this.bookCloseTimer);
     if (this.themeMediaQuery && this.themeChangeHandler) {
       this.themeMediaQuery.removeEventListener('change', this.themeChangeHandler);
     }
+    if (this.bookSceneRef && this.touchMoveBlocker) {
+      this.bookSceneRef.nativeElement.removeEventListener('touchmove', this.touchMoveBlocker);
+    }
   }
 
-  // ── Device-preference accent colour ──────────────────────────────────────────
+  // ── Device-preference accent colour ──────────────────────────────────────
   private applyDeviceTheme(): void {
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
     this.themeMediaQuery = mq;
-    this.setAccent(mq.matches);
-    this.themeChangeHandler = (e: MediaQueryListEvent): void => this.setAccent(e.matches);
+    this.setTheme(mq.matches);
+    this.themeChangeHandler = (e: MediaQueryListEvent): void => this.setTheme(e.matches);
     mq.addEventListener('change', this.themeChangeHandler);
   }
 
-  private setAccent(isDark: boolean): void {
-    const accent    = isDark ? '#BF40FF' : '#FF6B35';
-    const accentRgb = isDark ? '191,64,255' : '255,107,53';
-    const el        = this.elementRef.nativeElement as HTMLElement;
-    el.style.setProperty('--home-accent',     accent);
-    el.style.setProperty('--home-accent-rgb', accentRgb);
+  private setTheme(isDark: boolean): void {
+    const el = this.elementRef.nativeElement as HTMLElement;
+    el.setAttribute('data-theme', isDark ? 'cyber' : 'sunrise');
+    if (isDark) {
+      el.style.setProperty('--home-accent',     '#ffaa20');
+      el.style.setProperty('--home-accent-rgb', '255,170,32');
+      el.style.setProperty('--hero-bg',         '#0c0804');
+      el.style.setProperty('--hero-text-color', '#fff5e0');
+      el.style.setProperty('--hero-sub-color',  'rgba(255,210,120,0.50)');
+      el.style.setProperty('--glyph-color',     '#ffb830');
+      el.style.setProperty('--glyph-shadow',    'rgba(255,184,48,0.60)');
+      this.bookThreeComp?.setAccentColor(0xffaa20);
+    } else {
+      el.style.setProperty('--home-accent',     '#c87800');
+      el.style.setProperty('--home-accent-rgb', '200,120,0');
+      el.style.setProperty('--hero-bg',         '#fdf6e8');
+      el.style.setProperty('--hero-text-color', '#2a1200');
+      el.style.setProperty('--hero-sub-color',  'rgba(100,50,5,0.60)');
+      el.style.setProperty('--glyph-color',     '#c87800');
+      el.style.setProperty('--glyph-shadow',    'rgba(200,120,0,0.58)');
+      this.bookThreeComp?.setAccentColor(0xc87800);
+    }
   }
 
-  // ── Book interactions ─────────────────────────────────────────────────────────
-  onBookEnter(): void {
-    if (this.bookCloseTimer) {
-      clearTimeout(this.bookCloseTimer);
-      this.bookCloseTimer = null;
+  // ── Book event forwarding ──────────────────────────────────────────────────
+  onBookOpenChange(open: boolean): void { this.bookOpen.set(open); }
+  onPageChange(page: number): void      { this.currentPage.set(page); }
+
+  onBookEnter(): void { this.bookThreeComp?.onMouseEnter(); }
+  onBookLeave(): void { this.bookThreeComp?.onMouseLeave(); }
+
+  /** Click on scroll: open if closed, else advance to the next page (close → reopen). */
+  onBookClick(_event: MouseEvent): void {
+    if (!this.bookOpen()) {
+      this.bookThreeComp?.openBook();
+    } else {
+      this.bookThreeComp?.nextPage();
     }
-    this.bookOpen.set(true);
-    this._startRAF(); // ensure RAF is running (guards against late ViewChild init)
+  }
+
+  onBookTouchStart(event: TouchEvent): void {
+    this.bookThreeComp?.onMouseEnter();
+    const touch = event.touches[0];
+    const el    = event.currentTarget as HTMLElement;
+    const rect  = el.getBoundingClientRect();
+    const nx    = (touch.clientX - rect.left) / rect.width  - 0.5;
+    const ny    = (touch.clientY - rect.top)  / rect.height - 0.5;
+    const mx01  = Math.max(0, Math.min(1, (touch.clientX - rect.left) / rect.width));
+    if (!this.bookOpen()) {
+      // Opening the book — flag so touchend skips the immediate navigation.
+      // Without this a single tap opens AND turns a page AND closes in one gesture.
+      this.bookThreeComp?.openBook();
+      this.touchOpenedThisGesture = true;
+    } else {
+      this.touchOpenedThisGesture = false;
+      this.bookThreeComp?.onMouseMove(nx, ny, mx01);
+    }
+  }
+
+  onBookTouchMove(event: TouchEvent): void {
+    const touch = event.touches[0];
+    const el    = event.currentTarget as HTMLElement;
+    const rect  = el.getBoundingClientRect();
+    const nx    = (touch.clientX - rect.left) / rect.width  - 0.5;
+    const ny    = (touch.clientY - rect.top)  / rect.height - 0.5;
+    const mx01  = Math.max(0, Math.min(1, (touch.clientX - rect.left) / rect.width));
+    this.bookThreeComp?.onMouseMove(nx, ny, mx01);
+  }
+
+  onBookTouchEnd(event: TouchEvent): void {
+    // If this touchend belongs to the gesture that just opened the book, skip
+    // navigation and close — let the user see the open book before interacting.
+    if (this.touchOpenedThisGesture) {
+      this.touchOpenedThisGesture = false;
+      return;
+    }
+
+    const touch = event.changedTouches[0];
+    const el    = event.currentTarget as HTMLElement;
+    const rect  = el.getBoundingClientRect();
+    const mx01  = Math.max(0, Math.min(1, (touch.clientX - rect.left) / rect.width));
+    if (this.bookOpen()) {
+      if (mx01 > 0.5) {
+        this.bookThreeComp?.nextPage();
+      } else {
+        this.bookThreeComp?.prevPage();
+      }
+    }
+    this.bookThreeComp?.onMouseLeave();
+  }
+
+  /** CTA label for page 0 — context-aware (anon vs logged in) */
+  page0CtaLabel(): string {
+    if (this.account() === null) return 'Sign In';
+    const resume = this.inProgressCourses();
+    return resume.length > 0
+      ? `Resume: ${(resume[0].course.courseTitle ?? '').slice(0, 18).trimEnd()}…`
+      : 'My Learning';
+  }
+
+  onPageCta(page: { action: 'login' | 'route' | null; route: string | null }, pageIdx: number): void {
+    // Page 0 is always context-aware: logged-in users resume their last course
+    if (pageIdx === 0 && this.account() !== null) {
+      const resume = this.inProgressCourses();
+      if (resume.length > 0) {
+        this.router.navigate(['/catalog/course', resume[0].course.id]);
+      } else {
+        this.router.navigate(['/my-learning']);
+      }
+      return;
+    }
+    if (page.action === 'login') {
+      this.login();
+    } else if (page.action === 'route' && page.route) {
+      this.router.navigate([page.route]);
+    }
   }
 
   onBookMove(event: MouseEvent): void {
@@ -155,110 +353,17 @@ export default class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     const rect = el.getBoundingClientRect();
     const nx   = (event.clientX - rect.left) / rect.width  - 0.5;
     const ny   = (event.clientY - rect.top)  / rect.height - 0.5;
-    this._targetTiltX = ny * -8;
-    this._targetTiltY = nx * 14;
-
-    if (!this.bookOpen()) return;
-
-    const prevMx = this._prevMouseX;
-    const mx01   = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
-    this._targetMouseX = mx01;
-    this._prevMouseX   = mx01;
-
-    if (mx01 > 0.65) this.pageTurnPending = true;
-
-    if (this.pageTurnPending && prevMx >= 0.45 && mx01 < 0.45 && this.currentPage() < this.maxPages) {
-      this.currentPage.update(p => p + 1);
-      this.pageTurnPending = false;
-    }
+    const mx01 = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+    this.bookThreeComp?.onMouseMove(nx, ny, mx01);
   }
 
-  onBookLeave(): void {
-    this._targetTiltX  = 0;
-    this._targetTiltY  = 0;
-    this._targetMouseX = 0.88; // slight lift — resting page feel
-    this.pageTurnPending = false;
-    if (this.bookCloseTimer) clearTimeout(this.bookCloseTimer);
-    this.bookCloseTimer = setTimeout(() => {
-      this.bookOpen.set(false);
-      this.currentPage.set(0);
-      this._targetMouseX = 0.5;
-      this.bookCloseTimer = null;
-    }, 4000);
-  }
-
-  // ── Spring physics RAF engine (Motion.dev-style) ──────────────────────────────
-  private _startRAF(): void {
-    if (this._rafId !== null) return;
-    this._lastRafTime = performance.now();
-    this.ngZone.runOutsideAngular(() => {
-      const tick = (now: number): void => {
-        const dt = Math.min((now - this._lastRafTime) / 1000, 0.05); // cap at 50 ms
-        this._lastRafTime = now;
-
-        // Tilt: overdamped spring → smooth, weighted follow
-        this._tiltX = this._spring(this._tiltX, this._targetTiltX, 60, 1.1, dt);
-        this._tiltY = this._spring(this._tiltY, this._targetTiltY, 60, 1.1, dt);
-
-        // Page flip: underdamped spring → paper-like overshoot & settle
-        const targetAngle = this.bookOpen() ? (1 - this._targetMouseX) * -172 : 0;
-        this._pageAngle = this._spring(this._pageAngle, targetAngle, 90, 0.72, dt);
-
-        // Cover open/close: snappy spring with tiny overshoot
-        const targetCover = this.bookOpen() ? -158 : 0;
-        this._coverAngle = this._spring(this._coverAngle, targetCover, 130, 0.82, dt);
-
-        // Write directly to DOM — bypasses Angular change detection for 60 fps
-        const bookEl  = this.bookEl?.nativeElement;
-        const flipEl  = this.flipPageEl?.nativeElement;
-        const coverEl = this.coverEl?.nativeElement;
-
-        if (bookEl) {
-          bookEl.style.transform =
-            `perspective(900px) rotateX(${(5 + this._tiltX.value).toFixed(2)}deg) rotateY(${(-22 + this._tiltY.value).toFixed(2)}deg)`;
-        }
-        if (flipEl) {
-          flipEl.style.transform = `translateZ(13px) rotateY(${this._pageAngle.value.toFixed(2)}deg)`;
-        }
-        if (coverEl) {
-          coverEl.style.transform = `translateZ(14px) rotateY(${this._coverAngle.value.toFixed(2)}deg)`;
-        }
-
-        this._rafId = requestAnimationFrame(tick);
-      };
-      this._rafId = requestAnimationFrame(tick);
-    });
-  }
-
-  private _stopRAF(): void {
-    if (this._rafId !== null) {
-      cancelAnimationFrame(this._rafId);
-      this._rafId = null;
-    }
-  }
-
-  /** Critically-damped spring step (Euler integration, stable for dt ≤ 50 ms) */
-  private _spring(
-    state: { value: number; velocity: number },
-    target: number,
-    stiffness: number,
-    damping: number,
-    dt: number,
-  ): { value: number; velocity: number } {
-    const c = damping * 2 * Math.sqrt(stiffness); // damping coefficient
-    const a = (target - state.value) * stiffness - state.velocity * c;
-    const v = state.velocity + a * dt;
-    const x = state.value + v * dt;
-    return { value: x, velocity: v };
-  }
-
-  // ── Ring geometry helper ───────────────────────────────────────────────────────
+  // ── Ring geometry helper ──────────────────────────────────────────────────
   ringDash(percent: number): string {
     const circumference = 2 * Math.PI * 54;
     return `${(percent / 100) * circumference} ${circumference}`;
   }
 
-  // ── Data loading ───────────────────────────────────────────────────────────────
+  // ── Data loading ──────────────────────────────────────────────────────────
   private loadDashboard(): void {
     this.loadingStats.set(true);
     this.enrollmentService.getEnrollments().subscribe({
@@ -325,7 +430,7 @@ export default class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  // ── Animated count-up ─────────────────────────────────────────────────────────
+  // ── Animated count-up ─────────────────────────────────────────────────────
   private runCountUps(enrolled: number, completed: number, lessons: number, percent: number, xp: number): void {
     this.ngZone.runOutsideAngular(() => {
       this.countUp(enrolled,  1400, v => this.ngZone.run(() => this.displayEnrolled.set(v)));

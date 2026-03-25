@@ -5,6 +5,47 @@
     <div class="hero-layout">
       <!-- Left: text -->
       <div class="hero-content">
+        <!-- Mascot eyebrow badge -->
+        <div class="hero-mascot-badge" aria-hidden="true">
+          <svg class="hero-hamster" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 80">
+            <circle cx="14" cy="11" r="9"   fill="#c97030"/>
+            <circle cx="50" cy="11" r="9"   fill="#c97030"/>
+            <circle cx="14" cy="11" r="5.8" fill="#f9b8a4"/>
+            <circle cx="50" cy="11" r="5.8" fill="#f9b8a4"/>
+            <circle cx="32" cy="33" r="22" fill="#d08040"/>
+            <ellipse cx="8"  cy="38" rx="10.5" ry="8.5" fill="#dfa060"/>
+            <ellipse cx="56" cy="38" rx="10.5" ry="8.5" fill="#dfa060"/>
+            <ellipse cx="32" cy="32" rx="15" ry="14" fill="#eeac58"/>
+            <ellipse cx="32" cy="40" rx="9" ry="7" fill="#fcd9a8"/>
+            <circle cx="21" cy="26" r="6.5" fill="#180f2a"/>
+            <circle cx="43" cy="26" r="6.5" fill="#180f2a"/>
+            <ellipse cx="23.5" cy="23.5" rx="3"   ry="3.5" fill="white"/>
+            <ellipse cx="45.5" cy="23.5" rx="3"   ry="3.5" fill="white"/>
+            <circle  cx="19"   cy="29"   r="1.4"            fill="white" opacity="0.55"/>
+            <circle  cx="41"   cy="29"   r="1.4"            fill="white" opacity="0.55"/>
+            <ellipse cx="11"  cy="37" rx="5.5" ry="3.5" fill="rgba(215,70,70,0.22)"/>
+            <ellipse cx="53"  cy="37" rx="5.5" ry="3.5" fill="rgba(215,70,70,0.22)"/>
+            <path d="M29.5 39 Q32 36.5 34.5 39 Q32 42 29.5 39Z" fill="#e04572"/>
+            <path d="M26 43.5 Q32 50 38 43.5" stroke="#c0305a" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <line x1="0"  y1="35"  x2="17" y2="37.5" stroke="#9a6030" stroke-width="0.9" opacity="0.5"/>
+            <line x1="0"  y1="39"  x2="17" y2="39"   stroke="#9a6030" stroke-width="0.9" opacity="0.5"/>
+            <line x1="47" y1="37.5" x2="64" y2="35"  stroke="#9a6030" stroke-width="0.9" opacity="0.5"/>
+            <line x1="47" y1="39"   x2="64" y2="39"  stroke="#9a6030" stroke-width="0.9" opacity="0.5"/>
+            <circle cx="21" cy="26" r="9" fill="rgba(155,215,255,0.07)" stroke="#4a2808" stroke-width="2"/>
+            <circle cx="43" cy="26" r="9" fill="rgba(155,215,255,0.07)" stroke="#4a2808" stroke-width="2"/>
+            <path d="M30 26.5 Q32 24 34 26.5" stroke="#4a2808" stroke-width="1.8" fill="none"/>
+            <line x1="12" y1="22" x2="3"  y2="18" stroke="#4a2808" stroke-width="1.7"/>
+            <line x1="52" y1="22" x2="61" y2="18" stroke="#4a2808" stroke-width="1.7"/>
+            <path d="M0 80 L0 58 Q8 52 27 51 L32 59 L37 51 Q56 52 64 58 L64 80 Z" fill="#0d5040"/>
+            <path d="M8 52 Q18 50 27 51 L32 59 L21 61 Z" fill="#165a48"/>
+            <path d="M56 52 Q46 50 37 51 L32 59 L43 61 Z" fill="#165a48"/>
+            <line x1="32" y1="59" x2="32" y2="80" stroke="#c0a028" stroke-width="1.5"/>
+            <rect x="30.5" y="58" width="3" height="3.2" rx="0.6" fill="#c8aa28"/>
+            <rect x="11" y="64" width="11" height="8" rx="1.2" fill="#165a48" stroke="#0a3a2c" stroke-width="0.8"/>
+            <line x1="11" y1="67" x2="22" y2="67" stroke="#0a3a2c" stroke-width="0.6"/>
+          </svg>
+          <span class="hero-mascot-label">Learn With Hamster</span>
+        </div>
         <h1 class="hero-title">
           <span class="hero-line"><span class="hero-word">Learn without</span></span>
           <span class="hero-line hero-line-accent"><span class="hero-word accent">Limits</span></span>
@@ -16,57 +57,89 @@
         </div>
       </div>
 
-      <!-- Right: 3D Book (Minecraft Enchanting Table aesthetic) -->
-      <div class="book-scene"
+      <!-- Right: 3D Papyrus Scroll (Three.js WebGL) -->
+      <div #bookScene
+           class="book-scene"
            [class.enchanting]="bookOpen()"
+           (click)="onBookClick($event)"
            (mouseenter)="onBookEnter()"
            (mousemove)="onBookMove($event)"
-           (mouseleave)="onBookLeave()">
-        <div class="book-wrap">
-          <div class="book" #bookEl [class.book--open]="bookOpen()">
-            <div class="book-cover-front" #coverEl>
-              <div class="book-cover-lines" aria-hidden="true"></div>
-              <div class="book-cover-text">
-                <span class="book-cover-rune" aria-hidden="true">ᚠ ᚢ ᚦ</span>
-                <span class="book-cover-title">LEARN</span>
-                <span class="book-cover-sub">WITH HAMSTER</span>
-                <span class="book-cover-rune" aria-hidden="true">ᛁ ᛃ ᛇ</span>
-              </div>
+           (mouseleave)="onBookLeave()"
+           (touchstart)="onBookTouchStart($event)"
+           (touchmove)="onBookTouchMove($event)"
+           (touchend)="onBookTouchEnd($event)">
+
+        <!-- Three.js WebGL papyrus scroll renderer -->
+        <jhi-scroll-three
+          #scrollThreeComp
+          [maxPages]="maxPages"
+          (bookOpenChange)="onBookOpenChange($event)"
+          (pageChange)="onPageChange($event)">
+        </jhi-scroll-three>
+
+        <!-- Per-page HTML overlay — clickable content on top of 3D book -->
+        <div class="book-overlay" [class.book-overlay--visible]="bookOpen()">
+          @for (page of activeBookPages(); track page.icon) {
+            @let pageIdx = $index;
+            <div class="book-overlay-page"
+                 [class.book-overlay-page--active]="currentPage() === pageIdx">
+              <div class="book-overlay-icon">{{ page.icon }}</div>
+              <h4 class="book-overlay-title">
+                @if (pageIdx === 0 && account() !== null) {
+                  Continue Your Journey
+                } @else {
+                  {{ page.title }}
+                }
+              </h4>
+              <p class="book-overlay-desc">
+                @if (pageIdx === 0 && account() !== null) {
+                  @let resume = inProgressCourses();
+                  @if (resume.length > 0) {
+                    Pick up where you left off in <strong>{{ resume[0].course.courseTitle }}</strong>.
+                  } @else {
+                    You're all caught up — explore new courses to keep growing.
+                  }
+                } @else {
+                  {{ page.description }}
+                }
+              </p>
+              <button class="book-overlay-cta" (click)="onPageCta(page, pageIdx); $event.stopPropagation()">
+                {{ pageIdx === 0 ? page0CtaLabel() : page.cta }}
+                <span class="book-overlay-arrow">→</span>
+              </button>
             </div>
-            <div class="book-pages-edge">
-              @for (line of bookPageLines; track line) {
-                <div class="book-page-line"></div>
-              }
-            </div>
-            <div class="book-flip-page" #flipPageEl></div>
-            <div class="book-spine-face"></div>
-            <div class="book-top-face"></div>
-            <div class="book-bottom-face"></div>
-            <div class="book-back-cover"></div>
-          </div>
+          }
         </div>
 
-        <!-- Enchanting aura — expands when book opens -->
+        <!-- Click-me hint — shown when scroll is open on page 0 -->
+        <div class="page-turn-hint"
+             [class.hint--visible]="bookOpen() && currentPage() === 0"
+             aria-hidden="true">
+          <span class="hint-arrow">φ</span>
+          <span class="hint-text">Tap&nbsp;to&nbsp;advance</span>
+        </div>
+
+        <!-- Warm aura — expands when scroll opens -->
         <div class="enchant-aura" aria-hidden="true"></div>
 
-        <!-- Elder Futhark glyphs pulled into the book on open (ring of 16) -->
+        <!-- Greek letters orbit the scroll when it opens -->
         <div class="enchant-glyphs" aria-hidden="true">
-          <span class="enchant-glyph" style="--gx:150px;--gy:0px;--delay:0ms;--gd:1.8s">ᚠ</span>
-          <span class="enchant-glyph" style="--gx:139px;--gy:57px;--delay:220ms;--gd:1.5s">ᚢ</span>
-          <span class="enchant-glyph" style="--gx:106px;--gy:106px;--delay:440ms;--gd:1.9s">ᚦ</span>
-          <span class="enchant-glyph" style="--gx:57px;--gy:139px;--delay:660ms;--gd:1.6s">ᚩ</span>
-          <span class="enchant-glyph" style="--gx:0px;--gy:150px;--delay:880ms;--gd:2.0s">ᚱ</span>
-          <span class="enchant-glyph" style="--gx:-57px;--gy:139px;--delay:1100ms;--gd:1.7s">ᚲ</span>
-          <span class="enchant-glyph" style="--gx:-106px;--gy:106px;--delay:1320ms;--gd:1.5s">ᚷ</span>
-          <span class="enchant-glyph" style="--gx:-139px;--gy:57px;--delay:1540ms;--gd:1.8s">ᚹ</span>
-          <span class="enchant-glyph" style="--gx:-150px;--gy:0px;--delay:1760ms;--gd:1.6s">ᚺ</span>
-          <span class="enchant-glyph" style="--gx:-139px;--gy:-57px;--delay:1980ms;--gd:2.0s">ᚾ</span>
-          <span class="enchant-glyph" style="--gx:-106px;--gy:-106px;--delay:2200ms;--gd:1.7s">ᛁ</span>
-          <span class="enchant-glyph" style="--gx:-57px;--gy:-139px;--delay:2420ms;--gd:1.5s">ᛃ</span>
-          <span class="enchant-glyph" style="--gx:0px;--gy:-150px;--delay:2640ms;--gd:1.9s">ᛇ</span>
-          <span class="enchant-glyph" style="--gx:57px;--gy:-139px;--delay:2860ms;--gd:1.6s">ᛈ</span>
-          <span class="enchant-glyph" style="--gx:106px;--gy:-106px;--delay:3080ms;--gd:1.8s">ᛉ</span>
-          <span class="enchant-glyph" style="--gx:139px;--gy:-57px;--delay:3300ms;--gd:1.5s">ᛊ</span>
+          <span class="enchant-glyph" style="--gx:150px;--gy:0px;--delay:0ms;--gd:1.8s">α</span>
+          <span class="enchant-glyph" style="--gx:139px;--gy:57px;--delay:220ms;--gd:1.5s">β</span>
+          <span class="enchant-glyph" style="--gx:106px;--gy:106px;--delay:440ms;--gd:1.9s">γ</span>
+          <span class="enchant-glyph" style="--gx:57px;--gy:139px;--delay:660ms;--gd:1.6s">δ</span>
+          <span class="enchant-glyph" style="--gx:0px;--gy:150px;--delay:880ms;--gd:2.0s">ε</span>
+          <span class="enchant-glyph" style="--gx:-57px;--gy:139px;--delay:1100ms;--gd:1.7s">ζ</span>
+          <span class="enchant-glyph" style="--gx:-106px;--gy:106px;--delay:1320ms;--gd:1.5s">η</span>
+          <span class="enchant-glyph" style="--gx:-139px;--gy:57px;--delay:1540ms;--gd:1.8s">θ</span>
+          <span class="enchant-glyph" style="--gx:-150px;--gy:0px;--delay:1760ms;--gd:1.6s">ι</span>
+          <span class="enchant-glyph" style="--gx:-139px;--gy:-57px;--delay:1980ms;--gd:2.0s">κ</span>
+          <span class="enchant-glyph" style="--gx:-106px;--gy:-106px;--delay:2200ms;--gd:1.7s">λ</span>
+          <span class="enchant-glyph" style="--gx:-57px;--gy:-139px;--delay:2420ms;--gd:1.5s">μ</span>
+          <span class="enchant-glyph" style="--gx:0px;--gy:-150px;--delay:2640ms;--gd:1.9s">ν</span>
+          <span class="enchant-glyph" style="--gx:57px;--gy:-139px;--delay:2860ms;--gd:1.6s">ξ</span>
+          <span class="enchant-glyph" style="--gx:106px;--gy:-106px;--delay:3080ms;--gd:1.8s">π</span>
+          <span class="enchant-glyph" style="--gx:139px;--gy:-57px;--delay:3300ms;--gd:1.5s">ρ</span>
         </div>
 
         <div class="book-glow" [class.glow--open]="bookOpen()" aria-hidden="true"></div>
@@ -135,11 +208,105 @@
     <div class="dashboard-section">
       <div class="container-xl">
 
+        <!-- ─── Dashboard Book Hero ──────────────────────────────────────── -->
+        <div class="dash-book-hero reveal">
+          <!-- Welcome text side -->
+          <div class="dash-book-welcome">
+            <h2 class="welcome-title">
+              Welcome back, <span class="welcome-name">{{ accountRef.firstName || accountRef.login }}</span>
+            </h2>
+            <p class="welcome-sub">Your enchanting journey continues.</p>
+            @if (!loadingStats() && inProgressCourses().length > 0) {
+              @let resume = inProgressCourses()[0];
+              <a [routerLink]="['/catalog/course', resume.course.id]" class="dash-resume-btn">
+                ▶ Resume: {{ (resume.course.courseTitle ?? '') | slice:0:22 }}…
+              </a>
+            }
+          </div>
+
+          <!-- Book side -->
+          <div class="book-scene"
+               [class.enchanting]="bookOpen()"
+               (click)="onBookClick($event)"
+               (mouseenter)="onBookEnter()"
+               (mousemove)="onBookMove($event)"
+               (mouseleave)="onBookLeave()"
+               (touchstart)="onBookTouchStart($event)"
+               (touchmove)="onBookTouchMove($event)"
+               (touchend)="onBookTouchEnd($event)">
+
+            <jhi-scroll-three
+              #scrollThreeComp
+              [maxPages]="maxPages"
+              (bookOpenChange)="onBookOpenChange($event)"
+              (pageChange)="onPageChange($event)">
+            </jhi-scroll-three>
+
+            <div class="book-overlay" [class.book-overlay--visible]="bookOpen()">
+              @for (page of activeBookPages(); track page.icon) {
+                @let pageIdx = $index;
+                <div class="book-overlay-page"
+                     [class.book-overlay-page--active]="currentPage() === pageIdx">
+                  <div class="book-overlay-icon">{{ page.icon }}</div>
+                  <h4 class="book-overlay-title">
+                    @if (pageIdx === 0) {
+                      Continue Your Journey
+                    } @else {
+                      {{ page.title }}
+                    }
+                  </h4>
+                  <p class="book-overlay-desc">
+                    @if (pageIdx === 0) {
+                      @let res = inProgressCourses();
+                      @if (res.length > 0) {
+                        Pick up where you left off in <strong>{{ res[0].course.courseTitle }}</strong>.
+                      } @else {
+                        You're all caught up — explore new courses to keep growing.
+                      }
+                    } @else {
+                      {{ page.description }}
+                    }
+                  </p>
+                  <button class="book-overlay-cta" (click)="onPageCta(page, pageIdx); $event.stopPropagation()">
+                    {{ pageIdx === 0 ? page0CtaLabel() : page.cta }}
+                    <span class="book-overlay-arrow">→</span>
+                  </button>
+                </div>
+              }
+            </div>
+
+            <div class="page-turn-hint"
+                 [class.hint--visible]="bookOpen() && currentPage() === 0"
+                 aria-hidden="true">
+              <span class="hint-arrow">φ</span>
+              <span class="hint-text">Tap&nbsp;to&nbsp;advance</span>
+            </div>
+
+            <div class="enchant-aura" aria-hidden="true"></div>
+            <div class="enchant-glyphs" aria-hidden="true">
+              <span class="enchant-glyph" style="--gx:110px;--gy:0px;--delay:0ms;--gd:1.8s">α</span>
+              <span class="enchant-glyph" style="--gx:78px;--gy:78px;--delay:300ms;--gd:1.6s">γ</span>
+              <span class="enchant-glyph" style="--gx:0px;--gy:110px;--delay:600ms;--gd:1.9s">ε</span>
+              <span class="enchant-glyph" style="--gx:-78px;--gy:78px;--delay:900ms;--gd:1.7s">θ</span>
+              <span class="enchant-glyph" style="--gx:-110px;--gy:0px;--delay:1200ms;--gd:1.8s">λ</span>
+              <span class="enchant-glyph" style="--gx:-78px;--gy:-78px;--delay:1500ms;--gd:1.6s">μ</span>
+              <span class="enchant-glyph" style="--gx:0px;--gy:-110px;--delay:1800ms;--gd:2.0s">π</span>
+              <span class="enchant-glyph" style="--gx:78px;--gy:-78px;--delay:2100ms;--gd:1.7s">ω</span>
+            </div>
+
+            <div class="book-glow" [class.glow--open]="bookOpen()" aria-hidden="true"></div>
+            <div class="book-page-dots" [class.dots--visible]="bookOpen()">
+              @for (i of bookPageLines.slice(0, maxPages); track i) {
+                <div class="book-page-dot"
+                     [class.dot--done]="currentPage() > i"
+                     [class.dot--active]="currentPage() === i && bookOpen()"></div>
+              }
+            </div>
+          </div>
+        </div>
+
         <!-- Welcome header -->
-        <div class="welcome-header reveal">
-          <h2 class="welcome-title">
-            Welcome back, <span class="welcome-name">{{ accountRef.firstName || accountRef.login }}</span>
-          </h2>
+        <div class="welcome-header reveal" style="margin-top: 0.5rem">
           <p class="welcome-sub">Here's where you stand today.</p>
         </div>
 
